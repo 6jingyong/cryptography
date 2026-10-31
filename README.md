@@ -1,14 +1,14 @@
 # cryptography
 
-一个研究**合成数据中的统计自由度、变换域表示、纠错与多通道容量**的开放实验仓库。
+一个研究**合成数据中的统计自由度、变换域表示、纠错、多通道容量与可检测性**的开放实验仓库。
 
-当前仓库只做 synthetic benchmark。核心问题已经从早期的“脏数据里能不能找到可控统计状态”，推进到：
+当前仓库只做 synthetic benchmark。核心问题是：
 
 > 给定一套明确的宏观规律与发布精度，能够把多少可纠错离散状态放进其正交自由度中，同时保持拟合规律、曲线结构和跨变量关系稳定？
 
 ## 当前路线：q=8 protected-subspace carrier
 
-V10 固定：
+当前固定：
 
 - alphabet：`q = 8`
 - field：`GF(8)`
@@ -16,7 +16,7 @@ V10 固定：
 - block：`6 payload + 1 shaping + 2 parity`
 - 每个 payload symbol = 3 bit
 
-局部 carrier 不再主要依赖 `center + logvar + skew`，而写成：
+局部 carrier 写成：
 
 `y = B(x) * beta + U(x) * c`
 
@@ -27,124 +27,142 @@ V10 固定：
 - `c`：q=8 离散 carrier coefficients；
 - shaping symbol：在多个合法 Hamming codeword 中选择结构失真最低的一种。
 
-对于当前 14-point 周期 block：
+## V11：mixed-package auto-encoder
 
-- protected dimensions = 5：
-  `1, sin(wx), cos(wx), sin(2wx), cos(2wx)`
-- free dimensions = 9
-- 一整个 `[9,7,3]_8` codeword 正好放入 free subspace
-- 每 block 18 payload bit
+V10 证明了 homogeneous periodic package 可以扩展到 23.4 MB synthetic payload。V11 进一步测试：
 
-因此：
+> 同一个 encoder 能否处理多种宏观规律，自动选择 transform，并只依靠 published numeric package + compact manifest 完成 exact decode？
 
-`18 / 14 = 1.285714 bit / published numeric value`
+当前 mixed package 同时包含六类 synthetic 数据：
+
+- affine
+- periodic
+- periodic + second harmonic
+- saturation
+- Gaussian peak（log-domain）
+- strict mirror symmetry
+
+自动选择结果：
+
+| family | selected mode | codewords / 24-point block | nominal density |
+|---|---|---:|---:|
+| affine | affine | 2 | 1.50 bit/value |
+| periodic | periodic1 | 2 | 1.50 |
+| harmonic | periodic2 | 2 | 1.50 |
+| saturation | saturation | 2 | 1.50 |
+| Gaussian | gaussian_log | 2 | 1.50 |
+| symmetric | symmetric_even | 1 | 0.75 |
+
+### V11 self-contained round trip
+
+- synthetic high-entropy payload：**262,144 bytes**
+- y-series / table：**16**
+- heterogeneous tables：**6**
+- decoder input：`published_package_v11.npz + manifest_v11.json`
+- SHA-256 exact recovery：**yes**
+- manifest：**2,781 bytes**
+- manifest overhead：**1.061%**
+- gross rate：**20.565 bit/row**
+- net rate after manifest：**20.347 bit/row**
+- gross rate：**1.2853 bit/value**
+- net rate after manifest：**1.2717 bit/value**
+- raw q=8 symbol error before ECC：**0%** in this three-decimal benchmark
+
+结构失真整体较低；当前最贵的 family 是 Gaussian-log：约 **0.541% NRMSE**、roughness 约 **1.213x**。
+
+详见：
+
+- `src/q8_mixed_package_v11.py`
+- `results/q8_mixed_package_v11.md`
+- `results/q8_mixed_package_v11.json`
+
+## V11 detectability
+
+V11 同时加入 matched-control detector benchmark。
+
+### Generic detector
+
+只看普通 residual-shape features，不知道 q=8 lattice / Hamming 结构：
+
+| detector | ROC AUC |
+|---|---:|
+| Logistic | 0.522 |
+| Random Forest | 0.703 |
+| HistGB | 0.680 |
+
+leave-one-family-out Logistic 平均 AUC：**0.534**。
+
+这说明低阶统计脚印较弱，但非线性模型仍能找到中等 footprint；不能解释成“不可检测”。
+
+### Oracle detector
+
+如果 detector 已知 transform / q=8 lattice / Hamming consistency：
+
+- Logistic：**1.000**
+- Random Forest：**1.000**
+- HistGB：**1.000**
+- family-holdout Logistic：**1.000**
+
+这是 V11 最重要的负结果：**当前离散 lattice/code 结构一旦泄露，carrier 可被直接识别。**
+
+详见：
+
+- `src/v11_detectability.py`
+- `results/q8_mixed_package_v11_detectability.json`
 
 ## V10：package-level multiplexing
 
-当前重点不再是单张图或单条曲线，而是：
+V10 的 homogeneous periodic benchmark 实际跑通：
 
-`package = many tables x many y-series x rows x bits/value`
-
-同一个 x 轴可以自然对应多条 y 曲线；不同 table 也可以采用各自的宏观参数。
-
-### 全量 synthetic LoRA-size benchmark
-
-V10 已实际跑通：
-
-- synthetic high-entropy payload：**23.4 MB**
+- synthetic payload：**23.4 MB**
 - tables：**100**
 - y-series / table：**64**
 - Hamming blocks：**10,400,000**
 - published rows：**2,275,000**
-- published numeric y-values：**145,600,000**
-- effective rate：**82.286 bit / row**
-- effective rate：**1.285714 bit / numeric value**
-
-round-trip：
-
+- effective rate：**82.286 bit/row**
 - SHA-256 exact recovery：**yes**
-- raw q=8 symbol error before ECC：约 **0.019%**
-- mean NRMSE：约 **0.333%**
-- mean roughness ratio：约 **1.042x**
-- cross-channel correlation-matrix MAE：约 **7.2e-6**
 
 详见：
 
 - `src/q8_package_v10.py`
 - `results/q8_package_v10.md`
 
-## 为什么从 q=5 转向 q=8
-
-q=5 是 v9 的重要中间阶段，但 q=8 更适合当前结构：
-
-- 一个 symbol 正好是 3 bit；
-- GF(8) Hamming `[9,7,3]_8` 结构自然；
-- `6 payload + 1 shaping + 2 parity = 9`；
-- 不需要额外 radix conversion；
-- 在当前 publication quantization benchmark 下，q=8 能在较低结构失真下提供明显更高密度。
-
 ## v9（历史路线）
 
-v9 使用：
+v9 使用 `center + logvar + skew`、q=5 Hamming `[6,4,3]_5` 和 block shaping，验证了：
 
-- `center + logvar + skew`
-- 27 个联合三态映射到 q=5
-- q=5 Hamming `[6,4,3]_5`
-- `3 payload + 1 shaping + 2 parity`
+1. wet-paper-style feasibility；
+2. STC-like shaping：同一消息对应多个合法 codeword 时选择最低失真的表示。
 
-它验证了两个重要思想：
-
-1. **wet-paper-style feasibility**：某些局部状态可以直接不可用；
-2. **STC-like shaping**：在同一消息对应的多个合法 codeword 中选择最低失真的表示。
-
-这些思想仍然保留在 v10，但 carrier 从“统计 cell”升级成了“protected subspace”。
-
-历史实现：
-
-- `src/block_shaping_v9.py`
-- `results/block_shaping_v9.md`
+这些思想保留到了 q=8 protected-subspace 路线。
 
 ## 当前核心 KPI
 
 - exact payload recovery / SHA-256；
-- usable bits per published numeric value；
-- usable bits per published row；
+- usable bits per published numeric value / row；
+- manifest / codebook overhead；
 - protected macro-parameter drift；
-- NRMSE；
-- curve roughness；
-- cross-channel correlation drift；
-- q=8 raw symbol error before ECC；
-- codebook / metadata overhead。
+- NRMSE / roughness；
+- cross-channel relationship drift；
+- raw q=8 symbol error before ECC；
+- generic / oracle detectability。
 
 ## Synthetic paper benchmark
 
-仓库加入一份明确标注 synthetic/mock 的 paper-style benchmark Skill：
+仓库包含明确标注 synthetic/mock 的 paper-style benchmark Skill：
 
 - `skills/synthetic-paper-benchmark/SKILL.md`
 
-它可以组织：
+所有输出必须明确标注 `SYNTHETIC BENCHMARK`、`SIMULATED DATA` 或 `MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS`。
 
-- synthetic raw data；
-- multi-panel figures；
-- multivariate tables；
-- supplementary-data style files；
-- methods / capacity / distortion / recovery summaries。
+## 当前下一步
 
-所有输出必须明确标注：
+V12 优先研究：
 
-- `SYNTHETIC BENCHMARK`
-- `SIMULATED DATA`
-- 或 `MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS`
-
-不用于制造或冒充真实科研证据。
-
-## 仓库结构
-
-- `docs/`：理论与历史设计
-- `src/`：synthetic benchmark 程序
-- `data/`：固定 synthetic 数据
-- `results/`：实验结果与阶段报告
-- `skills/`：synthetic benchmark 工作流
+1. 降低 codebook-aware detectability；
+2. Gaussian-log shape-aware distortion reduction；
+3. deterministic publication transforms（排序、单位换算、列重排等）；
+4. 更严格的 cross-family / out-of-distribution validation。
 
 ## 边界
 
