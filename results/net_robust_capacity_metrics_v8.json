@@ -1,0 +1,99 @@
+{
+  "configuration": {
+    "train_seeds": 10,
+    "test_seeds": 12,
+    "train_seed_start": 20240011,
+    "test_seed_start": 20270031,
+    "seed_step_train": 173,
+    "seed_step_test": 137,
+    "rows_per_pool": 2424,
+    "generated_rows": 2400,
+    "bins": 20,
+    "selected_rows_per_cell": 24,
+    "candidate_trials_per_cell": 1000,
+    "beam_width": 30,
+    "min_candidates_per_local_state": 2,
+    "features": [
+      "slope_residual",
+      "logvar_relative",
+      "skew_delta"
+    ],
+    "state_quantization": "frozen global tertiles trained on disjoint synthetic pools",
+    "robustness_repetitions": 50,
+    "detector_cv": "4-fold GroupKFold by seed"
+  },
+  "frozen_thresholds": {
+    "logvar_rel": [-0.4212049312065179, 0.11676187903528823],
+    "skew_delta": [-0.29769487155815744, 0.9140050840143593],
+    "slope_resid": [-0.4233904493665972, 0.4251615935738613]
+  },
+  "construction": {
+    "raw_bits_per_cell_median": 4.402473935789967,
+    "raw_bits_range": [4.268315068794613, 4.439513149782223],
+    "gmean_shift_median": 0.00540764487380492,
+    "roughness_ratio_median": 1.198148239262537,
+    "loss_0.01_qary_net_bits_per_cell": 3.3179307136719807,
+    "loss_0.05_qary_net_bits_per_cell": 1.8423726470065092,
+    "loss_0.10_qary_net_bits_per_cell": 1.2336522923944426,
+    "bootstrap_qary_net_bits_per_cell": 0.23763964232192025,
+    "successful_runs": 12
+  },
+  "robustness": {
+    "loss_0.01": {
+      "joint_symbol_recovery": 0.8750833333333333,
+      "slope_state_recovery": 0.8873684210526316,
+      "logvar_state_recovery": 0.9845,
+      "skew_state_recovery": 0.9816666666666667
+    },
+    "loss_0.05": {
+      "joint_symbol_recovery": 0.62875,
+      "slope_state_recovery": 0.6894736842105263,
+      "logvar_state_recovery": 0.9270833333333334,
+      "skew_state_recovery": 0.9196666666666666
+    },
+    "loss_0.10": {
+      "joint_symbol_recovery": 0.4994166666666667,
+      "slope_state_recovery": 0.609561403508772,
+      "logvar_state_recovery": 0.8625833333333334,
+      "skew_state_recovery": 0.8628333333333333
+    },
+    "bootstrap": {
+      "joint_symbol_recovery": 0.20975,
+      "slope_state_recovery": 0.4330701754385965,
+      "logvar_state_recovery": 0.6609166666666667,
+      "skew_state_recovery": 0.6154166666666666
+    }
+  },
+  "detector_auc": {
+    "logistic": {
+      "mean": 0.5564583333333333,
+      "sd": 0.07580289758582719,
+      "folds": [0.42833333333333334, 0.5747222222222222, 0.6013888888888889, 0.6213888888888889]
+    },
+    "random_forest": {
+      "mean": 0.6482638888888889,
+      "sd": 0.06589816750060863,
+      "folds": [0.5802777777777779, 0.5919444444444444, 0.68, 0.7408333333333333]
+    },
+    "hist_gb": {
+      "mean": 0.638125,
+      "sd": 0.05933055516539998,
+      "folds": [0.5438888888888889, 0.6338888888888888, 0.6744444444444445, 0.7002777777777778]
+    }
+  },
+  "parameter_only_codebook_floor": {
+    "assumption": "6 float32 thresholds + 64-bit seed + four uint16 integer parameters; excludes implementation/protocol description",
+    "bits": 320,
+    "amortized_bits_per_cell": {
+      "20": 16.0,
+      "300": 1.0666666666666667,
+      "1000": 0.32,
+      "3000": 0.10666666666666667
+    }
+  },
+  "notes": [
+    "q-ary net bits/cell is an optimistic channel-capacity approximation from empirical joint-symbol error and median raw variable-radix capacity",
+    "bootstrap is intentionally harsh and should not be interpreted as a realistic publication transform without a specified resampling protocol",
+    "AUC near 0.5 only means the tested detector fails; AUC above 0.5 indicates learnable selection artifacts"
+  ]
+}
