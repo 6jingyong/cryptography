@@ -1,0 +1,37 @@
+{
+  "configuration": {
+    "synthetic_only": true,
+    "channels": ["slope_residual", "logvar_relative", "skew_delta"],
+    "state_quantization": "ternary coarse states",
+    "rows_generated": 2400,
+    "bins": 20,
+    "selected_rows_per_bin": 24,
+    "cross_seed_runs": 6,
+    "capacity_definition": "sum(log2(feasible_joint_state_count_per_step))"
+  },
+  "main_seed": {
+    "construction_success": true,
+    "capacity_bits": 85.60854041089696,
+    "bits_per_cell": 4.280427020544848,
+    "mean_feasible_joint_states": 20.75,
+    "minimum_feasible_joint_states": 7,
+    "mean_abs_gmean_shift": 0.008809901557638788,
+    "slope_residual_rmse": 0.48848972732753815,
+    "roughness_ratio_to_full_pool": 1.321330778479652,
+    "matched_random_roughness_ratio_median": 2.7112710209933137
+  },
+  "cross_seed_summary": {
+    "successful_runs": 6,
+    "bits_per_cell_median": 4.417517534779869,
+    "bits_per_cell_range": [4.35807001753477, 4.5252838252270084],
+    "mean_feasible_states_median": 22.4,
+    "minimum_feasible_states_observed_range": [6, 8],
+    "mean_abs_gmean_shift_median": 0.004883226323925491,
+    "matched_random_gmean_shift_median": 0.009687918849805806,
+    "slope_residual_rmse_median": 0.4230220830921211,
+    "matched_random_slope_rmse_median": 0.9879814860367928,
+    "roughness_ratio_median": 1.2558581959125563,
+    "matched_random_roughness_ratio_median": 2.605135118347342
+  },
+  "important_caveat": "This is a construction-capacity proxy. It does not subtract exact codebook description length, ECC overhead, robustness loss, or detector constraints."
+}
