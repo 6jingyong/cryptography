@@ -1,0 +1,40 @@
+{
+  "configuration": {
+    "q": 5,
+    "hamming_code": "[6,4,3]_5",
+    "subset_count": 16,
+    "test_seeds": 6,
+    "global_color_rule": "color=(4*center_state+4*logvar_state+3*skew_state+1) mod 5",
+    "note": "synthetic-only shared-reference benchmark"
+  },
+  "summary": {
+    "4P0S": {
+      "successful_seeds": 6,
+      "payload_bits_per_cell": 1.5479520632582415,
+      "mean_block_cost": 0.34146548332132337,
+      "mean_roughness_ratio": 1.0401347699737082,
+      "block_recovery_5pct_loss": 0.7074074074074074
+    },
+    "3P1S_fixed": {
+      "successful_seeds": 6,
+      "payload_bits_per_cell": 1.160964047443681,
+      "mean_block_cost": 0.42799388864511717,
+      "mean_roughness_ratio": 1.057752231849963,
+      "block_recovery_5pct_loss": 0.639814814814815
+    },
+    "3P1S_shaped": {
+      "successful_seeds": 6,
+      "payload_bits_per_cell": 1.160964047443681,
+      "mean_block_cost": 0.23713041531964552,
+      "mean_roughness_ratio": 1.022372121334391,
+      "block_recovery_5pct_loss": 0.7037037037037037
+    }
+  },
+  "wet_cost_cap_feasibility": {
+    "0.05": {"4P0S": 0.048666666666666664, "3P1S_shaped": 0.144},
+    "0.08": {"4P0S": 0.14466666666666667, "3P1S_shaped": 0.26666666666666666},
+    "0.12": {"4P0S": 0.26533333333333337, "3P1S_shaped": 0.43666666666666665},
+    "0.2": {"4P0S": 0.6686666666666666, "3P1S_shaped": 0.7813333333333333},
+    "0.3": {"4P0S": 0.8153333333333332, "3P1S_shaped": 0.876}
+  }
+}

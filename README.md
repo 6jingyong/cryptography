@@ -2,107 +2,125 @@
 
 一个研究**脏数据中的统计自由度、变换域表示与自适应多通道结构**的开放实验仓库。
 
-当前目标不是设计某个具体密码算法，而是回答一个更基础的问题：
+当前仓库只做合成 benchmark。核心问题是：
 
-> 给定一份本来就包含噪声、舍入、漂移、异常点、重复、缺失和批次效应的数据，在保持图表与统计性质合理的前提下，还剩多少可稳定控制、可组合、可重复验证的统计自由度？
+> 给定本来就包含噪声、舍入、漂移、异常点、重复和批次效应的数据，在保持统计与曲线性质合理的前提下，还剩多少可稳定控制、可组合、可纠错的统计自由度？
 
-## 新的总体思路
+## 当前路线：固定 q=5
 
-项目已经从最初的“几何均值 + 一阶差分 + 分布密码本”扩展为四层结构：
+经过前几轮实验，当前暂时不继续扩大 alphabet，固定：
 
-1. **中心/曲线层**  
-   通过区间几何均值、离散一阶差分、曲率等描述宏观趋势，并要求最终曲线保持低复杂度和平滑性。
+- 统计状态：`center + logvar + skew`；
+- 27 个联合三态通过一张**全局固定映射**变成 q=5 symbol；
+- slope / curvature 不再作为主要 payload，而作为曲线自然性约束；
+- 外层使用 q=5 Hamming `[6,4,3]_5`；
+- cell 内部优先选择离状态边界更远、整体曲线代价更低的候选。
 
-2. **多统计通道层**  
-   在同一统计单元中考察多个候选状态，例如 slope、curvature、variance、IQR、skew、residual autocorrelation、spectral ratio、跨变量相关关系等。目标不是固定使用全部通道，而是寻找彼此低耦合、鲁棒、自然的自由度。
+### v9：加入 block shaping
 
-3. **低复杂度内部密码本 / feature map**  
-   不要求所有统计单元使用同一种表示。内部密码本只描述“哪些单元使用哪些统计特征、如何粗粒度量化、状态如何解释”等低复杂度规则。理想目标是：
+v9 只借用了两个成熟编码思想：
 
-   \[
-   L(K) \ll L(C)
-   \]
+1. **wet-paper-style feasibility**：cell/symbol 组合可以直接判为不可用，不强迫每个 cell 什么都能做；
+2. **STC-like shaping**：消息约束整个 6-cell block，encoder 从多个合法 codeword 中选择总自然性代价最低的一个。
 
-   其中 \(K\) 是内部规则描述，\(C\) 是主要高熵载荷。密码本不应膨胀成逐点说明书。
+因此 6-cell block 可以拆成：
 
-4. **干扰层**  
-   没有被中心层或统计通道使用的观测仍保留在可见数据中，用于维持自然散布、批次差异和背景脏度。干扰层不是“无用数据”，而是自然性约束的一部分。
+`payload + ECC redundancy + shaping freedom = 6 cells`
 
-## 核心研究对象
+当前对照：
 
-对第 \(j\) 个独立统计单元，定义候选特征向量：
+- `4P0S`：4 个 q=5 payload 自由度 + 2 个 Hamming parity；
+- `3P1S`：3 个 payload + 1 个 shaping 自由度 + 2 个 parity。
 
-\[
-F_j=(S_{slope},S_{curvature},S_{variance},S_{IQR},S_{autocorr},S_{spectrum},\ldots)
-\]
+`3P1S` 中同一 payload 有 5 个合法 Hamming codeword，encoder 选总代价最低的一个；decoder 不需要知道 shaping symbol。
 
-真正关心的不是单个特征有多少状态，而是自然性约束 \(N_j\) 下的联合自由度：
+## v9 结果摘要
 
-\[
-C_j = H(F_j\mid N_j)
-\]
+六个独立 synthetic seed：
 
-整个载体的有效容量近似为：
+| construction | payload rate | mean block cost | roughness | 5% row-loss block recovery |
+|---|---:|---:|---:|---:|
+| 4P0S | **1.548 bit/cell** | 0.341 | 1.040x | 70.7% |
+| 3P1S fixed-control | 1.161 | 0.428 | 1.058x | 64.0% |
+| 3P1S shaped | 1.161 | **0.237** | **1.022x** | 70.4% |
 
-\[
-C_{total} \approx \sum_j C_j - L(K) - R_{ECC}
-\]
+最重要的结果不是删点恢复率，而是 hard-feasibility：
 
-其中：
+- cost cap=0.12：`4P0S 26.5% -> 3P1S 43.7%`
+- cost cap=0.20：`4P0S 66.9% -> 3P1S 78.1%`
 
-- \(L(K)\)：内部密码本 / feature map 的描述成本；
-- \(R_{ECC}\)：为了鲁棒解码付出的纠错冗余。
+说明 shaping 的主要价值是：**在保持合法 ECC codeword 的同时，绕开局部高代价/不可用统计状态。**
 
-因此项目的核心 KPI 已从单纯的 `bits/row` 改为：
+详见：
 
-- **robust bits per independent statistical cell**；
-- **independent cells per carrier collection**；
-- **codebook overhead**；
-- **detectability**；
-- **robustness**。
+- `docs/q5-block-shaping.md`
+- `src/block_shaping_v9.py`
+- `results/block_shaping_v9.md`
+- `results/block_shaping_metrics_v9.json`
 
-## 当前已经验证的部分
+## 当前数学对象
 
-目前的合成 benchmark 已经得到几个正向结果：
+对 cell `j` 和 q=5 symbol `a`，定义最优可行候选代价：
 
-- 约 10% 的对称干扰样本可以显著改变散布，而几乎不移动几何均值中心线；
-- 在不知道 latent function 的情况下，只靠可观测 x/y，能够从脏数据池中盲选出明显比随机分组更平滑的中心曲线；
-- 中心曲线子集与一个独立的三态分布 codebook 可以同时存在；
-- 在 12 组随机 seed 中，双通道结构大部分情况下都能稳定复现；
-- 单纯增加 raw rows 并不会线性增加容量，真正重要的是独立统计单元数与每个单元的联合自由度。
+`rho[j,a]`
 
-详细结果见 `results/`。
+不可用状态：
 
-## 当前实验路线
+`rho[j,a] = +infinity`
 
-下一阶段重点不是继续增加原始数据行数，而是寻找一组“统计正交基”：
+block encoder 求：
 
-1. 计算 slope / curvature / variance / IQR / skew / autocorrelation / spectral ratio 等候选特征；
-2. 测量它们的互信息、相关性和条件熵；
-3. 测试删点、重采样、舍入和轻微噪声下的状态稳定性；
-4. 对每个统计单元自适应选择最有余量的 feature；
-5. 计算 adaptive multi-channel capacity 与内部密码本开销；
-6. 最后再加入独立 detector，比较自然随机数据和结构化数据的可检测性。
+`min total_local_cost + curve_cost`
+
+subject to：
+
+`z belongs to a legal q=5 Hamming/coset family for the payload`.
+
+这使当前问题从“逐 cell 塞 symbol”转为“在一组合法 block 表示中做全局最小代价选择”。
+
+## 当前核心 KPI
+
+- robust bits per independent statistical cell；
+- construction feasibility；
+- local statistical distortion；
+- curve roughness / slope / curvature damage；
+- ECC block recovery；
+- codebook overhead；
+- detectability（不是当前唯一优化目标）。
+
+## 已确认的几个结论
+
+- raw rows 不是正确容量变量，独立统计 cell 才是；
+- slope 作为 payload 较脆弱，更适合当曲线约束；
+- `center + logvar + skew` 的纯局部状态更稳；
+- 全局 q=5 映射比逐 cell alphabet 稳定、简单；
+- shaping 明显改善“难塞/难看”，但**不能替代 ECC**；
+- bootstrap 重采样仍是强破坏，不应与普通 rounding / measurement noise 混为一谈。
+
+## 当前未解决的关键问题
+
+1. **shared-reference dependency**：当前状态定义仍使用 parent-bin 统计量；decoder 只有最终载体时能否自包含解码尚未解决。
+2. **adaptive-rate shaping**：逐 block 在 `4P0S` / `3P1S` 之间切换仍需要可重复的 mode schedule 或 metadata。
+3. **同步与 cell 丢失**：整 cell 缺失与普通 row loss 是不同错误模型。
+4. **downstream invariance**：未来还需要验证回归、相关性、显著性等下游统计结论是否稳定。
 
 ## 仓库结构
 
 - `docs/theory-framework.md`：理论框架
-- `docs/validation-plan.md`：初版验证计划
-- `docs/curve-construction.md`：曲线与干扰层设计
-- `src/`：合成数据、盲选、双通道、容量估算等实验脚本
-- `data/`：固定 seed 的合成 benchmark
-- `results/`：每轮验证结果
+- `docs/q5-block-shaping.md`：q=5 block shaping 设计
+- `docs/validation-plan.md`：验证计划
+- `src/`：合成 benchmark 脚本
+- `data/`：固定 seed 合成数据
+- `results/`：每轮实验结果
 
 ## 边界
 
 当前仓库只研究合成数据上的统计自由度、容量、鲁棒性和可检测性：
 
 - 不基于真实科研论文制造伪造数据；
-- 不把一次 detector 失败解释为“不可检测”；
+- 不把 detector 失败解释为“不可检测”；
 - 不把理论组合数直接当成可用容量；
-- 不把内部密码本设计成逐点映射表。
-
-所有结果首先作为可重复、可证伪的 benchmark。
+- 不把内部密码本做成逐点映射表。
 
 ## License
 
