@@ -1,0 +1,32 @@
+{
+  "configuration": {
+    "seed": 20261031,
+    "rows": 1224,
+    "bins": 20,
+    "center_count_per_bin": 12,
+    "codebook_count_per_bin": 15,
+    "codebook_patterns": {
+      "0": [6, 5, 4],
+      "1": [5, 5, 5],
+      "2": [4, 5, 6]
+    },
+    "random_baselines": 500
+  },
+  "center_channel": {
+    "roughness": 27.043167411642937,
+    "full_pool_roughness": 65.18827013205428,
+    "roughness_random_median": 266.2531206793326,
+    "slope_corr_to_full": 0.9604817783588906,
+    "slope_corr_random_median": 0.8519750344269035
+  },
+  "codebook_channel": {
+    "target_hit_rate": 1.0,
+    "feasible_bin_rate": 1.0,
+    "mean_js_to_full_tertile_hist": 0.0023148623643544568,
+    "random_mean_js_median": 0.013431959949393106,
+    "mean_abs_gmean_shift": 0.0016857026237560746,
+    "random_mean_abs_gmean_shift_median": 0.011026339632453586,
+    "mean_logspread_ratio": 1.0040138563996825,
+    "random_logspread_ratio_median": 0.9383023823313537
+  }
+}
