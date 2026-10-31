@@ -1,255 +1,174 @@
-# 初版验证计划 v0.1
+# Validation Plan v1.0
 
 ## 目标
 
-第一版只验证一个问题：
+验证当前 synthetic 双码本架构是否同时满足：
 
-> 给定天然含有多种“脏数据”特征的二维数据，仅通过分组、筛选和统计变换，是否能产生稳定、可控、同时又不明显偏离原分布的派生状态？
-
-不实现完整密码协议。
-
----
-
-## Phase 0 — 建立合成数据基线
-
-使用 `src/generate_dirty_data.py` 生成固定随机种子的二维数据。
-
-当前 v0 数据包含：
-
-- 平滑潜在趋势；
-- 异方差噪声；
-- 后半程缓慢仪器漂移；
-- 少量异常点；
-- 不同小数位舍入；
-- 少量缺失元数据；
-- 少量重复行；
-- 两种 source 标签。
-
-要求：
-
-1. 固定 seed 可完全复现；
-2. 所有脏数据机制参数显式记录；
-3. 原始 latent function 不作为后续算法输入，只用于评估。
+1. published package 可以 self-contained decode；
+2. adaptive q 的选择与 residual budget 一致；
+3. locator 能把目标稳定推进 Top-K；
+4. strict verifier 能拒绝错误候选；
+5. 所有 metadata / codebook overhead 被计入净效率。
 
 ---
 
-## Phase 1 — 建立自然随机分组基线
+## A. Carrier 层
 
-对同一份数据做大量随机分组。
+### A1. Exact recovery
 
-记录每组：
+必须报告：
 
-- x 区间样本数；
-- y 算术均值；
-- y 几何均值；
-- 标准差；
-- 分位数；
-- skew/kurtosis；
-- 相邻区间的离散斜率；
-- histogram 的粗粒度统计。
+- payload SHA-256；
+- decoded SHA-256；
+- exact equality；
+- raw q-ary symbol error；
+- >1 symbol-error blocks。
 
-得到：
+### A2. Publication transforms
+
+逐项测试：
+
+- decimal / significant-digit quantization；
+- `y -> ay+b`；
+- log-domain relative precision；
+- row sorting；
+- column reorder；
+- table split / merge。
+
+只有 decoder 只使用 published package + manifest 时才算有效。
+
+### A3. Structure distortion
+
+按 family 使用合适指标：
+
+- NRMSE；
+- macro coefficient drift；
+- correlation drift；
+- absolute second-difference energy；
+- spectral residual energy。
+
+注意：affine baseline 的二阶差分为 0，因此不能使用 naive roughness ratio。
+
+---
+
+## B. Adaptive-q 层
+
+候选：
 
 \[
-P_{\text{random}}(F)
+q\in\{8,16,32\}
 \]
 
-作为“没有人为优化时”的特征分布。
+每个 table 的 calibration 必须：
 
----
+- 使用独立 synthetic payload；
+- publication 后 exact decode；
+- 不出现超过 ECC 能力的 block；
+- 满足 table residual budget。
 
-## Phase 2 — 约束优化分组
-
-只允许改变：
-
-- 每个原始点属于哪一组；
-- 可选的分组数量；
-- x-bin 的合法划分范围。
-
-禁止：
-
-- 修改原始 x/y；
-- 新造数据点；
-- 删除数据后不记录；
-- 使用 latent function 作为优化器输入。
-
-优化目标先采用多目标形式：
+记录 q frontier：
 
 \[
-J=
-\lambda_1 D_{\text{distribution}}
-+\lambda_2 R_{\text{roughness}}
-+\lambda_3 E_{\text{target}}
-+\lambda_4 I(C;K)
+D_{\max}\rightarrow q^*
 \]
 
-其中：
-
-- `D_distribution`：分组后和总体分布的差异；
-- `R_roughness`：几何均值曲线粗糙度；
-- `E_target`：目标粗粒度斜率状态的误差；
-- `I(C;K)`：两类统计视图之间的依赖程度。
-
-第一版先用简单随机搜索 / simulated annealing / evolutionary search 中的一种，重点是可解释，不追求最优。
+并在不同 seed / channel count / family 下重复。
 
 ---
 
-## Phase 3 — Capacity 曲线
+## C. Package 层
 
-逐渐增加要求控制的状态数。
+报告：
 
-例如：
+- tables；
+- y-series / table；
+- total published rows；
+- total numeric values；
+- gross bit/value；
+- net bit/row；
+- manifest bytes；
+- padding waste。
 
-- 2-state；
-- 4-state；
-- 8-state；
-- 9-state。
-
-记录：
-
-- 成功率；
-- 平均搜索成本；
-- distribution distortion；
-- curve roughness；
-- 最小样本量。
-
-绘制：
-
-\[
-\text{payload state count}
-\rightarrow
-\text{distortion / failure rate}
-\]
-
-验证“量化越细，可行解空间越小”的预期。
+至少保留一个大规模 benchmark，例如 23.4 MB synthetic target-size test。
 
 ---
 
-## Phase 4 — Detectability
+## D. Locator 层
 
-构造两类样本：
+### D1. Corpus size
 
-- `random grouping`
-- `optimized grouping`
+至少：
 
-检测器不能直接读取优化器内部状态。
+- 10k；
+- 100k；
+- 1M descriptor-only synthetic candidates。
 
-基础检测特征：
+### D2. Hard decoys
 
-- 均值/方差/分位数；
-- 末位数字分布；
-- slope distribution；
-- residual autocorrelation；
-- histogram divergence；
-- group-to-group similarity；
-- x-bin sample count irregularity。
+加入：
 
-检测器从简单模型开始：
+- random decoys；
+- shared-q decoys；
+- shared-family decoys；
+- 25% / 50% / 75% structural-overlap near-decoys。
 
-1. Logistic Regression
-2. Random Forest
-3. Gradient Boosting
+### D3. Missing / corrupted fingerprint
 
-主要指标：
+测试：
 
-- ROC-AUC；
-- PR-AUC；
-- 交叉 seed 泛化；
-- 未见 noise level 泛化。
+- substitution；
+- missing positions；
+- reordered figures/tables；
+- duplicated positions。
 
-重要解释：
+核心指标：
 
-> AUC ≈ 0.5 只代表当前检测器没有区分能力，不代表信息论意义上的不可检测。
+- Recall@5/20/50/100；
+- median target rank；
+- P90/P99 rank；
+- expected verification attempts。
 
----
-
-## Phase 5 — 背景“脏度”扫描
-
-定义 noise level：
-
-- L0：近乎干净；
-- L1：少量测量噪声；
-- L2：+ rounding；
-- L3：+ outliers；
-- L4：+ missingness / duplicates；
-- L5：+ drift / heteroskedasticity。
-
-比较每个 level 下：
-
-- capacity；
-- distortion；
-- detector AUC；
-- robustness。
-
-这是项目最核心的一张图：
-
-\[
-\text{background dirtiness}
-\rightarrow
-\text{detectability}
-\]
-
-核心假设：
-
-> 背景越脏，某些人为结构的边际可检测性可能下降。
-
-但实验也可能证伪这一假设。
+不要求 locator false positive 接近 0。
 
 ---
 
-## Phase 6 — Robustness
+## E. Strict verifier
 
-对已经生成的派生结构做常见扰动：
+分别测试：
 
-- 随机丢失 1%、5%、10% 数据；
-- y 增加小幅测量误差；
-- rounding 改变；
-- x-bin 边界轻微移动；
-- bootstrap resampling。
+- wrong locator key；
+- right locator / wrong interpretation；
+- malformed package；
+- valid-looking decoy；
+- correct package。
 
-比较：
+指标：
 
-- 几何均值变化；
-- slope state 稳定率；
-- distribution feature 稳定率。
+- false accept；
+- false reject；
+- attempts until accept。
 
----
-
-## Phase 7 — 多组联合结构
-
-最后才研究多个数据组。
-
-问题：
-
-1. 单组特征熵是多少？
-2. 两组联合熵是否接近相加？
-3. 不同统计视图之间互信息多大？
-4. 多组同时约束后，detectability 是否明显增加？
-
-重点指标：
-
-\[
-H(F_1,\ldots,F_r)
-\]
-
-和
-
-\[
-I(F_i;F_j)
-\]
-
-而不是先构造完整通信协议。
+最终真假判断只属于 verifier，不属于 locator。
 
 ---
 
-## 成功标准 v0.1
+## F. Detectability
 
-第一阶段不要求“证明可以隐写”。
+仍保留：
 
-满足以下三条，就已经值得继续：
+- generic detector；
+- codebook-aware/oracle detector。
 
-1. 在不修改原始数值的情况下，可以通过分组控制若干粗粒度派生状态；
-2. 在合理约束范围内，优化分组与随机分组的传统分布指标差异较小；
-3. capacity / detectability / robustness 三者表现出清晰、可重复的 trade-off。
+但其解释从“唯一优化目标”改成：
 
-如果做不到，也同样是有价值的负结果。
+> 衡量结构 recognizability，以及这种 recognizability 是否与 locator utility 形成 trade-off。
+
+不能把 AUC≈0.5 解释成“不可检测”。
+
+---
+
+## G. 安全与研究边界
+
+所有 corpus、payload、paper-style artifacts 必须是 synthetic/mock。
+
+不对真实论文、真实 secrets、真实模型权重进行隐藏、检索或传输实验。

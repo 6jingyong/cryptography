@@ -1,352 +1,444 @@
-# 理论框架 v0.2
+# 理论框架 v1.0：双码本、adaptive-q 与 package-level carrier
 
-## 1. 核心问题
+## 1. 核心对象已经改变
 
-传统隐写通常从“如何把信息塞进一个正常载体”出发。
+早期版本把问题描述为：
 
-本项目换一个角度：
+> 在脏数据、统计 cell 和派生统计量中，还剩多少可以稳定控制的自由度？
 
-> 如果环境本身就存在大量噪声、缺失、舍入、仪器漂移、异常点、重复和人为清洗，那么满足公开自然性约束之后，还剩多少可以稳定控制的统计自由度？
+这个问题仍然成立，但已经不是当前架构最简洁的描述。
 
-因此研究对象不是某一种具体隐写算法，而是：
+现在的基本对象是：
 
-**天然脏数据中的条件熵、变换域结构、低复杂度内部规则、鲁棒性与可检测性。**
+\[
+\boxed{
+\text{structured numeric package}
++
+\text{interpretation codebook}
++
+\text{locator codebook}
++
+\text{strict verifier}
+}
+\]
+
+项目只在 synthetic / mock 数据上验证容量、纠错、结构保持与检索性质。
 
 ---
 
-## 2. 从固定双通道到自适应多通道
+## 2. 第一层：宏观结构与自由子空间
 
-早期模型主要研究两类状态：
-
-1. 区间几何均值形成的离散 slope；
-2. 同一区间内的粗粒度分布状态。
-
-后续实验表明，这两类状态可以在合成脏数据中同时存在，因此进一步把每个独立统计单元表示为候选特征向量：
+设某一局部数值 block 在变换域 \(z=g(y)\) 中满足：
 
 \[
-F_j=(S_{slope},S_{curvature},S_{variance},S_{IQR},S_{skew},S_{autocorr},S_{spectrum},S_{relation},\ldots)
+z = B(x)\beta + U(x)c
 \]
 
-不同 cell 不要求采用同一种 feature。真正的问题变成：
+其中：
 
-> 每个 cell 在自然性约束下，哪些统计方向仍有可控余量？这些方向之间有多少条件独立性？
-
----
-
-## 3. 观测空间与派生空间
-
-设公开观测数据为：
-
-\[
-D=\{(x_i,y_i)\}_{i=1}^{N}
-\]
-
-同一份数据可以映射到不同表示空间：
-
-\[
-\Phi_1(D)=\text{raw values}
-\]
-
-\[
-\Phi_2(D)=\text{binned geometric means}
-\]
-
-\[
-\Phi_3(D)=\text{discrete slopes / curvature}
-\]
-
-\[
-\Phi_4(D)=\text{histogram / quantile / spread statistics}
-\]
-
-\[
-\Phi_5(D)=\text{residual order / autocorrelation / spectrum}
-\]
-
-\[
-\Phi_6(D)=\text{cross-series / cross-variable relations}
-\]
-
-关键思想是：
-
-> 原始空间看起来正常，并不意味着所有派生空间都没有额外自由度；反之，某个派生空间中的结构也不一定显著改变原始空间的视觉和传统统计指标。
-
----
-
-## 4. 中心线、导数与曲率
-
-将 x 轴划分为区间：
-
-\[
-B_1,\ldots,B_m
-\]
-
-对于正值 y，定义每个区间的几何均值：
-
-\[
-g_j=\exp\left(\frac{1}{n_j}\sum_{i\in B_j}\ln y_i\right)
-\]
-
-定义相邻区间离散斜率：
-
-\[
-s_j=\frac{g_{j+1}-g_j}{\bar{x}_{j+1}-\bar{x}_j}
-\]
-
-以及离散曲率/二阶差分：
-
-\[
-c_j=s_{j+1}-s_j
-\]
-
-连续 spline 只作为曲线合理性的评价器，不作为主要状态定义，以避免容量依赖特定拟合器。
-
-曲线自然性可通过以下指标评价：
-
-- spline roughness；
-- derivative total variation；
-- max slope；
-- residual pattern；
-- 与 observable smooth target 的偏差。
-
----
-
-## 5. 分布与残差候选通道
-
-同一 cell 内还可以定义：
-
-### Spread
-
-\[
-S_{variance}=Q(\log\sigma)
-\]
-
-\[
-S_{IQR}=Q(Q_{75}-Q_{25})
-\]
-
-### Shape
-
-\[
-S_{skew}=Q(\text{skewness})
-\]
-
-或粗粒度的上下尾质量、分位数比例等。
-
-### Residual order
-
-拟合宏观趋势后得到残差：
-
-\[
-r_i=y_i-f(x_i)
-\]
-
-可研究：
-
-\[
-S_{autocorr}=Q(\operatorname{Corr}(r_i,r_{i+1}))
-\]
-
-### Frequency-domain structure
-
-对残差做频域变换后可定义：
-
-\[
-S_{spectrum}=Q\left(\frac{E_{low}}{E_{high}}\right)
-\]
-
-### Cross-variable / cross-series relation
-
-对于多变量或多曲线数据，还可以研究相关系数、相位差、交点数、面积差等关系状态。
-
-这些候选特征是否真正提供新增容量，需要通过条件熵/互信息和鲁棒性实验验证，而不能直接相加。
-
----
-
-## 6. 低复杂度内部密码本 / feature map
-
-引入内部规则 K：
-
-\[
-K=\{\text{feature choice},\text{quantization},\text{ordering},\text{state map},\text{ECC parameters}\}
-\]
-
-其作用不是逐点说明数据如何分配，而是用低描述复杂度描述“如何解释统计状态”。
+- \(B(x)\in\mathbb{R}^{n\times r}\)：protected macro basis；
+- \(\beta\)：宏观参数；
+- \(U(x)\in\mathbb{R}^{n\times d}\)：free basis；
+- \(c\)：可控制的离散 carrier coefficients。
 
 理想条件：
 
 \[
-L(K)\ll L(C)
+B^\top U=0,\qquad U^\top U=I
 \]
 
-其中 C 表示主要高熵载荷。
+于是 encoder 改变 \(c\) 时，尽量不改变宏观拟合空间 \(B\beta\)。
 
-因此一个 cell 可以使用 slope，另一个使用 variance，再一个使用 autocorrelation；某些 cell 也可以完全不承载状态，只保留为背景干扰。
+常见 protected basis：
 
-这相当于自适应信道分配：
+### affine
 
 \[
-S_j^*=\arg\max_{S\in\mathcal{S}} C(S_j\mid N_j)
+B=[1,x]
 \]
 
-其中 \(N_j\) 是该 cell 必须满足的自然性与鲁棒性约束。
+### periodic / harmonic
 
-密码本的关键约束是：
+\[
+B=[1,\sin\omega x,\cos\omega x,\sin2\omega x,\cos2\omega x]
+\]
 
-> 它应该描述规则族，而不是记录逐行 assignment。
+### Gaussian peak（log-domain）
 
-否则密码本自身会膨胀并吞噬主要载荷收益。
+若：
+
+\[
+y=A\exp\left[-\frac{(x-\mu)^2}{2\sigma^2}\right]
+\]
+
+则：
+
+\[
+\log y=a+bx+cx^2
+\]
+
+因此可以在 `log(y)` 中保护：
+
+\[
+B=[1,x,x^2]
+\]
+
+### saturation
+
+可使用：
+
+\[
+B=[1,\exp(-t/\tau)]
+\]
+
+宏观 family 不决定唯一 carrier；真正决定容量的是 protected rank、publication precision 与允许的 residual budget。
 
 ---
 
-## 7. 干扰层
+## 3. q-ary block code
 
-将观测划分为角色：
+当前使用：
 
 \[
-D=D_{center}\cup D_{feature}\cup D_{interference}
+q=2^m
+\]
+
+以及 q-ary Hamming：
+
+\[
+[q+1,q-1,3]_q
+\]
+
+保留 \(s\) 个 information symbols 作为 shaping freedom 时：
+
+\[
+R(q,s)
+=
+\frac{q-1-s}{n_{\text{published}}}\log_2q
+\]
+
+当前主要研究：
+
+\[
+q\in\{8,16,32\},\qquad s=1
+\]
+
+shaping 的目标不是提高纠错距离，而是在同一个 payload 对应的多个合法 codeword 中选择结构代价较低者。
+
+---
+
+## 4. q 是 operating point，不是协议常数
+
+V10/V11 固定 q=8。
+
+V12 以后，q 的角色改成：
+
+\[
+q_j
+=
+\max\left\{
+q:
+\begin{array}{l}
+\text{publication 后可以 exact decode}\\
+D_j(q)\le D_{j,\max}
+\end{array}
+\right\}
+\]
+
+其中 \(D_j\) 是第 \(j\) 张 table 的结构失真指标。
+
+当前 synthetic benchmark 的经验前沿约为：
+
+- <0.5% residual：q=8；
+- ~1–1.5%：q=16；
+- ~2.5–3.5%：q=32。
+
+该阈值依赖：
+
+- transform；
+- publication quantization；
+- block geometry；
+- shaping；
+- 数据生成模型。
+
+不能解释成普适常数。
+
+---
+
+## 5. package-level multiplexing
+
+最终容量单位不是“单张图”，而是整个 package：
+
+\[
+C_{\text{package}}
+=
+\sum_j
+\sum_k
+N_{jk}R_{jk}
+-
+L(M)
 \]
 
 其中：
 
-- `center` 主要维持宏观曲线；
-- `feature` 产生若干统计状态；
-- `interference` 保留自然散布、批次效应和背景脏度。
+- \(j\)：table / figure group；
+- \(k\)：同表内 y-series；
+- \(N_{jk}\)：published numeric values；
+- \(R_{jk}\)：该通道有效 bit/value；
+- \(L(M)\)：manifest / metadata 成本。
 
-干扰层不是简单删除的“无用点”。它的存在可能影响：
+因此一张 table 可以共享 x 并容纳多条曲线；一个 package 又可以包含大量 table。
 
-- 总体分布；
-- detector 特征；
-- 局部方差；
-- 曲线观感；
-- 状态鲁棒性。
-
-因此干扰层必须进入最终自然性评价。
+V10 已经验证 23.4 MB synthetic payload 的 package-level exact round trip。
 
 ---
 
-## 8. 独立统计单元，而不是 raw rows
+## 6. 两本码本
 
-后续容量实验发现，raw row count 并不是正确的容量变量。
+### Codebook A：解释码本
 
-更合理的层级是：
+Codebook A 回答：
+
+> 这份数字结构应该怎样解释和解码？
+
+它可以包含：
 
 \[
-\text{raw rows}
+K_A=
+\{
+\text{family},
+\text{transform},
+q,
+\text{block geometry},
+\Delta,
+\text{ECC},
+\text{ordering}
+\}
+\]
+
+其原则仍然是：
+
+\[
+L(K_A)\ll L(C_{\text{payload}})
+\]
+
+它不应该成为逐点 assignment 表。
+
+当前实现中，Codebook A 的大部分信息可以由 compact manifest 表示；部分结构也可以从 x / figure family 推导。
+
+### Codebook B：locator 码本
+
+Codebook B 回答：
+
+> 在大量候选 package 中，哪些值得尝试严格解码？
+
+它不负责最终认证。
+
+定义结构描述符：
+
+\[
+d_j=
+(\text{family}_j,q_j,\text{transform}_j,\ldots)
+\]
+
+目标 package 形成短序列：
+
+\[
+F=(d_1,d_2,\ldots,d_L)
+\]
+
+接收端预共享或预先知道 \(F\) 的粗粒度模式，然后对候选做相似度排名。
+
+因此允许：
+
+\[
+\text{false positive}>0
+\]
+
+只要：
+
+\[
+P(\text{target rank}\le K)
+\]
+
+足够高，且后续验证成本可接受。
+
+---
+
+## 7. 检索与认证必须分离
+
+当前协议模型明确分成：
+
+### Stage 1 — retrieval
+
+输出：
+
+\[
+\operatorname{TopK}(F_{\text{candidate}},F_{\text{target}})
+\]
+
+优化：
+
+- Recall@K；
+- target rank；
+- expected candidate attempts。
+
+### Stage 2 — interpretation
+
+对候选尝试：
+
+\[
+D
 \rightarrow
-\text{independent statistical cells}
-\rightarrow
-\text{robust states per cell}
-\rightarrow
-\text{effective payload}
+\hat C
 \]
 
-增加同一 cell 内的 replicate 往往主要提高统计稳定性，而不会线性增加离散状态数。
+错误候选可以解码失败，也可以产生无意义输出。
 
-因此项目同时记录：
+### Stage 3 — strict verification
 
-- `robust bits / independent cell`；
-- `independent cells / carrier collection`；
-- `bits / visible row`（仅作为辅助效率指标）。
+最终：
+
+\[
+V(\hat C,K)=\{0,1\}
+\]
+
+synthetic benchmark 可以使用：
+
+- length / format check；
+- keyed integrity tag；
+- SHA-256 equality。
+
+因此：
+
+\[
+\boxed{
+\text{recognizability}
+\neq
+\text{interpretability}
+\neq
+\text{verified recovery}
+}
+\]
 
 ---
 
-## 9. 联合容量与密码本成本
+## 8. 对规则性 / detectability 的新解释
 
-对于第 j 个 cell：
-
-\[
-C_j=H(F_j\mid N_j)
-\]
-
-总有效容量更接近：
+旧目标倾向：
 
 \[
-C_{total}\approx\sum_j C_j-L(K)-R_{ECC}
+\text{AUC}\rightarrow0.5
 \]
 
-其中：
+但 V11 显示，若 detector 知道 q lattice / Hamming 规则，结构可以非常容易识别。
 
-- \(L(K)\)：内部 feature map / 密码本开销；
-- \(R_{ECC}\)：鲁棒解码所需纠错冗余。
+这并不自动意味着架构失效。
 
-如果多个通道并不独立，则必须扣除互信息：
+如果威胁模型允许第二本 locator 码本，那么：
 
 \[
-H(S_1,S_2)=H(S_1)+H(S_2)-I(S_1;S_2)
+\text{structural regularity}
 \]
 
-因此下一阶段重点是寻找：
+既可能是公开 recognizability 的来源，也可能成为接收端检索目标的信号。
 
-> **低互信息 + 高鲁棒性 + 低可检测性** 的统计特征组合。
+因此当前不再把“低 detectability”设为唯一目标。
+
+更完整的 trade-off 是：
+
+\[
+\max
+\left(
+C_{\text{net}},
+R@K,
+\text{robustness}
+\right)
+\]
+
+subject to：
+
+\[
+\text{macro distortion}\le D_{\max}
+\]
+
+和明确的安全/研究边界。
 
 ---
 
-## 10. Dirty-channel 假设
+## 9. V14 的集成结果
 
-核心假设仍然是：
+一个实际生成的 12-table adaptive-q synthetic package：
 
-> 当背景本身具有较高的异常率、量化误差、缺失、漂移和非平稳性时，额外施加少量结构的边际可检测性可能下降。
+- q schedule：8/16/32 按 family 分层；
+- payload：128 KiB；
+- published package + manifest self-contained decode；
+- SHA-256 exact match。
 
-形式上比较：
+将其结构指纹放入 10,000 个 synthetic candidates：
 
-\[
-P_{natural\ dirty}(X)
-\]
+- target extraction error：20%；
+- 1% hard near-decoys；
+- near-decoy 复制 50% 指纹位置；
+- 200 个 corpus seeds。
 
-与
+q-only locator：
 
-\[
-P_{structured\ dirty}(X)
-\]
+- P(Top-20)=58.0%；
+- P(Top-100)=83.5%；
+- mean attempts≈99.8。
 
-但这只是待验证假设。
+joint `(family,q)` locator：
 
-如果人为结构在导数、残差、跨 cell 或跨图联合分布中形成过强规律，即使 raw data 很脏，也可能更容易被检测。
+- P(Top-20)=93.5%；
+- P(Top-50)=98.5%；
+- P(Top-100)=98.5%；
+- median rank=1；
+- mean attempts≈5.6。
 
----
-
-## 11. 四个核心指标
-
-### Capacity
-
-自然性约束下可稳定控制的联合状态数。
-
-### Codebook overhead
-
-\[
-\frac{L(K)}{C_{payload}}
-\]
-
-密码本越依赖逐 cell 特例，收益越差。
-
-### Detectability
-
-训练不知道内部规则的独立检测器区分随机/自然分组与结构化分组。
-
-AUC 接近 0.5 只说明当前 detector 失败，不代表信息论意义上的不可检测。
-
-### Robustness
-
-测试：
-
-- 缺失样本；
-- bootstrap / resampling；
-- 小幅测量扰动；
-- rounding 变化；
-- bin 边界变化；
-- 数据顺序变化（对依赖顺序的特征）。
+因此第二码本应该描述联合结构，而不是只描述 q schedule。
 
 ---
 
-## 12. 当前研究边界
+## 10. 当前容量与检索 KPI
 
-当前阶段只研究合成 benchmark 上的统计自由度与可证伪性：
+### Carrier
 
-- 不把组合数学上限直接当作可用容量；
-- 不用真实科研论文构造伪造实验数据；
-- 不把某个固定 feature 当作天然最优通道；
-- 不把内部密码本设计成逐点 mapping；
-- 不在容量评估中忽略 ECC、鲁棒性和 detector 成本。
+- exact recovery；
+- raw symbol error；
+- bit/value；
+- bit/row；
+- package rows；
+- manifest overhead；
+- NRMSE；
+- macro drift；
+- cross-series relationship drift。
 
-当前下一步：建立候选统计特征矩阵，测量 feature independence、鲁棒性和自适应 feature-map 的净容量。
+### Locator
+
+- Recall@K；
+- median / P90 / P99 target rank；
+- mean verification attempts；
+- 缺失结构位置下的 rank degradation；
+- near-decoy robustness。
+
+### Verifier
+
+- strict false accept；
+- false reject；
+- decoder + integrity success。
+
+---
+
+## 11. 当前边界
+
+本仓库只研究 synthetic / mock benchmark。
+
+不做：
+
+- 真实科研论文造假；
+- 真实 secret / model-weight 的隐蔽传输；
+- 基于真实公开论文搭建隐蔽检索网络；
+- 把 detector 失败解释为绝对不可检测。
+
+当前目标是建立一个可证伪、可重复的**结构化数据自由度 + package 编码 + synthetic locator**实验框架。

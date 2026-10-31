@@ -1,178 +1,306 @@
 # cryptography
 
-一个研究**合成数据中的统计自由度、变换域表示、纠错、多通道容量与可检测性**的开放实验仓库。
+一个研究**合成结构化数据中的可控自由度、纠错、package-level multiplexing 与检索/验证协议**的开放实验仓库。
 
-当前仓库只做 synthetic benchmark。核心问题是：
+> 当前仓库只做 **synthetic / mock benchmark**。它不用于伪造真实科研证据，也不提供真实 secret / model-weight 的隐蔽传输工作流。
 
-> 给定一套明确的宏观规律与发布精度，能够把多少可纠错离散状态放进其正交自由度中，同时保持拟合规律、曲线结构和跨变量关系稳定？
+## 当前结论：系统已经不是“一本密码本”
 
-## 当前路线：q=8 protected-subspace carrier
+当前架构更准确地写成：
 
-当前固定：
+```text
+synthetic payload
+    ↓
+Codebook A：数据解释规则
+    ↓
+protected-subspace + adaptive q + q-ary ECC + shaping
+    ↓
+published numeric package
+    ↓
+Codebook B：预共享结构指纹，只负责 locator
+    ↓
+Top-K candidate retrieval
+    ↓
+strict decode / integrity verification
+    ↓
+accept or reject
+```
 
-- alphabet：`q = 8`
-- field：`GF(8)`
-- 外层码：q=8 Hamming `[9,7,3]_8`
-- block：`6 payload + 1 shaping + 2 parity`
-- 每个 payload symbol = 3 bit
+**Codebook B 不要求唯一定位。**  
+召回错误候选没有关系：错误候选可以被拉取、尝试解析，再由最后的严格校验拒绝。
 
-局部 carrier 写成：
+因此当前研究目标不再是“把所有规则都藏到 detector 看不见”，而是同时研究：
 
-`y = B(x) * beta + U(x) * c`
+1. 数据层能承载多少可纠错状态；
+2. package 能否保持宏观结构与发布精度；
+3. 第二码本能否把真正目标稳定推进 Top-K；
+4. 最终 verifier 能否可靠地区分正确/错误候选。
+
+---
+
+## 1. Codebook A：protected-subspace carrier
+
+局部数值结构写成：
+
+\[
+z = B(x)\beta + U(x)c
+\]
 
 其中：
 
-- `B(x)`：必须保护的宏观子空间；
-- `U(x)`：`B` 的确定性正交补；
-- `c`：q=8 离散 carrier coefficients；
-- shaping symbol：在多个合法 Hamming codeword 中选择结构失真最低的一种。
+- \(B(x)\)：必须保持的宏观规律；
+- \(U(x)\)：宏观子空间的自由补空间；
+- \(c\)：离散 q-ary carrier coefficients；
+- `z` 可以是 `y`，也可以是 `log(y)` 等变换域。
 
-## V11：mixed-package auto-encoder
+decoder 根据 published `x/y` 与 compact manifest 重建 \(B,U\)，不需要原始未编码曲线。
 
-V10 证明了 homogeneous periodic package 可以扩展到 23.4 MB synthetic payload。V11 进一步测试：
+当前 synthetic families 包括：
 
-> 同一个 encoder 能否处理多种宏观规律，自动选择 transform，并只依靠 published numeric package + compact manifest 完成 exact decode？
+- affine；
+- periodic / harmonic；
+- saturation；
+- Gaussian peak（log-domain）；
+- symmetry 等。
 
-当前 mixed package 同时包含六类 synthetic 数据：
+---
 
-- affine
-- periodic
-- periodic + second harmonic
-- saturation
-- Gaussian peak（log-domain）
-- strict mirror symmetry
+## 2. q 不再固定：adaptive q
 
-自动选择结果：
+早期 V10/V11 固定 `q=8`。后续实验表明，q 更合理的定义是**每张 table 的 operating point**。
 
-| family | selected mode | codewords / 24-point block | nominal density |
-|---|---|---:|---:|
-| affine | affine | 2 | 1.50 bit/value |
-| periodic | periodic1 | 2 | 1.50 |
-| harmonic | periodic2 | 2 | 1.50 |
-| saturation | saturation | 2 | 1.50 |
-| Gaussian | gaussian_log | 2 | 1.50 |
-| symmetric | symmetric_even | 1 | 0.75 |
+当前候选：
 
-### V11 self-contained round trip
+\[
+q\in\{8,16,32\}
+\]
 
-- synthetic high-entropy payload：**262,144 bytes**
-- y-series / table：**16**
-- heterogeneous tables：**6**
-- decoder input：`published_package_v11.npz + manifest_v11.json`
+对应 q-ary Hamming：
+
+\[
+[q+1,q-1,3]_q
+\]
+
+并保留一个 information symbol 作为 shaping freedom。
+
+在当前 synthetic publication benchmark 中，一个粗略经验前沿是：
+
+| 允许的 residual / NRMSE | 常见 operating point |
+|---:|---:|
+| < ~0.5% | q=8 |
+| ~1–1.5% | q=16 |
+| ~2.5–3.5% | q=32 |
+
+这不是理论常数，而是当前 transform / quantization / shaping 组合下的实测结果。
+
+### V12 adaptive-q package
+
+同一 128 KiB synthetic payload：
+
+| mode | exact | published rows | gross bit/value | net bit/row |
+|---|:---:|---:|---:|---:|
+| fixed q=8 | yes | 43,776 | 1.497 | 22.646 |
+| adaptive q | yes | 27,760 | 2.361 | 35.705 |
+
+adaptive-q：
+
+- net bit/row：**+57.7%**
+- published rows：**-36.6%**
 - SHA-256 exact recovery：**yes**
-- manifest：**2,781 bytes**
-- manifest overhead：**1.061%**
-- gross rate：**20.565 bit/row**
-- net rate after manifest：**20.347 bit/row**
-- gross rate：**1.2853 bit/value**
-- net rate after manifest：**1.2717 bit/value**
-- raw q=8 symbol error before ECC：**0%** in this three-decimal benchmark
 
-结构失真整体较低；当前最贵的 family 是 Gaussian-log：约 **0.541% NRMSE**、roughness 约 **1.213x**。
+---
 
-详见：
+## 3. package 才是容量单位
 
-- `src/q8_mixed_package_v11.py`
-- `results/q8_mixed_package_v11.md`
-- `results/q8_mixed_package_v11.json`
+单曲线不是最终对象。更合理的容量模型是：
 
-## V11 detectability
+\[
+C_{package}
+=
+\sum_{\text{tables}}
+\sum_{\text{series}}
+N_{ij}R_{ij}
+-
+L(\text{manifest})
+\]
 
-V11 同时加入 matched-control detector benchmark。
+同一张表可以共享一个 x 轴并包含很多 y-series；一整套 package 又可以有很多 table。
 
-### Generic detector
-
-只看普通 residual-shape features，不知道 q=8 lattice / Hamming 结构：
-
-| detector | ROC AUC |
-|---|---:|
-| Logistic | 0.522 |
-| Random Forest | 0.703 |
-| HistGB | 0.680 |
-
-leave-one-family-out Logistic 平均 AUC：**0.534**。
-
-这说明低阶统计脚印较弱，但非线性模型仍能找到中等 footprint；不能解释成“不可检测”。
-
-### Oracle detector
-
-如果 detector 已知 transform / q=8 lattice / Hamming consistency：
-
-- Logistic：**1.000**
-- Random Forest：**1.000**
-- HistGB：**1.000**
-- family-holdout Logistic：**1.000**
-
-这是 V11 最重要的负结果：**当前离散 lattice/code 结构一旦泄露，carrier 可被直接识别。**
-
-详见：
-
-- `src/v11_detectability.py`
-- `results/q8_mixed_package_v11_detectability.json`
-
-## V10：package-level multiplexing
-
-V10 的 homogeneous periodic benchmark 实际跑通：
+V10 homogeneous benchmark 已实际跑通：
 
 - synthetic payload：**23.4 MB**
-- tables：**100**
-- y-series / table：**64**
-- Hamming blocks：**10,400,000**
-- published rows：**2,275,000**
-- effective rate：**82.286 bit/row**
-- SHA-256 exact recovery：**yes**
+- tables：100
+- y-series / table：64
+- q=8 Hamming blocks：10,400,000
+- published rows：2,275,000
+- rate：82.286 bit/row
+- SHA-256 exact recovery：yes
 
-详见：
+因此“大载荷是否可能”首先是 package geometry 问题，而不是单张图的点数问题。
 
-- `src/q8_package_v10.py`
-- `results/q8_package_v10.md`
+---
 
-## v9（历史路线）
+## 4. Codebook B：locator，不是 verifier
 
-v9 使用 `center + logvar + skew`、q=5 Hamming `[6,4,3]_5` 和 block shaping，验证了：
+V13/V14 把第二本预共享码本建模为**结构指纹**。
 
-1. wet-paper-style feasibility；
-2. STC-like shaping：同一消息对应多个合法 codeword 时选择最低失真的表示。
+指纹不需要逐点 mapping，也不需要唯一命中。它只需要在大量候选中让正确 package 排名足够靠前。
 
-这些思想保留到了 q=8 protected-subspace 路线。
+当前最简单的结构位置可以是：
 
-## 当前核心 KPI
+\[
+(\text{family},q)
+\]
 
-- exact payload recovery / SHA-256；
-- usable bits per published numeric value / row；
-- manifest / codebook overhead；
-- protected macro-parameter drift；
-- NRMSE / roughness；
-- cross-channel relationship drift；
-- raw q=8 symbol error before ECC；
-- generic / oracle detectability。
+未来也可以包含更粗粒度的：
 
-## Synthetic paper benchmark
+- transform class；
+- figure/table family；
+- channel-count class；
+- publication-precision class；
+- block family。
 
-仓库包含明确标注 synthetic/mock 的 paper-style benchmark Skill：
+### V14 integrated retrieval result
 
-- `skills/synthetic-paper-benchmark/SKILL.md`
+实际生成一个 12-table adaptive-q synthetic target package，其结构序列包含：
 
-所有输出必须明确标注 `SYNTHETIC BENCHMARK`、`SIMULATED DATA` 或 `MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS`。
+```text
+affine:      q8 → q16 → q32
+periodic:    q8 → q16 → q32
+saturation:  q8 → q16 → q32
+gaussian:    q8 → q16 → q32
+```
 
-## 当前下一步
+然后放入 10,000 个 synthetic candidates 中。
 
-V12 优先研究：
+benchmark 条件：
 
-1. 降低 codebook-aware detectability；
-2. Gaussian-log shape-aware distortion reduction；
-3. deterministic publication transforms（排序、单位换算、列重排等）；
-4. 更严格的 cross-family / out-of-distribution validation。
+- 200 个独立 corpus；
+- 目标指纹有 20% 提取错误；
+- 1% candidate 是 hard near-decoy；
+- near-decoy 故意复制目标 50% 的结构位置。
 
-## 边界
+结果：
 
-当前仓库只研究 synthetic data 上的容量、结构保持、纠错和可检测性：
+| locator | P(Top-20) | P(Top-50) | P(Top-100) | mean verification attempts |
+|---|---:|---:|---:|---:|
+| q-only | 58.0% | 71.5% | 83.5% | 99.8 |
+| **joint `(family,q)`** | **93.5%** | **98.5%** | **98.5%** | **5.6** |
 
-- 不基于真实科研论文制造伪造数据；
-- 不把真实 secret / model weights 做成隐蔽外传工具；
-- 不把 detector 失败解释为“不可检测”；
-- 不把理论组合数直接当成可用容量；
-- 不把内部 codebook 做成逐点映射表。
+因此：
+
+> q schedule 本身可以参与指纹，但联合结构比单独 q 更有效。
+
+---
+
+## 5. 严格验证才是最终真假判断
+
+retrieval false positive 不算协议失败。
+
+流程允许：
+
+```text
+candidate 1 -> verify -> reject
+candidate 2 -> verify -> reject
+candidate 3 -> verify -> accept
+```
+
+最终 accept/reject 应由严格校验决定，例如 synthetic benchmark 中的：
+
+- decoder 是否成功；
+- payload length / format 是否一致；
+- integrity/authentication tag 是否一致；
+- SHA-256 是否一致。
+
+所以当前区分三个概念：
+
+\[
+\text{recognizability}
+\neq
+\text{interpretability}
+\neq
+\text{verified recovery}
+\]
+
+能看出“有规则”不等于知道如何解释，也不等于通过最终验证。
+
+---
+
+## 6. 对 detectability 的重新定位
+
+V11 的 oracle detector 在知道 q=8 lattice / Hamming 规则时 AUC 可以达到 1.0。
+
+旧解释是：
+
+> 规则性是必须消除的风险。
+
+当前更准确的解释是：
+
+> 固定结构具有强指纹；它既可能增加 recognizability，也可能为预共享 locator 提供有用信号。
+
+因此 detectability 仍然记录，但不再单独决定优化方向。
+
+当前更关键的 KPI 是：
+
+- exact recovery；
+- bit/value；
+- bit/row；
+- package rows；
+- manifest overhead；
+- macro / correlation drift；
+- raw symbol error；
+- locator Recall@K；
+- target-rank distribution；
+- expected verification attempts；
+- strict false accepts。
+
+---
+
+## 7. 当前实现
+
+### 当前主线
+
+- `src/adaptive_q_package_v12.py`：adaptive-q package encoder/decoder
+- `src/dual_codebook_pipeline_v14.py`：locator + strict verification 集成
+
+### 当前结果
+
+- `results/adaptive_q_v12.md`
+- `results/dual_codebook_pipeline_v14.md`
+
+### 理论说明
+
+- `docs/theory-framework.md`
+- `docs/dual-codebook-architecture.md`
+- `docs/validation-plan.md`
+
+### 历史路线
+
+V9 及更早的 `center / logvar / skew / q=5` statistical-cell 路线仍保留在仓库中，作为思想来源与历史对照，不再是当前主架构。
+
+---
+
+## 8. 当前下一步
+
+优先级：
+
+1. **扩大 locator corpus**：10k → 100k / 1M synthetic descriptors，研究 fingerprint length 与 Top-K 成本；
+2. **publication transforms**：排序、列重排、单位缩放、有效数字变化后的 self-contained decode；
+3. **更真实的 synthetic residual models**：让 q 的选择基于明确的数据生成模型，而不是只依赖人工 NRMSE budget；
+4. **fingerprint redundancy**：研究缺图、缺表、结构位置丢失时的 retrieval；
+5. **metadata accounting**：把 manifest / locator codebook / integrity metadata 全部计入净容量。
+
+---
+
+## 9. 边界
+
+仓库只研究 synthetic/mock benchmark：
+
+- 不基于真实科研论文制造伪造实验数据；
+- 不把真实 secrets 或 model weights 做成隐蔽外传工具；
+- 不把 detector 失败解释成信息论意义上的“不可检测”；
+- 不把理论组合数直接当作有效容量；
+- 第二码本只在 synthetic corpus 中研究检索性质。
 
 ## License
 

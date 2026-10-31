@@ -1,0 +1,67 @@
+{
+  "scope": "synthetic-only dual-codebook integration",
+  "actual_target_package": {
+    "payload_bytes": 131072,
+    "payload_sha256": "d9bec3e8091833a05f1ed95afc4d0e609593400d33a983898dec62402d9893b9",
+    "decoder_sha256": "d9bec3e8091833a05f1ed95afc4d0e609593400d33a983898dec62402d9893b9",
+    "exact_decode": true,
+    "tables": 12,
+    "q_schedule": [8, 16, 32, 8, 16, 32, 8, 16, 32, 8, 16, 32],
+    "family_schedule": [
+      "affine", "affine", "affine",
+      "periodic", "periodic", "periodic",
+      "saturation", "saturation", "saturation",
+      "gaussian", "gaussian", "gaussian"
+    ]
+  },
+  "locator_q_only": {
+    "alphabet": 3,
+    "fingerprint_positions": 12,
+    "seeds": 200,
+    "corpus_size": 10000,
+    "extraction_noise": 0.2,
+    "near_decoy_fraction": 0.01,
+    "near_decoy_shared_positions": 0.5,
+    "p_target_top1": 0.115,
+    "p_target_top5": 0.325,
+    "p_target_top10": 0.46,
+    "p_target_top20": 0.58,
+    "p_target_top50": 0.715,
+    "p_target_top100": 0.835,
+    "median_rank": 13.0,
+    "p90_rank": 221.1,
+    "p99_rank": 1675.77,
+    "max_rank": 2717,
+    "mean_verification_attempts": 99.765,
+    "mean_target_similarity": 0.8029166666666667,
+    "mean_max_decoy_similarity": 0.9179166666666666
+  },
+  "locator_joint_family_q": {
+    "alphabet": 12,
+    "fingerprint_positions": 12,
+    "seeds": 200,
+    "corpus_size": 10000,
+    "extraction_noise": 0.2,
+    "near_decoy_fraction": 0.01,
+    "near_decoy_shared_positions": 0.5,
+    "p_target_top1": 0.7,
+    "p_target_top5": 0.85,
+    "p_target_top10": 0.91,
+    "p_target_top20": 0.935,
+    "p_target_top50": 0.985,
+    "p_target_top100": 0.985,
+    "median_rank": 1.0,
+    "p90_rank": 10.0,
+    "p99_rank": 101.15,
+    "max_rank": 180,
+    "mean_verification_attempts": 5.585,
+    "mean_target_similarity": 0.7975,
+    "mean_max_decoy_similarity": 0.7258333333333333
+  },
+  "strict_verification": {
+    "representative_target_rank": 1,
+    "verification_attempts_until_accept": 1,
+    "accepted_is_target": true,
+    "actual_target_decoder_sha256_match": true
+  }
+}
