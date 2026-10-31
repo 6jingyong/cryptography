@@ -1,0 +1,41 @@
+{
+  "configuration": {
+    "seed": 20261031,
+    "rows": 1224,
+    "bins": 20,
+    "bin_width": 1.0,
+    "center_count_per_bin": 12,
+    "candidate_trials_per_bin": 2500,
+    "random_baselines": 500
+  },
+  "full_pool": {
+    "roughness": 65.18827013205428,
+    "derivative_tv": 27.020872702549728,
+    "max_abs_spline_slope": 5.778371569650488,
+    "slope_sd": 2.1853335406148484
+  },
+  "optimized": {
+    "roughness": 36.0406034367152,
+    "derivative_tv": 19.965940598286096,
+    "max_abs_spline_slope": 6.131289273165291,
+    "slope_sd": 2.0668542162098245,
+    "rmse_to_observable_smooth_target": 0.030430433355712782,
+    "rmse_to_full_geomean": 0.39732817215980704,
+    "slope_corr_to_full": 0.9546661897293542
+  },
+  "random_baseline": {
+    "roughness": {"mean": 304.5888008936024, "sd": 145.85207616973076, "p05": 116.04723538190986, "median": 285.0433353289778, "p95": 585.6744839147881},
+    "derivative_tv": {"mean": 55.94303886487924, "sd": 12.841469816066219, "p05": 36.89036926215633, "median": 55.09975136682585, "p95": 79.95696243469038},
+    "max_abs_spline_slope": {"mean": 7.5234798596325385, "sd": 1.1672771136964728, "p05": 5.79684649908942, "median": 7.3972694868440785, "p95": 9.660848951904189},
+    "slope_sd": {"mean": 2.590655885330982, "sd": 0.22201978058694774, "p05": 2.2527965339061033, "median": 2.5777998725776174, "p95": 3.015526301448834},
+    "rmse_to_observable_smooth_target": {"mean": 1.0558207478087147, "sd": 0.18440673233037955, "p05": 0.7538123260219278, "median": 1.0494960017143282, "p95": 1.3585436045079247},
+    "rmse_to_full_geomean": {"mean": 0.9810025620746496, "sd": 0.16415687425804534, "p05": 0.715565393999403, "median": 0.9643842386269976, "p95": 1.26130194573784},
+    "slope_corr_to_full": {"mean": 0.8495441742164296, "sd": 0.05185688396148052, "p05": 0.7514059648235561, "median": 0.857342717705022, "p95": 0.9224467023542938}
+  },
+  "optimized_percentile_vs_random": {
+    "roughness_lower_tail_pct": 0.0,
+    "derivative_tv_lower_tail_pct": 0.0,
+    "rmse_target_lower_tail_pct": 0.0,
+    "slope_corr_upper_tail_pct": 0.4
+  }
+}
