@@ -20,8 +20,6 @@ NOISE = [0.00, 0.10, 0.11, 0.12, 0.13, 0.14, 0.15]
 
 def load_base(path: Path):
     ns = runpy.run_path(str(path))
-    # runpy's returned mapping is not guaranteed to be the callable globals;
-    # patch the real globals used by conditions()/run().
     targets = [ns[name].__globals__ for name in ("conditions", "run")]
     for g in targets:
         g["REQUANT_FACTORS"] = list(REQUANT)
@@ -64,6 +62,22 @@ def largest_pass(rows):
     return None if not vals else max(vals)
 
 
+def all_seed_pass_monotonic(rows):
+    """True iff PASS points form one prefix before all FAIL points."""
+    seen_fail = False
+    for r in rows:
+        if not r["pass"]:
+            seen_fail = True
+        elif seen_fail:
+            return False
+    return True
+
+
+def exact_count_monotonic_nonincreasing(rows):
+    counts = [r["direct_exact_count"] for r in rows]
+    return all(b <= a for a, b in zip(counts, counts[1:]))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", type=Path, default=Path("protocol/v18-publication-damage.py"))
@@ -101,9 +115,13 @@ def main():
 
     baseline = next(r for r in rq if abs(r["value"] - 1.00) < 1e-12)
     noise_control = next(r for r in noise if abs(r["value"] - 0.10) < 1e-12)
+    rq_gate_mono = all_seed_pass_monotonic(rq)
+    noise_gate_mono = all_seed_pass_monotonic(noise)
+    rq_count_mono = exact_count_monotonic_nonincreasing(rq)
+    noise_count_mono = exact_count_monotonic_nonincreasing(noise)
 
     refined = {
-        "version": "v18-publication-frontier-refine-v1",
+        "version": "v18-publication-frontier-refine-v2",
         "scope": "synthetic-only",
         "frozen_plan": "results/v18-publication-frontier-refine-plan.md",
         "parent_coarse_evidence": "results/v18-publication-damage.json",
@@ -122,11 +140,29 @@ def main():
             "requant_1p00_pass": baseline["pass"],
             "noise_0p10_pass": noise_control["pass"],
         },
-        "frontier": {
+        "frontier_descriptors": {
             "largest_tested_requant_all_seed_pass": largest_pass(rq),
             "first_tested_requant_below_all_seed_pass": first_fail(rq),
+            "requant_all_seed_pass_pattern_monotonic": rq_gate_mono,
+            "requant_exact_count_monotonic_nonincreasing": rq_count_mono,
             "largest_tested_noise_all_seed_pass": largest_pass(noise),
             "first_tested_noise_below_all_seed_pass": first_fail(noise),
+            "noise_all_seed_pass_pattern_monotonic": noise_gate_mono,
+            "noise_exact_count_monotonic_nonincreasing": noise_count_mono,
+        },
+        "interpretation": {
+            "requantization": (
+                "No scalar monotonic re-quantization threshold is supported by this grid; "
+                "1.05x fails 8/8 gating while 1.10x passes, consistent with discrete grid/coset alignment effects."
+                if not rq_gate_mono else
+                "All-seed re-quantization PASS/FAIL is monotonic on the tested grid."
+            ),
+            "additive_noise": (
+                "The all-seed gate is monotonic on the tested alpha grid, but exact pass counts are not; "
+                "each alpha uses an independent noise realization, so this is not a deterministic nested threshold."
+                if noise_gate_mono and not noise_count_mono else
+                "Interpret noise results as sampled condition success, not a universal deterministic threshold."
+            ),
         },
         "requantization": rq,
         "additive_noise": noise,
@@ -140,11 +176,11 @@ def main():
     print(json.dumps({
         "version": refined["version"],
         "refinement_valid": refined["refinement_valid"],
-        "frontier": refined["frontier"],
+        "frontier_descriptors": refined["frontier_descriptors"],
+        "interpretation": refined["interpretation"],
         "requantization": rq,
         "additive_noise": noise,
     }, indent=2))
-    # Scientific failure is data. Runtime/harness errors still fail normally.
 
 
 if __name__ == "__main__":
