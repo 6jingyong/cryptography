@@ -1,267 +1,389 @@
 # cryptography
 
-一个研究**合成结构化数据中的可控自由度、纠错、package-level multiplexing、检索/验证与发布流程鲁棒性**的开放实验仓库。
+一个关于**结构化数值数据如何承载、检索和恢复离散信息**的 synthetic benchmark 项目。
 
-> 当前仓库只做 **synthetic / mock benchmark**。不用于伪造真实科研证据，也不提供真实 secrets / model weights 的隐蔽传输工作流。
-
-## 当前架构
-
-```text
-synthetic payload
-    ↓
-Codebook A：解释规则
-    ↓
-protected subspace + adaptive q + q-ary ECC + shaping
-    ↓
-published numeric package
-    ↓
-public canonicalization schema
-    ↓
-Codebook B：labeled structural fingerprint，只负责 locator
-    ↓
-Top-K candidates
-    ↓
-strict decode / integrity verification
-    ↓
-accept / reject
-```
-
-现在明确区分：
-
-\[
-\text{recognizability}
-\neq
-\text{interpretability}
-\neq
-\text{verified recovery}
-\]
-
-Codebook B 不要求唯一定位。误召回只增加验证成本，最终真假只由 strict verifier 决定。
+> 这个仓库研究的是：  
+> **当一组公开数值数据本来就有自己的宏观规律、噪声、量化和多表结构时，还能否在不破坏这些规律的前提下，稳定加入可恢复的离散状态？**
+>
+> 当前只使用 synthetic / mock 数据做实验，不用于真实科研造假，也不提供真实 secrets / model weights 的隐蔽传输工作流。
 
 ---
 
-## 1. Codebook A
+# 30 秒理解这个项目
 
-局部数值结构：
+```text
+原始 payload
+    ↓
+把 bit 变成 q-ary 状态
+    ↓
+把这些状态放进“不影响宏观曲线”的自由方向
+    ↓
+得到一组可正常发布的数值表格
+    ↓
+接收端先用“第二本码本”从很多候选里找出可能的目标
+    ↓
+再按“第一本码本”尝试解码
+    ↓
+最后用严格校验判断对错
+```
+
+所以它不是“一张图里藏一串 bit”这么简单，而更像：
+
+\[
+\boxed{
+\text{numeric carrier}
++
+\text{locator}
++
+\text{decoder}
++
+\text{verifier}
+}
+\]
+
+---
+
+# 为什么需要两本码本？
+
+因为“找到目标”和“读懂目标”是两件不同的事。
+
+## Codebook A：解释码本
+
+它告诉 decoder：
+
+> 这张表应该怎样解释？
+
+例如：
+
+```text
+family = periodic
+transform = identity
+q = 16
+ECC = q-ary Hamming
+publication mode = guarded
+```
+
+它决定真正的解码方式。
+
+## Codebook B：定位码本
+
+它不负责解码，只负责回答：
+
+> 在很多候选 package 里，哪些值得先试？
+
+例如一个 package 的结构可能是：
+
+```text
+affine/q8
+affine/q16
+periodic/q8
+periodic/q16
+gaussian/q16
+...
+```
+
+这组结构本身就可以形成一个短指纹。
+
+如果 Top-20 里有多个候选，也没关系：
+
+```text
+candidate A -> decode -> reject
+candidate B -> decode -> reject
+candidate C -> decode -> accept
+```
+
+因此：
+
+\[
+\boxed{
+\text{locator 允许误召回，verifier 才负责最终真假}
+}
+\]
+
+---
+
+# 数值层是怎么工作的？
+
+一条曲线通常有自己的宏观规律。
+
+我们把它写成：
 
 \[
 z=B(x)\beta+U(x)c
 \]
 
-- \(B(x)\)：protected macro structure；
-- \(U(x)\)：free subspace；
-- \(c\)：q-ary carrier coefficients；
-- `z` 可以是 `y`、`log(y)` 等变换域。
+其中：
 
-当前 synthetic families 包括 affine、periodic/harmonic、saturation、Gaussian/log、symmetry。
+- \(B(x)\beta\)：负责“这条曲线看起来还是原来的曲线”；
+- \(U(x)c\)：负责承载离散状态。
+
+例如周期曲线可以保护：
+
+\[
+1,\sin \omega x,\cos \omega x,\sin 2\omega x,\cos 2\omega x
+\]
+
+然后只在这些方向的正交补空间中调整 carrier。
+
+对于 Gaussian peak，还可以先进入：
+
+\[
+z=\log y
+\]
+
+再做同样的事情。
 
 ---
 
-## 2. adaptive q
+# q 是什么？
 
-当前：
+q 表示每个离散 symbol 有多少种状态。
+
+目前主要研究：
 
 \[
 q\in\{8,16,32\}
 \]
 
-使用 q-ary Hamming：
+对应：
+
+- q=8：3 bit / symbol
+- q=16：4 bit / symbol
+- q=32：5 bit / symbol
+
+q 越大，容量越高，但需要更大的数值间隔，所以现在由每张 table 自己选择 q。
+
+---
+
+# adaptive-q
+
+当前逻辑可以概括成：
+
+```text
+非常平滑 / 精度高     -> q=8
+允许约 1% residual   -> q=16
+允许约 2.5~3%        -> q=32
+```
+
+这不是理论常数，而是当前 synthetic benchmark 的 operating point。
+
+---
+
+# 为什么还要 ECC？
+
+因为公开数据可能经历：
+
+- rounding；
+- re-quantization；
+- 数值噪声；
+- 个别 symbol 判错。
+
+当前使用 q-ary Hamming：
 
 \[
 [q+1,q-1,3]_q
 \]
 
-V12 同一 128 KiB synthetic payload：
+并保留一个 information symbol 作为 shaping freedom。
+
+shaping 的目的不是增加 payload，而是在多个合法 codeword 中选择结构代价更低的那个。
+
+---
+
+# 为什么容量单位是 package？
+
+一个 package 可以包含：
+
+- 多张 table；
+- 每张 table 多个 y-series；
+- 每张 table 不同 q；
+- 不同 transform；
+- 不同 publication mode。
+
+所以总容量更接近：
+
+\[
+C_{package}
+=
+\sum_{tables}
+\sum_{series}
+N_{ij}R_{ij}
+-
+L(metadata)
+\]
+
+---
+
+# 目前跑到什么程度？
+
+## V10：大 package
+
+已经实际跑通：
+
+- synthetic payload：23.4 MB
+- 100 tables
+- 64 y-series / table
+- 2.275M published rows
+- 82.286 bit/row
+- SHA-256 exact recovery
+
+## V12：adaptive-q
+
+同一 128 KiB synthetic payload：
 
 | mode | exact | rows | gross bit/value | net bit/row |
 |---|:---:|---:|---:|---:|
 | fixed q=8 | yes | 43,776 | 1.497 | 22.646 |
 | adaptive q | yes | 27,760 | 2.361 | 35.705 |
 
----
+adaptive-q 让 net bit/row 提升约 57.7%。
 
-## 3. package-level capacity
+## V16：第二本码本 / locator
 
-\[
-C_{package}
-=
-\sum_{j,k}N_{jk}R_{jk}
--
-L(\text{metadata})
-\]
-
-V10 homogeneous benchmark：
-
-- synthetic payload 23.4 MB；
-- 100 tables；
-- 64 y-series / table；
-- 10.4M q8 Hamming blocks；
-- 2.275M published rows；
-- 82.286 bit/row；
-- SHA-256 exact recovery。
-
----
-
-## 4. Codebook B：labeled locator
-
-第二码本：
-
-\[
-F=\{(\ell_i,v_i)\}_{i=1}^{L}
-\]
-
-- label \(\ell_i\)：公开 package 中可恢复的 table / figure / axis / role identity；
-- value \(v_i\)：预共享的粗粒度联合结构，例如 `(family,q)`。
-
-V16 在 1M synthetic candidates 上：
+在 1,000,000 个 synthetic candidates 中：
 
 | fingerprint | erasure | P(Top-20) | P(Top-100) |
 |---|---:|---:|---:|
 | 12-ary × 16 | 25% | 96.7% | 100% |
 | 12-ary × 24 | 50% | 90.0% | 100% |
 | 12-ary × 32 | 50% | 100% | 100% |
-| q-only 3-ary × 32 | 50% | 46.7% | 66.7% |
 
-因此 q 只适合作为 locator value 的一部分。
+结论：
 
----
+> 第二本码本不需要唯一定位，只需要让目标高概率进入 Top-K。
 
-## 5. V17：publication pipeline robustness
+## V17：发布流程鲁棒性
 
-V17 把发布后的变化分成三类。
+现在已经区分：
 
 ### Natural invariant
 
-Gaussian/log mode 下正的乘法单位换算：
+不需要额外 metadata。
+
+例如 Gaussian/log mode 下：
 
 \[
 y'=ay
 \]
 
-可以自然吸收到 protected constant term。synthetic test 中放大 1000 倍仍 exact。
+仍然可以直接恢复。
 
 ### Canonicalizable
 
-只需要公开 schema / unit metadata：
+只要保留公开 schema，就可以恢复：
 
-- 列重排 + channel labels；
-- 行重排 + `(segment_id,x_index)`；
-- row + column reorder；
+- 行重排；
+- 列重排；
 - table split / merge；
-- 一般 affine unit transform 在已知单位换算参数下。
-
-这些操作在 V17 synthetic package 中全部 exact recovery。
+- 已知单位换算。
 
 ### Precision-destructive
 
-真正的硬边界是二次量化。
+真正危险的是二次量化。
 
-current spacing：
+当前实验中：
+
+- 2 decimal places：exact
+- 1 decimal place：fail
+- 4 significant digits：exact
+- 3 significant digits：fail
+
+通过加大 symbol spacing，可以换取更强 publication robustness。
+
+---
+
+# 一个完整例子
+
+假设有一个 12-table synthetic package：
 
 ```text
-q8  = 2.0 x publication step
-q16 = 2.5 x
-q32 = 3.0 x
+table 01 -> affine / q8
+table 02 -> affine / q16
+table 03 -> affine / q32
+table 04 -> periodic / q8
+table 05 -> periodic / q16
+table 06 -> periodic / q32
+table 07 -> saturation / q8
+table 08 -> saturation / q16
+table 09 -> saturation / q32
+table 10 -> gaussian / q8
+table 11 -> gaussian / q16
+table 12 -> gaussian / q32
 ```
 
-当前 package：
+那么：
 
-- original step：exact；
-- 1.5x re-quantization：失败；
-- 2 decimal places：exact；
-- 1 decimal place：失败；
-- 4 significant digits：exact；
-- 3 significant digits：失败。
+1. `family + q` 可以形成 locator fingerprint；
+2. 每张 table 内部再根据 Codebook A 解码；
+3. 如果 table 顺序被打乱，只要 table identity 还在，就先 canonicalize；
+4. 如果少几张 table，locator 把它当 erasure；
+5. 如果误召回了错误 package，最终 verifier 会拒绝。
 
-因此核心变量是：
+这就是当前完整协议。
+
+---
+
+# 当前主线代码
+
+```text
+src/adaptive_q_package_v12.py
+src/dual_codebook_pipeline_v14.py
+src/locator_erasure_scaling_v16.py
+src/publication_robustness_v17.py
+```
+
+说明文档：
+
+```text
+docs/how-it-works.md
+docs/theory-framework.md
+docs/dual-codebook-architecture.md
+docs/publication-pipeline.md
+docs/validation-plan.md
+```
+
+---
+
+# 当前真正还没解决的问题
+
+现在最重要的问题已经不是“还能不能再塞更多 bit”，而是：
 
 \[
-\boxed{\Delta/\delta_{final}}
+\boxed{
+\text{加入 carrier 后，residual 是否仍然像原本的数据生成机制？}
+}
 \]
 
-而不是 q 本身。
-
----
-
-## 6. publication guard modes
-
-| mode | q8/q16/q32 spacing | bit/value | tested exact re-quantization |
-|---|---|---:|---:|
-| current | 2 / 2.5 / 3 | 2.312 | 1.0x |
-| guarded | 3 / 3.5 / 4.5 | 1.844 | 1.5x |
-| strong | 4 / 5 / 6 | 1.762 | 1.75x |
-| very strong | 5 / 6.5 / 8 | 1.762 | **3.0x** |
-
-`very strong` 在本轮 synthetic package 中 3.0x 仍 exact、3.25x 开始失败。
-
-这说明 Codebook A 应显式带 publication operating mode：
-
-```text
-high_density
-guarded_1p5x
-guarded_1p75x
-guarded_3x
-```
-
----
-
-## 7. 当前文件
-
-### Code
-
-- `src/adaptive_q_package_v12.py`
-- `src/dual_codebook_pipeline_v14.py`
-- `src/locator_erasure_scaling_v16.py`
-- `src/publication_robustness_v17.py`
-
-### Results
-
-- `results/adaptive_q_v12.md`
-- `results/dual_codebook_pipeline_v14.md`
-- `results/locator_v16.md`
-- `results/publication_robustness_v17.md`
-
-### Docs
-
-- `docs/theory-framework.md`
-- `docs/dual-codebook-architecture.md`
-- `docs/publication-pipeline.md`
-- `docs/validation-plan.md`
-
----
-
-## 8. 下一步
-
-下一阶段优先研究显式 synthetic residual models：
+下一阶段会显式建立：
 
 \[
 y=f(x)+\epsilon
 \]
 
-包括：
+其中 \(\epsilon\) 分别是：
 
 - iid Gaussian；
-- heteroscedastic Gaussian；
+- heteroscedastic；
 - AR(1)；
 - batch drift；
-- Gaussian + sparse outliers。
+- sparse outlier mixture。
 
-问题从“人工给一个 NRMSE budget”改成：
+然后测试：
 
-> carrier residual 是否仍然与声明的数据生成模型相容？在这个约束下最大可用 q / publication guard 是多少？
+> 在保持 residual model 合理的条件下，最大 q / publication guard 到底是多少？
 
 ---
 
-## 9. 边界
+# 边界
 
-仓库只研究 synthetic/mock benchmark：
+本仓库只研究 synthetic / mock benchmark：
 
-- 不基于真实科研论文制造伪造实验数据；
-- 不把真实 secrets 或 model weights 做成隐蔽外传工具；
-- 不把 detector 失败解释成信息论意义上的不可检测；
-- 不把理论组合数直接当作有效容量；
-- 第二码本只在 synthetic corpus 中研究检索性质。
+- 不制造真实科研证据；
+- 不把真实 secrets / model weights 做成隐蔽传输工具；
+- 不把 detector 失败解释成“绝对不可检测”；
+- 不把理论组合数直接当有效容量；
+- locator 只在 synthetic corpus 中验证。
 
 ## License
 
-MIT.
+MIT
