@@ -1,175 +1,100 @@
 # Version Remap — where V12–V21 belong after the protocol reset
 
-This note remaps previous work onto the corrected architecture:
+The corrected lifecycle is:
 
 ```text
 A -> c -> B -> b -> a
 ```
 
-The purpose is to preserve useful experiments without preserving incorrect
-naming.
+This note preserves useful historical work without preserving pre-reset naming or treating unaudited summaries as current evidence.
 
----
+## V12 — adaptive q
 
-# V12 — adaptive q
+**Correct layer:** primarily `b`; concrete package choices belong in `B`.
 
-**Correct layer:** primarily `b`, with package choices recorded in `B`.
+Retain: adaptive q, q-ary ECC, shaping, protected subspace, publication quantization, exact reconstruction.
 
-Useful retained work:
+Status: **CURRENT / RETAIN**.
 
-```text
-adaptive q
-q-ary Hamming ECC
-shaping
-protected subspace
-publication quantization
-exact reconstruction
-```
+## V14 — historical dual-codebook experiment
 
-Interpretation:
-
-- V12 is a carrier/codec experiment for how `b` is represented numerically.
-- Actual q, transform, block geometry, etc. belong in per-package `B`.
-
-Status: **retain**.
-
----
-
-# V14 — "dual codebook"
-
-**Correct layer:** mixed two different concepts and therefore should be renamed
-historically rather than treated as the final architecture.
-
-Useful retained work:
+Useful components remain, but the old names are retired:
 
 ```text
-candidate structural fingerprint
-strict candidate verification
-actual package decoder
+old locator portion -> current A
+old decoder-manifest portion -> current B
 ```
 
-Correct remap:
+Status: **HISTORICAL-BUT-VALID EXPERIMENTS; TERMINOLOGY STALE**.
 
-- locator portion -> `A`
-- decode manifest portion -> `B`
-
-Status: **retain experiments, retire terminology**.
-
----
-
-# V16 — labeled locator
+## V16 — labeled locator
 
 **Correct layer:** `A`.
 
-The labeled fingerprint:
+The labeled fingerprint is historical A-layer retrieval research. References in the old report to the "second codebook" are pre-reset wording and now mean the A-layer locator, not current `B`.
 
-\[
-F=\{(\ell_i,v_i)\}
-\]
+Status: **HISTORICAL-BUT-VALID A-LAYER BENCHMARK**.
 
-is an A-defined way to observe candidate package `c`.
+## V17 — publication robustness
 
-Reordering and erasure are locator/canonicalization concerns.
+**Correct layer:** split across `A`, `c`, and `B`.
 
-Status: **retain as A-layer benchmark**.
+- public labels / canonical ordering before locating -> `A`;
+- package framing and publication survival -> `c`;
+- actual transform, q, precision, geometry, decoder settings -> `B`.
 
----
+The old V17 report contains pre-reset statements placing q/transform/ECC/geometry in "Codebook A". Those statements are stale; the experimental observations may still be retained under the remap above.
 
-# V17 — publication robustness
+Status: **HISTORICAL-BUT-VALID RESULTS; RESPONSIBILITIES REMAPPED**.
 
-**Correct layer:** split between `A`, `c`, and `B`.
+## V18 — host-aware residual carrier
 
-- public labels / canonical ordering needed before locating -> `A`
-- package surviving reorder/split/merge/quantization -> `c`
-- actual transform / precision / local decode settings -> `B`
+**Correct layer:** `b`, with concrete mode parameters in `B`.
 
-Status: **retain, split responsibilities**.
+The architecture maps cleanly, but no auditable V18 executable/raw result is present in the current repository history inspected during the 2026-11-02 audit. Precise V18 numbers preserved in old summaries are therefore not current machine evidence.
 
----
+Status: **NEEDS-REINTEGRATION**.
 
-# V18 — host-aware residual carrier
+## V19 — regime selector
 
-**Correct layer:** `b`, with mode parameters in `B`.
+**Correct layer:** sender-side policy for choosing `(b,B)`. `A` may define the allowed vocabulary, but must not absorb package-specific mode choice.
 
-Host-aware syndrome/QIM determines how payload representation is carried in the
-numeric free subspace.
+The architecture is reusable; the historical quantitative summary lacks an auditable current executable/result chain.
 
-Status: **retain**.
+Status: **NEEDS-REINTEGRATION**.
 
----
+## V20 — outer ECC / verified package reliability
 
-# V19 — regime selector
+**Correct layer:** mainly `b` and `c`; concrete shard/parity geometry belongs in `B`; bootstrap/verification rules belong to A/c framing.
 
-**Correct layer:** sender-side generation policy for `(b,B)`.
+The architecture is reusable; historical quantitative values are not current machine evidence until rerun under the corrected lifecycle.
 
-The selector chooses which inner carrier family should be used for one package.
+Status: **NEEDS-REINTEGRATION**.
 
-It is not part of long-lived `A` unless `A` merely defines the allowed mode
-vocabulary.
+## V21 — constrained optimizer
 
-Status: **retain, reclassify**.
+The retained principle is:
 
----
+> protocol constraints before rate.
 
-# V20 — outer ECC / verified package rate
+The old quantitative locator schema and package-geometry results were produced under the pre-reset abstraction and must not be attached directly to current Protocol-v3.
 
-**Correct layer:** mainly `b` and `c`, with parameters in `B`.
+Status: **HISTORICAL-BUT-VALID PRINCIPLE ONLY; QUANTITATIVE RESULTS STALE**.
 
-- outer data/parity structure -> payload/package reliability
-- actual shard geometry / parity counts -> `B`
-- integrity framing / opening rules -> `c` and A-defined bootstrap
+## Current audited state
 
-Status: **retain**.
-
----
-
-# V21 — constrained optimizer
-
-**Correct lesson retained:**
-
-> capacity must be optimized only after protocol constraints pass.
-
-**Incorrect abstraction to retire:**
-
-- treating "Codebook A" as the package reconstruction manifest;
-- treating "Codebook B" as the locator.
-
-After reset:
+The current verified spine is:
 
 ```text
-A = pre-shared root locator/bootstrap codebook
-B = per-package reconstruction codebook
+A/B reset
+-> V12 carrier
+-> Protocol-v3 public-structure locator
+-> strict open/verify
+-> B+b decode
+-> exact a recovery
+-> E5 multi-seed nominal benchmark
 ```
 
-The previous V21 locator experiments should be interpreted as experiments on
-the **A-layer fingerprint schema**.
+A separate structural-v4 synthetic descriptor benchmark now records the explicit retrieval boundary for a 12-label A-layer model. It is research on the retrieval layer, not evidence that the current v3 NPZ parser already tolerates physical table deletion or split/merge.
 
-The previous fixed-manifest accounting should be interpreted as **B + package
-metadata cost**, not as the cost of A.
-
-Status: **retain results selectively, rewrite architecture**.
-
----
-
-# Current status and next integration step
-
-The protocol-level lifecycle now exists and has been tested with the real synthetic V12 manifest and published NPZ package:
-
-```text
-A
--> locate c
--> strict outer verify
--> extract real B + b
--> real V12 decode
--> recover a
--> strict final verify
-```
-
-The next technical integration step is **not** another throughput sweep. It is to bind the A-layer fingerprint to public structural properties of the actual generated package, while preserving the separation:
-
-```text
-A defines how to find / bootstrap c
-B defines how this concrete b reconstructs a
-```
-
-V18–V21 should be reintroduced only after each mode is cleanly attached to this corrected lifecycle.
+The next integration target after the audit gate is V18, not another rate/bit-value sweep.
