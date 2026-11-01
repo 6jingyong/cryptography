@@ -139,3 +139,41 @@ joint `(family,q)`：
 结论：
 
 > 第二本码本应优先描述联合结构，不必承担最终认证职责。
+
+
+---
+
+## V15/V16：locator 使用稳定 label canonicalize
+
+第二码本进一步写成：
+
+\[
+F=\{(\ell_i,v_i)\}
+\]
+
+其中 `label` 来自公开结构，`value` 才是预共享模式的一部分。
+
+因此：
+
+```text
+figure/table reorder
+    -> recover public labels
+    -> canonical sort
+    -> compare locator values
+```
+
+而不是把 figure 的当前顺序直接当协议位置。
+
+当前 benchmark 中：
+
+- naive ordered matcher 在随机重排下 median rank ≈ 4066 / 10k；
+- canonical labeled matcher 在同样 25% erasure + 10% substitution 下 median rank = 1。
+
+在 1M synthetic candidates 上，12-ary × 16 labeled positions、25% erasure 时，Top-20=96.7%、Top-100=100%（30 seeds）。
+
+如果允许 50% labeled positions 完全缺失：
+
+- 12-ary × 24：Top-100=100%；
+- 12-ary × 32：Top-20=100%。
+
+所以 locator 的主要冗余预算应针对 **erasure / label loss**，而不是 figure 顺序。

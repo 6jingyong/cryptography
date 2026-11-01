@@ -112,14 +112,18 @@ D_{\max}\rightarrow q^*
 - shared-family decoys；
 - 25% / 50% / 75% structural-overlap near-decoys。
 
-### D3. Missing / corrupted fingerprint
+### D3. Labeled fingerprint: reorder / missing / corruption
 
 测试：
 
-- substitution；
-- missing positions；
+- value substitution；
+- labeled-position erasure；
 - reordered figures/tables；
-- duplicated positions。
+- duplicated positions；
+- label 无法恢复 / label 冲突。
+
+默认协议应先按公开 label canonicalize，因此单纯 reorder 不应造成 rank 损失。
+必须同时保留 naive ordered matcher 作为负对照。
 
 核心指标：
 
@@ -172,3 +176,23 @@ D_{\max}\rightarrow q^*
 所有 corpus、payload、paper-style artifacts 必须是 synthetic/mock。
 
 不对真实论文、真实 secrets、真实模型权重进行隐藏、检索或传输实验。
+
+
+## H. V16 locator scaling acceptance targets
+
+当前 synthetic stress benchmark 建议至少报告：
+
+- corpus = 10k / 100k / 1M；
+- value alphabet = 3 与 12；
+- fingerprint length = 12 / 16 / 24 / 32；
+- erasure = 10% / 25% / 50%；
+- substitution = 10%；
+- 1% hard near-decoys，50% structural overlap。
+
+重点不是要求所有配置 Top-1，而是建立：
+
+\[
+(N, L, |\Sigma|, e, s)\rightarrow\operatorname{Recall@K}
+\]
+
+从而决定第二码本在目标 corpus 规模下需要的 labeled positions 数量。

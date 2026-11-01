@@ -193,7 +193,63 @@ benchmark 条件：
 
 ---
 
-## 5. 严格验证才是最终真假判断
+## 5. V15/V16：第二码本改成 labeled fingerprint
+
+后续实验进一步确认：第二码本不应该被理解成“固定顺序的符号串”。更合理的对象是：
+
+\[
+F=\{(\ell_i,v_i)\}_{i=1}^{L}
+\]
+
+其中：
+
+- `label` \(\ell_i\)：可以从公开 package 结构中稳定恢复的粗粒度身份，例如 table / figure role、axis family、结构类型；
+- `value` \(v_i\)：预共享码本期望的粗粒度结构值，例如 q class、transform class 或联合状态。
+
+因此 figure/table **重排不应该消耗 locator 冗余**：接收端先按 label canonicalize，再比较 value。真正的损失是：
+
+- label 对应结构位完全缺失（erasure）；
+- value 提取错误（substitution）。
+
+### V15 reorder control
+
+10k candidate、16 个 labeled positions、12-ary value、25% erasure、10% substitution、随机重排：
+
+| matcher | median rank | P90 rank | P(Top-100) |
+|---|---:|---:|---:|
+| naive ordered | 4066 | 8368 | 6% |
+| **canonical labeled** | **1** | **1** | **100%** |
+
+结论：只要存在稳定 label，重排主要是协议设计问题，不是信息容量问题。
+
+### V16 locator scaling
+
+统一 stress model：
+
+- corpus：10k / 100k / 1M；
+- retained positions 中 10% substitution；
+- 1% hard near-decoys；
+- near-decoy 与 target 共享 50% labeled values。
+
+在 1M candidate 上：
+
+| fingerprint | erasure | P(Top-20) | P(Top-100) | median rank |
+|---|---:|---:|---:|---:|
+| 12-ary × 16 | 25% | **96.7%** | **100%** | **1** |
+| 12-ary × 24 | 50% | 90.0% | **100%** | 2 |
+| 12-ary × 32 | 50% | **100%** | **100%** | **1** |
+| q-only-like 3-ary × 32 | 25% | 86.7% | 96.7% | 4 |
+| q-only-like 3-ary × 32 | 50% | 46.7% | 66.7% | 23 |
+
+1M 行结果使用 30 个独立 seed，是 empirical stress test，不是概率保证。
+
+这进一步确认：
+
+> **q 只适合作为 locator value 的一部分。第二码本应该使用带稳定 label 的联合结构状态。**
+
+---
+
+## 6. 严格验证才是最终真假判断
 
 retrieval false positive 不算协议失败。
 
@@ -226,7 +282,7 @@ candidate 3 -> verify -> accept
 
 ---
 
-## 6. 对 detectability 的重新定位
+## 7. 对 detectability 的重新定位
 
 V11 的 oracle detector 在知道 q=8 lattice / Hamming 规则时 AUC 可以达到 1.0。
 
@@ -256,17 +312,19 @@ V11 的 oracle detector 在知道 q=8 lattice / Hamming 规则时 AUC 可以达�
 
 ---
 
-## 7. 当前实现
+## 8. 当前实现
 
 ### 当前主线
 
 - `src/adaptive_q_package_v12.py`：adaptive-q package encoder/decoder
-- `src/dual_codebook_pipeline_v14.py`：locator + strict verification 集成
+- `src/dual_codebook_pipeline_v14.py`
+- `src/locator_erasure_scaling_v16.py`：locator + strict verification 集成
 
 ### 当前结果
 
 - `results/adaptive_q_v12.md`
 - `results/dual_codebook_pipeline_v14.md`
+- `results/locator_v16.md`
 
 ### 理论说明
 
@@ -280,19 +338,19 @@ V9 及更早的 `center / logvar / skew / q=5` statistical-cell 路线仍保留�
 
 ---
 
-## 8. 当前下一步
+## 9. 当前下一步
 
 优先级：
 
-1. **扩大 locator corpus**：10k → 100k / 1M synthetic descriptors，研究 fingerprint length 与 Top-K 成本；
-2. **publication transforms**：排序、列重排、单位缩放、有效数字变化后的 self-contained decode；
+1. **publication transforms**：排序、列重排、单位缩放、有效数字变化后的 self-contained decode；
+2. **table split / merge**：确认 package 重组后 Codebook A 仍然可恢复；
 3. **更真实的 synthetic residual models**：让 q 的选择基于明确的数据生成模型，而不是只依赖人工 NRMSE budget；
-4. **fingerprint redundancy**：研究缺图、缺表、结构位置丢失时的 retrieval；
+4. **locator label failure**：研究 label 本身无法稳定恢复时的退化，而不是只测 value erasure；
 5. **metadata accounting**：把 manifest / locator codebook / integrity metadata 全部计入净容量。
 
 ---
 
-## 9. 边界
+## 10. 边界
 
 仓库只研究 synthetic/mock benchmark：
 
