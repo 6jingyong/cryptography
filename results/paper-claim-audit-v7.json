@@ -1,0 +1,20 @@
+{
+  "version": "paper-claim-audit-v7",
+  "scope": "synthetic-only",
+  "gate_pass": true,
+  "claims": [
+    {"claim_id":"C1","pass":true,"evidence":{"E1_pass":true,"E2_pass":true}},
+    {"claim_id":"C2","pass":true,"evidence":{"matched_fit_beats_linear_fraction":1.0,"median_delta_r2":0.9228571584461855}},
+    {"claim_id":"C3","pass":true,"evidence":{"leave_one_out_archetype_retention_rate":1.0}},
+    {"claim_id":"C4","pass":true,"evidence":{"seeds":8,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"all_payload_hashes_unique":true,"median_target_rank":1.0,"max_target_rank":1,"median_locator_score":1.0}},
+    {"claim_id":"C5","pass":true,"mandatory":true},
+    {"claim_id":"C6","pass":true,"evidence":{"baseline_recall_at_100":1.0,"deletion_25pct_recall_at_100":1.0,"deletion_50pct_recall_at_1000":0.0,"substitution_20pct_recall_at_20":0.9283,"substitution_20pct_recall_at_100":0.9793,"substitution_20pct_recall_at_1000":0.9812,"combined_recall_at_1000":0.0}}
+  ],
+  "never_upgrade": [
+    "domain archetype -> real provenance",
+    "high R2 -> proven physical mechanism",
+    "synthetic locator benchmark -> universal undetectability/security",
+    "requested experiment -> completed evidence",
+    "descriptor-level v4 canonicalization -> current v3 NPZ parser support"
+  ]
+}
