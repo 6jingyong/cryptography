@@ -9,6 +9,40 @@
 
 ---
 
+# Quick Start：先亲眼跑一次
+
+第一次看这个项目，推荐先不要跑完整 benchmark：
+
+```bash
+python -m pip install -r requirements.txt
+python demo.py
+```
+
+`demo.py` 会自动完成：
+
+```text
+synthetic payload
+-> adaptive-q numeric package
+-> structural locator
+-> reject a decoy
+-> decode the published package
+-> SHA-256 PASS
+```
+
+并生成：
+
+```text
+demo_output/curve_before_after.svg
+demo_output/demo_manifest_summary.json
+demo_output/demo_summary.json
+```
+
+Quick demo 使用缩小的 calibration，只用于理解流程；正式结果仍以 `src/` / `results/` 中的 benchmark 为准。
+
+更详细步骤见 [`docs/quick-start.md`](docs/quick-start.md)。
+
+---
+
 # 30 秒理解这个项目
 
 ```text
