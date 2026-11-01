@@ -1,5 +1,5 @@
 {
-  "version": "current-audited-summary-v2",
+  "version": "current-audited-summary-v3",
   "scope": "synthetic-only",
   "protocol": {
     "chain": "A -> c -> B -> b -> a",
@@ -30,6 +30,36 @@
         "both_target_rank": 1,
         "payload_hashes_distinct": true
       }
+    },
+    "real_package_v18": {
+      "status": "CURRENT_BOUNDED_REINTEGRATION",
+      "carrier": "host-aware modulo-QIM on a non-zero synthetic smooth residual host",
+      "locator_does_not_parse_B_before_ranking": true,
+      "v18_specific_state_in_B": true,
+      "multiseed": {
+        "seeds": 8,
+        "all_payload_hashes_unique": true,
+        "exact_recovery_rate": 1.0,
+        "recall_at_20": 1.0,
+        "recall_at_100": 1.0,
+        "median_target_rank": 1.0,
+        "max_target_rank": 2
+      },
+      "calibration": {
+        "tables": 12,
+        "q4_selected": 12,
+        "q2_selected": 0,
+        "all_exact_block_recovery": true,
+        "min_host_adjustment_nrmse": 0.0007201639903283434,
+        "max_host_adjustment_nrmse": 0.0010926954532566903,
+        "strictest_budget_nrmse": 0.0045
+      },
+      "host_adjustment": {
+        "median_adjustment_to_host_rms_ratio": 0.4459463314354794,
+        "max_adjustment_to_host_rms_ratio": 0.4852376607415115
+      },
+      "fixed_512B_gross_bits_per_numeric_value": 0.11339977851605759,
+      "boundary": "current evidence applies only to the frozen smooth synthetic residual-host model; q2 fallback and other residual distributions remain untested"
     }
   },
   "locator_structural_v4": {
@@ -47,9 +77,10 @@
   },
   "technical_history": {
     "v18": {
-      "classification": "NEEDS-REINTEGRATION",
+      "classification": "CURRENT_BOUNDED_REINTEGRATION",
       "role": "noisy-host b carrier; package-specific mode parameters belong in B",
-      "legacy_summary_status": "UNVERIFIED_NOT_CURRENT_EVIDENCE",
+      "current_evidence": "results/noisy-host-v18-reintegration.json",
+      "legacy_summary_status": "RETIRED_NOT_RESTORED",
       "legacy_summary": {"stable_policy_total_cells":60,"stable_policy_feasible_cells":59,"stable_policy_q4_selected":57,"stable_policy_q2_selected":2,"stable_policy_unresolved":1}
     },
     "v19": {

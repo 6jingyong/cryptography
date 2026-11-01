@@ -49,17 +49,54 @@ Status: **HISTORICAL-BUT-VALID RESULTS; RESPONSIBILITIES REMAPPED**.
 
 ## V18 — host-aware residual carrier
 
-**Correct layer:** `b`, with concrete mode parameters in `B`.
+**Correct layer:** `b`, with concrete host model / q / QIM / geometry / publication parameters in `B`.
 
-The architecture maps cleanly, but no auditable V18 executable/raw result is present in the current repository history inspected during the 2026-11-02 audit. Precise V18 numbers preserved in old summaries are therefore not current machine evidence.
+The old precise V18 summary had no auditable executable/raw-result chain and remains retired. It was **not** restored.
 
-Status: **NEEDS-REINTEGRATION**.
+A new implementation now exists:
+
+```text
+src/noisy_host_package_v18.py
+protocol/real-package-v18.py
+```
+
+It first generates a non-zero smooth synthetic residual host, then embeds payload symbols by moving free-subspace coefficients to the nearest modulo-QIM payload coset. The hypothesis/gates were frozen before the machine run.
+
+Current bounded evidence:
+
+```text
+12 / 12 tables selected q=4
+q=2 fallback not exercised
+all selected-table calibration exact recovery = 1.0
+calibration adjustment NRMSE ~= 0.000720 .. 0.001093
+strictest declared budget = 0.0045
+8 / 8 payload seeds distinct
+8 / 8 exact full-protocol recovery
+Recall@100 = 1.0
+median target rank = 1
+max target rank = 2
+```
+
+Embedding adjustment RMS is material but smaller than the pre-existing host residual: median ratio about `0.446`, maximum observed about `0.485` in the 8-seed run.
+
+Status: **CURRENT_BOUNDED_REINTEGRATION** for the frozen smooth synthetic residual model only.
+
+Still unverified:
+
+```text
+q=2 fallback effectiveness
+other residual distributions
+rate optimality
+historical V18 quantitative summary
+```
 
 ## V19 — regime selector
 
 **Correct layer:** sender-side policy for choosing `(b,B)`. `A` may define the allowed vocabulary, but must not absorb package-specific mode choice.
 
 The architecture is reusable; the historical quantitative summary lacks an auditable current executable/result chain.
+
+Do not build V19 on the assumption that the current V18 mode is a universal noisy-host default. First test V18 across a frozen residual-model matrix. If the carrier is model-specific, V19 should select among explicitly supported host regimes.
 
 Status: **NEEDS-REINTEGRATION**.
 
@@ -87,14 +124,16 @@ The current verified spine is:
 
 ```text
 A/B reset
--> V12 carrier
+-> V12 clean-host carrier
 -> Protocol-v3 public-structure locator
 -> strict open/verify
 -> B+b decode
 -> exact a recovery
 -> E5 multi-seed nominal benchmark
+-> V18 bounded smooth-residual noisy-host carrier
+-> V18 current-protocol 8-seed exact-recovery benchmark
 ```
 
-A separate structural-v4 synthetic descriptor benchmark now records the explicit retrieval boundary for a 12-label A-layer model. It is research on the retrieval layer, not evidence that the current v3 NPZ parser already tolerates physical table deletion or split/merge.
+A separate structural-v4 synthetic descriptor benchmark records the explicit retrieval boundary for a 12-label A-layer model. It is research on the retrieval layer, not evidence that the current NPZ parser already tolerates physical table deletion or split/merge.
 
-The next integration target after the audit gate is V18, not another rate/bit-value sweep.
+The next high-value test is the V18 residual-model matrix, not another rate/bit-value sweep and not yet V19 policy optimization.

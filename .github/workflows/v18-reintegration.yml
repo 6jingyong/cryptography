@@ -1,0 +1,43 @@
+name: v18-reintegration
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  v18:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile V18 rebuild
+        run: |
+          python -m py_compile src/noisy_host_package_v18.py protocol/real-package-v18.py
+      - name: Single-seed noisy-host engine gate
+        run: |
+          rm -rf /tmp/v18-single
+          python src/noisy_host_package_v18.py --seed 101 --payload-bytes 512 --channels 2 --out-dir /tmp/v18-single
+      - name: Eight-seed current-protocol gate
+        run: |
+          python protocol/real-package-v18.py \
+            --engine src/noisy_host_package_v18.py \
+            --seeds 101,102,103,104,105,106,107,108 \
+            --payload-bytes 512 \
+            --channels 2 \
+            --corpus-size 2000 \
+            --top-k 100 \
+            --out /tmp/v18-protocol-result.json
+      - name: Upload V18 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: v18-machine-results
+          path: |
+            /tmp/v18-single/noisy_host_v18_results.json
+            /tmp/v18-single/manifest_noisy_host_v18.json
+            /tmp/v18-protocol-result.json
+          if-no-files-found: error
