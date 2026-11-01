@@ -1,0 +1,34 @@
+{
+  "label": "MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS",
+  "payload_bytes": 8192,
+  "payload_sha256": "f6085d5e7a176365f8189e47e88490a33401058db8319c747cdb397fe210172e",
+  "decoded_sha256": "f6085d5e7a176365f8189e47e88490a33401058db8319c747cdb397fe210172e",
+  "exact_recovery": true,
+  "published_rows": 3584,
+  "gross_bits_per_numeric_value": 2.2857142857142856,
+  "q_distribution": {"8": 4, "16": 4, "32": 4},
+  "locator": {
+    "candidate_count": 1000,
+    "target_rank": 1,
+    "target_similarity": 0.9166666666666666,
+    "best_decoy_similarity": 0.6666666666666666
+  },
+  "strict_verification": {
+    "best_decoy": "REJECT",
+    "target": "ACCEPT"
+  },
+  "tables": [
+    {"table_id": 0, "family": "affine", "q": 8, "transform": "identity"},
+    {"table_id": 1, "family": "affine", "q": 16, "transform": "identity"},
+    {"table_id": 2, "family": "affine", "q": 32, "transform": "identity"},
+    {"table_id": 3, "family": "periodic", "q": 8, "transform": "identity"},
+    {"table_id": 4, "family": "periodic", "q": 16, "transform": "identity"},
+    {"table_id": 5, "family": "periodic", "q": 32, "transform": "identity"},
+    {"table_id": 6, "family": "saturation", "q": 8, "transform": "identity"},
+    {"table_id": 7, "family": "saturation", "q": 16, "transform": "identity"},
+    {"table_id": 8, "family": "saturation", "q": 32, "transform": "identity"},
+    {"table_id": 9, "family": "gaussian", "q": 8, "transform": "log"},
+    {"table_id": 10, "family": "gaussian", "q": 16, "transform": "log"},
+    {"table_id": 11, "family": "gaussian", "q": 32, "transform": "log"}
+  ]
+}

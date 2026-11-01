@@ -378,6 +378,90 @@ docs/validation-plan.md
 
 ---
 
+# 完整实例：从 12 行配置到一个 mock paper package
+
+如果 Quick Start 只告诉你“协议能跑”，完整实例则回答：
+
+> **我给工具什么？它最后给我什么？**
+
+输入只是一个很小的 JSON：
+
+```json
+{
+  "payload_bytes": 8192,
+  "channels_per_table": 8,
+  "locator": {
+    "candidate_count": 1000,
+    "near_decoys": 20,
+    "shared_structure_fraction": 0.5,
+    "target_substitutions": 1
+  }
+}
+```
+
+运行：
+
+```bash
+python examples/generate_mock_paper.py \
+  --config examples/mock-paper-config.json \
+  --out-dir mock_paper_output
+```
+
+内部发生的事情只有三层：
+
+```text
+WRITE   synthetic payload -> adaptive-q numeric package
+FIND    structural fingerprint -> Top-K candidates
+VERIFY  decoder + strict integrity -> ACCEPT / REJECT
+```
+
+最后得到：
+
+```text
+mock_paper_output/
+├── README.md
+├── paper.md
+├── manifest_readable.json
+├── verification.json
+├── figures/
+│   ├── figure_1_periodic_before_after.svg
+│   ├── figure_2_adaptive_q_schedule.svg
+│   └── figure_3_locator_verifier.svg
+├── data/
+│   ├── periodic_table_sample.csv
+│   └── gaussian_table_sample.csv
+└── carrier/
+    ├── published_adaptive_q_v12.npz
+    ├── manifest_adaptive_q_v12.json
+    └── adaptive_q_v12_results.json
+```
+
+其中 `paper.md` 只是展示层；真正权威的是：
+
+```text
+published numeric package
++ manifest
+-> decoder
+-> verification.json
+```
+
+完整说明见：
+
+```text
+docs/mock-paper-example.md
+skills/synthetic-paper-benchmark/SKILL.md
+```
+
+所有 mock-paper 产物必须保留：
+
+```text
+MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS
+```
+
+这不是装饰标签，而是 Skill 的硬约束。
+
+---
+
 # 当前真正还没解决的问题
 
 现在最重要的问题已经不是“还能不能再塞更多 bit”，而是：

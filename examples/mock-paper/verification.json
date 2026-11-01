@@ -1,0 +1,9 @@
+{
+  "label": "SYNTHETIC BENCHMARK",
+  "exact_payload_recovery": true,
+  "payload_sha256": "f6085d5e7a176365f8189e47e88490a33401058db8319c747cdb397fe210172e",
+  "decoded_sha256": "f6085d5e7a176365f8189e47e88490a33401058db8319c747cdb397fe210172e",
+  "locator_target_rank": 1,
+  "best_decoy_verification": "REJECT",
+  "target_verification": "ACCEPT"
+}
