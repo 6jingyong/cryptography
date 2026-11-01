@@ -1,0 +1,59 @@
+{
+  "version": "v18-residual-model-matrix-v1",
+  "scope": "synthetic-only",
+  "source_ci": {
+    "workflow_run_id": 41340671651,
+    "artifact_id": 13096538512,
+    "artifact_sha256": "8c9104bad02b8404e444e0ecaf8be8820d5cd53d6c2241cce267703e0c715dfb"
+  },
+  "frozen_plan": "results/v18-residual-matrix-plan.md",
+  "configuration": {
+    "models": ["iid_gaussian","heteroscedastic_gaussian","ar1_rho_0p85","low_frequency_drift","gaussian_sparse_outliers"],
+    "seeds_per_supported_model": [201,202,203,204],
+    "payload_bytes": 512,
+    "channels": 2,
+    "candidate_corpus": 2000,
+    "top_k": 100,
+    "carrier_policy": "unchanged q4-first/q2-fallback host-aware modulo-QIM",
+    "energy_normalization": "free-subspace RMS matched to expected smooth-reference RMS at same table/step"
+  },
+  "general_v18_supported": true,
+  "classification": "GENERAL_V18_SUPPORTED",
+  "passing_models": ["iid_gaussian","heteroscedastic_gaussian","ar1_rho_0p85","low_frequency_drift","gaussian_sparse_outliers"],
+  "failing_models": [],
+  "models": [
+    {
+      "model":"iid_gaussian",
+      "model_pass":true,
+      "calibration":{"pass":true,"q_distribution":{"2":0,"4":12},"min_selected_host_adjustment_nrmse":0.0007228935623539987,"max_selected_host_adjustment_nrmse":0.0011031613643596994,"median_selected_adjustment_to_host_rms_ratio":0.4417417687351065,"max_selected_adjustment_to_host_rms_ratio":0.4458772114680443},
+      "protocol":{"seeds":4,"all_payload_hashes_unique":true,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"median_target_rank":1.0,"max_target_rank":1,"B_settings_present_all_runs":true,"median_adjustment_to_host_rms_ratio":0.4430846925226636,"max_adjustment_to_host_rms_ratio":0.45871472164384186}
+    },
+    {
+      "model":"heteroscedastic_gaussian",
+      "model_pass":true,
+      "calibration":{"pass":true,"q_distribution":{"2":0,"4":12},"min_selected_host_adjustment_nrmse":0.0007180823921597917,"max_selected_host_adjustment_nrmse":0.0010970646548257904,"median_selected_adjustment_to_host_rms_ratio":0.4428914890777843,"max_selected_adjustment_to_host_rms_ratio":0.4484152979224445},
+      "protocol":{"seeds":4,"all_payload_hashes_unique":true,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"median_target_rank":1.0,"max_target_rank":1,"B_settings_present_all_runs":true,"median_adjustment_to_host_rms_ratio":0.4455788787902668,"max_adjustment_to_host_rms_ratio":0.46668743657668443}
+    },
+    {
+      "model":"ar1_rho_0p85",
+      "model_pass":true,
+      "calibration":{"pass":true,"q_distribution":{"2":0,"4":12},"min_selected_host_adjustment_nrmse":0.0007121870768337479,"max_selected_host_adjustment_nrmse":0.0010921925146382926,"median_selected_adjustment_to_host_rms_ratio":0.4389767173429634,"max_selected_adjustment_to_host_rms_ratio":0.4525106282042228},
+      "protocol":{"seeds":4,"all_payload_hashes_unique":true,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"median_target_rank":1.0,"max_target_rank":1,"B_settings_present_all_runs":true,"median_adjustment_to_host_rms_ratio":0.44108003596694845,"max_adjustment_to_host_rms_ratio":0.45724400441484453}
+    },
+    {
+      "model":"low_frequency_drift",
+      "model_pass":true,
+      "calibration":{"pass":true,"q_distribution":{"2":0,"4":12},"min_selected_host_adjustment_nrmse":0.0007262742436406691,"max_selected_host_adjustment_nrmse":0.0010817259888868903,"median_selected_adjustment_to_host_rms_ratio":0.4456206171867087,"max_selected_adjustment_to_host_rms_ratio":0.48292759480123476},
+      "protocol":{"seeds":4,"all_payload_hashes_unique":true,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"median_target_rank":1.0,"max_target_rank":1,"B_settings_present_all_runs":true,"median_adjustment_to_host_rms_ratio":0.44403323263956357,"max_adjustment_to_host_rms_ratio":0.49143277680614084}
+    },
+    {
+      "model":"gaussian_sparse_outliers",
+      "model_pass":true,
+      "calibration":{"pass":true,"q_distribution":{"2":0,"4":12},"min_selected_host_adjustment_nrmse":0.0007224005345209423,"max_selected_host_adjustment_nrmse":0.001104584449195157,"median_selected_adjustment_to_host_rms_ratio":0.44111296890123286,"max_selected_adjustment_to_host_rms_ratio":0.4482055526983114},
+      "protocol":{"seeds":4,"all_payload_hashes_unique":true,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"median_target_rank":1.0,"max_target_rank":1,"B_settings_present_all_runs":true,"median_adjustment_to_host_rms_ratio":0.4403808071543651,"max_adjustment_to_host_rms_ratio":0.47840371784502517}
+    }
+  ],
+  "accepted_claim": "The same q4-first host-aware modulo-QIM carrier passed the five frozen equal-energy synthetic host-residual structures and the 4-seed current-protocol gate for each model.",
+  "mechanistic_caution": "Because the encoder observes the host and quantizes free-subspace coefficients directly to payload cosets, host-distribution shape is not the dominant remaining failure variable. This matrix does not test unknown post-embedding channel noise or stronger re-quantization.",
+  "not_supported": ["universal noisy-host robustness","unknown post-embedding noise robustness","coarser publication re-quantization robustness","q=2 fallback effectiveness","real data/publication deployment"]
+}
