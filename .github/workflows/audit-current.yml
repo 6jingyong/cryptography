@@ -23,3 +23,10 @@ jobs:
             --json-out /tmp/locator-structural-v4.json \
             --md-out /tmp/locator-structural-v4.md
           cat /tmp/locator-structural-v4.json
+      - name: Run Paper v7 claim gate
+        run: |
+          python tools/paper_claim_gate_v7.py \
+            --v4-result /tmp/locator-structural-v4.json \
+            --json-out /tmp/paper-claim-audit-v7.json \
+            --md-out /tmp/paper-claim-audit-v7.md
+          cat /tmp/paper-claim-audit-v7.json
