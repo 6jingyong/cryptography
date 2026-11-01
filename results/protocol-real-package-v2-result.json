@@ -1,0 +1,15 @@
+{
+  "scope": "synthetic-only real-package protocol harness",
+  "protocol_chain": "A -> c -> B -> b -> a",
+  "objects": {
+    "A": {"version": "A-v2", "fingerprint_length": 32, "fingerprint_alphabet": 192, "manifest_format": "json-v12-manifest", "payload_format": "npz-v12-published-package"},
+    "a": {"payload_bytes": 2048, "sha256": "858ad69493dedaa0652a62ede3326f464a3fa45572a99492dfe977d64c9a8d9b"},
+    "B": {"manifest_bytes": 7167, "tables": 12, "q_schedule": [8,16,32,8,16,32,8,16,32,8,16,32]},
+    "b": {"published_npz_bytes": 44081},
+    "c": {"target_index": 2843, "observed_fingerprint_positions": 22},
+    "d": {"background_records": 2999, "near_decoys": 30}
+  },
+  "locator": {"target_rank": 1, "top_k": 100, "accepted_rank": 1, "attempt_count": 1},
+  "recovery": {"accepted": true, "exact_a_recovery": true, "recovered_sha256": "858ad69493dedaa0652a62ede3326f464a3fa45572a99492dfe977d64c9a8d9b"},
+  "engine_summary": {"published_rows_total": 1904, "gross_bits_per_numeric_value": 2.1512605042016806, "q_distribution": {"8": 4, "16": 4, "32": 4}}
+}

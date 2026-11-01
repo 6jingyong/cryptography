@@ -1,0 +1,17 @@
+{
+  "scope": "synthetic-only V12 protocol acceptance",
+  "all_pass": true,
+  "real_B_manifest_bytes": 7145,
+  "real_b_npz_bytes": 31654,
+  "payload_sha256": "1f9d989f855004ceea76c6ee79d46f5c7e03e2aa0061098de2041a68b4796492",
+  "tests": [
+    {"test": "real_v12_direct_open", "pass": true, "observed": "strict_verify_pass"},
+    {"test": "corrupt_real_B", "pass": true, "observed": "c_outer_integrity_failed"},
+    {"test": "corrupt_real_b", "pass": true, "observed": "c_outer_integrity_failed"},
+    {"test": "real_package_false_positive_then_verify", "pass": true, "accepted_rank": 2, "attempts": [
+      {"rank": 1, "index": 0, "locator_score": 0.7115124735378854, "accepted": false, "reason": "c_outer_integrity_failed"},
+      {"rank": 2, "index": 1, "locator_score": 0.7115124735378854, "accepted": true, "reason": "strict_verify_pass"}
+    ]},
+    {"test": "wrong_A_real_package", "pass": true, "observed": "c_outer_integrity_failed"}
+  ]
+}

@@ -1,9 +1,0 @@
-{
-  "samples": 8400,
-  "generic_features": 10,
-  "oracle_features": 13,
-  "generic_auc": {"logistic": 0.522094356261023, "random_forest": 0.7027242378432854, "hist_gb": 0.6802966742252456},
-  "oracle_auc": {"logistic": 1.0, "random_forest": 1.0000000000000002, "hist_gb": 1.0},
-  "generic_family_holdout_logistic": {"by_family": {"affine": 0.5426102040816326, "gaussian": 0.495365306122449, "harmonic": 0.5486469387755103, "periodic": 0.5383673469387755, "saturation": 0.5498285714285714, "symmetric": 0.5274551020408164}, "mean": 0.5337122448979592},
-  "oracle_family_holdout_logistic": {"by_family": {"affine": 1.0, "gaussian": 1.0, "harmonic": 1.0, "periodic": 1.0, "saturation": 1.0, "symmetric": 1.0}, "mean": 1.0}
-}

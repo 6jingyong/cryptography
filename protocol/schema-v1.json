@@ -1,0 +1,60 @@
+{
+  "version": "protocol-reset-v1",
+  "scope": "synthetic-only",
+  "objects": {
+    "a": {
+      "name": "payload",
+      "lifetime": "per-package",
+      "role": "ultimate byte payload to recover"
+    },
+    "b": {
+      "name": "processed_payload_representation",
+      "lifetime": "per-package",
+      "role": "encoded/carrier-side representation of a"
+    },
+    "B": {
+      "name": "per_package_reconstruction_codebook",
+      "lifetime": "per-package",
+      "role": "describes how to reconstruct a from b once c is opened"
+    },
+    "c": {
+      "name": "candidate_package",
+      "lifetime": "per-package",
+      "role": "fingerprint-bearing package containing b+B+framing/integrity"
+    },
+    "d": {
+      "name": "background_record",
+      "lifetime": "public corpus",
+      "role": "non-target public/background candidate"
+    },
+    "A": {
+      "name": "pre_shared_root_codebook",
+      "lifetime": "long-lived",
+      "role": "locator + canonicalization + bootstrap rules for finding/opening c"
+    }
+  },
+  "sender_states": [
+    "choose_package_configuration_under_A",
+    "encode_a_to_b",
+    "generate_B",
+    "assemble_fingerprint_b_B_integrity_into_c",
+    "mix_c_with_d_records"
+  ],
+  "receiver_states": [
+    "canonicalize_candidates_under_A",
+    "rank_candidates_using_A_fingerprint",
+    "bootstrap_open_candidate_c",
+    "strict_outer_verify",
+    "extract_B_and_b",
+    "parse_B_under_A",
+    "decode_b_under_B",
+    "strict_final_verify_a"
+  ],
+  "priority": [
+    "A_locator_bootstrap_works",
+    "c_opens_and_verifies",
+    "B_is_complete",
+    "b_recovers_a",
+    "only_then_optimize_capacity"
+  ]
+}

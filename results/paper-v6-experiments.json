@@ -1,0 +1,18 @@
+{
+  "version": "paper-experiment-cycle-v6",
+  "scope": "synthetic-only",
+  "label": "MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS",
+  "summary": {"completed": 5, "requested_external": 1, "completed_pass": 5, "completed_fail": 0},
+  "results": [
+    {"experiment_id": "E1", "status": "COMPLETED", "pass": true, "kind": "morphology_perturbation_stability", "results": [
+      {"noise_fraction_of_curve_range": 0.001, "story_retention_rate": 1.0, "per_curve_label_retention_rate": 0.9716666666666667},
+      {"noise_fraction_of_curve_range": 0.0025, "story_retention_rate": 1.0, "per_curve_label_retention_rate": 0.9533333333333334},
+      {"noise_fraction_of_curve_range": 0.005, "story_retention_rate": 1.0, "per_curve_label_retention_rate": 0.945}
+    ]},
+    {"experiment_id": "E2", "status": "COMPLETED", "pass": true, "kind": "leave_one_table_out_story_stability", "leave_one_out_story_retention_rate": 1.0},
+    {"experiment_id": "E3", "status": "COMPLETED", "pass": true, "kind": "matched_fit_vs_linear_ablation", "matched_fit_beats_linear_fraction": 1.0, "median_delta_r2": 0.923098553282276},
+    {"experiment_id": "E4", "status": "COMPLETED", "pass": true, "kind": "domain_archetype_leave_one_out_stability", "leave_one_out_archetype_retention_rate": 1.0},
+    {"experiment_id": "E5", "status": "REQUESTED_BENCHMARK_ENGINE", "pass": null, "kind": "multi_seed_reencode_recovery", "purpose": "Repeat full package generation, locator ranking, and exact recovery over independent synthetic seeds."},
+    {"experiment_id": "E6", "status": "COMPLETED", "pass": true, "kind": "limitation_retention_audit", "present_in_paper": true}
+  ]
+}

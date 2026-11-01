@@ -1,301 +1,15 @@
 ---
 name: synthetic-paper-benchmark
-description: Generate a clearly labeled synthetic/mock paper-style benchmark package that demonstrates the repository's numeric carrier, locator, decoder, publication pipeline, and strict verification. Never represent synthetic results as real experiments.
+description: Run and render clearly labeled synthetic/mock structured-numeric carrier benchmarks using the corrected A → c → B → b → a protocol. Keep machine results authoritative and paper presentation downstream.
 ---
 
-# Synthetic Paper Benchmark Skill
+# Synthetic Paper Benchmark
 
-## What this skill is for
+## Scope
 
-Use this skill when you want a **paper-shaped demonstration package** for the
-repository's synthetic carrier benchmark.
+Use this skill only for synthetic/mock research artifacts.
 
-The skill is not "write a fake scientific claim."
-
-It is:
-
-```text
-WRITE
-  synthetic payload -> numeric carrier
-
-FIND
-  structural fingerprint -> candidate ranking
-
-VERIFY
-  candidate decode -> strict integrity check
-```
-
-and then package those benchmark steps into something that looks like a
-scientific supplementary package so a human can inspect it easily.
-
-Every generated artifact must remain visibly labeled as synthetic/mock.
-
----
-
-# Non-negotiable boundary
-
-The skill may generate:
-
-- deterministic synthetic numeric data;
-- synthetic high-entropy benchmark payloads;
-- mock scientific tables;
-- mock-paper prose;
-- SVG figures;
-- CSV excerpts;
-- reproducibility manifests;
-- locator benchmarks over synthetic candidate corpora;
-- exact-recovery / SHA-256 verification reports.
-
-It must not:
-
-- fabricate evidence for a real scientific claim;
-- impersonate an existing paper, journal, lab, author, institution, company, or dataset;
-- invent human/animal experiments and present them as observations;
-- remove the synthetic/mock label;
-- hide a real secret, credential, confidential file, model weight, or private dataset;
-- build a real-paper covert retrieval network;
-- optimize a real carrier to evade reviewers, security tools, or forensic detection.
-
-If a requested package would cross those boundaries, keep the same benchmark
-structure but replace the payload/data/claim with synthetic surrogates.
-
----
-
-# The three-layer mental model
-
-## 1. WRITE — Codebook A
-
-Codebook A answers:
-
-> How should this numeric table be interpreted?
-
-Current fields may include:
-
-```text
-family
-transform
-q
-ECC mode
-block geometry
-publication precision
-publication guard mode
-```
-
-The numeric carrier is modeled as:
-
-\[
-z=B(x)\beta+U(x)c
-\]
-
-where:
-
-- \(B(x)\beta\) is the protected macro structure;
-- \(U(x)c\) is the controllable carrier component.
-
-Current q candidates are:
-
-\[
-q\in\{8,16,32\}
-\]
-
-with q-ary Hamming coding and one shaping degree of freedom.
-
-The skill should use the repository's actual encoder/decoder when available,
-rather than inventing reported metrics.
-
----
-
-## 2. FIND — Codebook B
-
-Codebook B is only a locator.
-
-It answers:
-
-> Which synthetic candidate packages are worth trying first?
-
-A locator position is better represented as a labeled structural value:
-
-\[
-F=\{(\ell_i,v_i)\}
-\]
-
-For example:
-
-```text
-label = table role
-value = (family, q)
-```
-
-False positives are allowed.
-
-The skill should report:
-
-- candidate corpus size;
-- target rank;
-- Recall@K when running repeated trials;
-- structural similarity;
-- near-decoy configuration.
-
-Do not describe locator success as final authentication.
-
----
-
-## 3. VERIFY — strict verifier
-
-The final decision belongs to the verifier.
-
-A benchmark package may check:
-
-```text
-format
-length
-version
-keyed integrity tag
-SHA-256 equality
-```
-
-The paper-style report should explicitly distinguish:
-
-\[
-\text{recognizability}
-\neq
-\text{interpretability}
-\neq
-\text{verified recovery}
-\]
-
-A candidate that ranks highly but fails strict verification is a normal
-retrieval false positive, not a protocol failure.
-
----
-
-# Inputs
-
-## Required
-
-### `benchmark_goal`
-
-One or more of:
-
-```text
-capacity
-exact_recovery
-publication_robustness
-locator_retrieval
-distortion
-multichannel_scaling
-transform_comparison
-residual_model_compatibility
-```
-
-### `macro_families`
-
-Choose synthetic families such as:
-
-```text
-affine
-periodic
-harmonic
-saturation
-gaussian_peak
-symmetric
-hysteresis_like
-```
-
-### `package_geometry`
-
-For example:
-
-```text
-tables = 12
-channels_per_table = 8
-payload_bytes = 8192
-```
-
-### `publication_model`
-
-Examples:
-
-```text
-absolute_step
-log_step
-decimal_rounding
-significant_digits
-guarded_1p5x
-guarded_3x
-```
-
----
-
-## Optional
-
-### `q_candidates`
-
-Default:
-
-```text
-[8, 16, 32]
-```
-
-### `locator_config`
-
-For example:
-
-```text
-candidate_count = 1000
-near_decoys = 20
-shared_structure_fraction = 0.5
-target_substitution_rate = 0.1
-```
-
-### `paper_length`
-
-```text
-short
-standard
-extended
-```
-
-### `output_formats`
-
-Any subset of:
-
-```text
-markdown
-svg
-csv
-json
-npz
-zip
-```
-
----
-
-# Required workflow
-
-## Step 0 — establish synthetic scope
-
-Before generating anything, make the benchmark subject generic.
-
-Good:
-
-```text
-synthetic periodic response
-simulated saturation index
-mock Gaussian peak response
-```
-
-Bad:
-
-```text
-named hospital patient trial
-named laboratory alloy experiment
-real drug efficacy result
-real company's proprietary benchmark
-```
-
-The title and first screen of every paper-style artifact must visibly say one
-of:
+Every generated scientific-looking artifact must remain visibly labeled with language such as:
 
 ```text
 SYNTHETIC BENCHMARK
@@ -303,368 +17,324 @@ SIMULATED DATA
 MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS
 ```
 
----
+Do not use the workflow to hide real confidential material in real publications, fabricate real evidence, impersonate real institutions/authors, or claim a synthetic result came from a real experiment.
 
-## Step 1 — generate deterministic macro structure
+# Current protocol
 
-For each table/series define:
-
-\[
-y_{macro}=f(x,\theta)
-\]
-
-with reproducible parameters.
-
-Examples:
-
-Periodic:
+Use the corrected object model:
 
 ```text
-[1, sin(wx), cos(wx), sin(2wx), cos(2wx)]
+A -> c -> B -> b -> a
 ```
 
-Affine:
+with background records `d`.
+
+Definitions:
 
 ```text
-[1, x]
+A = pre-shared root locator/bootstrap codebook
+c = candidate package mixed among background records
+B = per-package reconstruction codebook
+b = processed payload representation
+a = final synthetic payload
+d = unrelated background record
 ```
 
-Gaussian in log domain:
+The two codebooks are not peers.
+
+## A responsibilities
+
+A is long-lived and shared before any package exists.
+
+A may define:
 
 ```text
-[1, x, x^2]
+fingerprint interpretation
+candidate canonicalization
+candidate ranking
+outer package framing/bootstrap
+how B is parsed
+strict outer verification rule
 ```
 
-Saturation:
+A should not need each package's concrete q, table geometry, transform, ECC, padding, or payload length.
+
+## B responsibilities
+
+B is created for one concrete package.
+
+B may contain:
 
 ```text
-[1, exp(-t/tau)]
+actual carrier mode
+actual q
+transform
+block/table geometry
+symbol/fragment ordering
+ECC parameters
+publication precision
+padding and payload length
+outer-code parameters
+final payload binding
 ```
 
-Do not claim these functions came from real measurements.
+If deleting a B field makes reconstruction ambiguous, that field is not optional overhead.
 
----
+## Locator rule
 
-## Step 2 — run Codebook-A carrier
-
-For each table:
-
-1. construct protected basis \(B\);
-2. construct free basis \(U\);
-3. choose q using the benchmark's current adaptive-q policy;
-4. encode deterministic synthetic high-entropy bytes;
-5. apply q-ary ECC;
-6. use shaping to reduce declared structural cost;
-7. apply the explicit publication transform.
-
-The decoder must operate from the published package + manifest, not from the
-original unencoded values.
-
----
-
-## Step 3 — apply publication pipeline
-
-When relevant, test:
+False positives are allowed.
 
 ```text
-row reorder
-column reorder
-table split/merge
-known unit conversion
-decimal rounding
-significant-digit rounding
-re-quantization
+locator hit != valid package
 ```
 
-Classify each operation as:
+The A-layer objective is high target Recall@K. Strict package verification is authoritative.
+
+# Technical priority
+
+Use this ordering:
 
 ```text
-natural invariant
-canonicalizable
-destructive at current operating point
+1. A can find/bootstrap c
+2. c can be opened and verified
+3. B completely explains b
+4. b reconstructs a
+5. only then optimize capacity/rate
 ```
 
-Public canonicalization labels are schema, not Codebook B.
+Do not trade locator recall, reconstruction metadata, or strict verification for a prettier bit/value number.
 
----
+# Retained technical modes
 
-## Step 4 — run Codebook-B locator benchmark
+## V12 clean-host carrier
 
-Build the synthetic structural fingerprint from declared coarse features such
-as:
+Use adaptive q `{8,16,32}`, q-ary Hamming ECC, shaping, and publication quantization for clean/nearly-clean synthetic free subspaces.
+
+Concrete package choices belong in B.
+
+## V18 noisy-host carrier
+
+For an explicit synthetic residual model, use host-aware syndrome/QIM embedding.
+
+Residual benchmark families include:
 
 ```text
-(family, q)
-(family, q, transform)
-(table role, family, q)
+iid Gaussian
+heteroscedastic Gaussian
+AR(1)
+batch drift
+sparse-outlier mixture
 ```
 
-Place the target among a synthetic candidate corpus.
+## V19 regime selector
 
-Include random decoys and, when requested, hard near-decoys.
+V19 is sender-side policy for choosing the package's inner strategy.
 
-Report target rank or Recall@K.
+It is not a replacement for A.
 
----
+## V20/V21 package reliability
 
-## Step 5 — strict verification
+Outer integrity and erasure-code choices belong to package reliability / B.
 
-Run strict verification independently of locator score.
+Rate optimization is downstream of protocol constraints.
 
-At minimum report:
+# Real-package protocol test
+
+The preferred end-to-end technical test is:
 
 ```text
-best high-ranking decoy -> ACCEPT / REJECT
-true target -> ACCEPT / REJECT
-payload SHA-256
-decoded SHA-256
-exact equality
+A
+-> rank candidate c
+-> strict outer verify
+-> extract real V12 B + b
+-> invoke real V12 decoder
+-> recover a
+-> verify payload hash
 ```
 
-A paper-style result must never imply that locator rank alone proves identity.
-
----
-
-## Step 6 — generate paper-style artifacts
-
-Minimum recommended package:
+Important acceptance cases:
 
 ```text
-paper.md
-README.md
-manifest_readable.json
-verification.json
+normal package -> ACCEPT
+corrupt B -> REJECT
+corrupt b -> REJECT
+wrong A -> REJECT
+locator false positive -> reject decoy, continue
+```
+
+# Paper pipeline
+
+The paper layer is downstream of authoritative machine evidence.
+
+Recommended chain:
+
+```text
+machine result
+-> morphology analysis
+-> narrative archetype
+-> generic descriptive fits
+-> figure planning
+-> story / claim hierarchy
+-> experiment requests
+-> completed experiment results
+-> paper
+```
+
+## Morphology-driven domain archetype
+
+The renderer may infer a narrative style from visible synthetic curve morphology.
+
+Useful features:
+
+```text
+linearity
+monotonicity
+saturation
+periodicity
+single-peak prominence
+peak symmetry
+significant extrema
+```
+
+Candidate narrative archetypes may include:
+
+```text
+materials characterization / physical chemistry
+spectroscopy / analytical chemistry
+kinetics / transport / relaxation
+oscillatory systems / controls
+signal processing / measurement methods
+```
+
+This is a writing archetype, not provenance inference.
+
+A peak-shaped synthetic curve may justify "peak-profile analysis"; it does not justify inventing a real Raman experiment, material, instrument, patient cohort, or mechanism.
+
+# Generic fits
+
+Descriptive fit examples:
+
+```text
+linear -> linear regression
+saturating -> single-exponential saturation
+periodic -> single-harmonic fit
+bell peak -> Gaussian peak fit
+```
+
+A good fit is not mechanistic proof.
+
+# Figure and story planning
+
+Main figures should favor evidence breadth:
+
+```text
+morphology coverage
+fit quality
+morphology confidence
+relevance to the primary claim
+```
+
+Do not automatically promote the prettiest/highest-R² curve to the primary conclusion.
+
+Claim roles may include:
+
+```text
+primary_conclusion
+supporting_quantification
+presentation_support
+technical_control
+limitation_negative_result
+supplementary_control
+```
+
+Material limitations may be forced into the Discussion.
+
+# Claim-driven experiment requests
+
+When a claim lacks evidence, generate a machine-checkable request.
+
+States:
+
+```text
+READY_LOCAL
+REQUESTED_BENCHMARK_ENGINE
+COMPLETED
+FAILED
+```
+
+Only `COMPLETED` machine results may be rendered as evidence.
+
+A requested experiment must remain pending until a benchmark result exists.
+
+Useful request classes:
+
+```text
+morphology perturbation stability
+leave-one-table-out story stability
+fit ablation
+domain-archetype stability
+multi-seed full re-encode / locator / exact recovery
+limitation-retention audit
+```
+
+Preferred loop:
+
+```text
+claim
+-> evidence gap
+-> experiment request
+-> benchmark result
+-> paper update
+```
+
+# Current implementation
+
+The cleaned repository exposes the current paper line through:
+
+```text
+tools/paper_v6.py
+```
+
+Historical v3/v4/v5/v6 helper chains are intentionally removed from the current working tree.
+
+# Output package
+
+A current paper package may contain:
+
+```text
+paper_v6.md
+paper_manifest.json
+experiment_results_v6.json
+story_plan.json
+claim_evidence_map.json
+paper_plan.json
+fit_results.json
+domain_archetype.json
 figures/
-  figure_1_*.svg
-  figure_2_*.svg
-data/
-  *_sample.csv
 ```
 
-Optional machine-readable benchmark artifacts:
+# Claim discipline
+
+Never write:
 
 ```text
-carrier/
-  published_*.npz
-  manifest_*.json
-  results_*.json
-```
-
----
-
-# Required paper structure
-
-## Title block
-
-Must visibly include:
-
-```text
-MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS
-```
-
-## Abstract
-
-State:
-
-- that all data are synthetic;
-- benchmark goal;
-- package geometry;
-- exact recovery outcome;
-- locator outcome if present.
-
-Do not write a real-world scientific conclusion.
-
-## 1. Benchmark objective
-
-Explain WRITE / FIND / VERIFY in plain language.
-
-## 2. Synthetic-data construction
-
-Explain macro families and protected structure.
-
-## 3. Carrier algorithm
-
-Explain adaptive q, ECC, shaping, and publication mode at the level needed for
-reproducibility.
-
-## 4. Published numeric example
-
-Include at least one figure comparing:
-
-```text
-baseline macro
-vs
-published carrier
-```
-
-## 5. Locator and verifier
-
-Show that a plausible decoy can rank highly yet be rejected.
-
-## 6. Recovery result
-
-Include:
-
-- payload bytes;
-- published rows;
-- gross bit/value;
-- q distribution;
-- exact recovery;
-- input/output SHA-256.
-
-## 7. Limitations
-
-Explicitly say the benchmark does not establish compatibility with real
-experimental processes.
-
-## 8. Reproducibility
-
-Point to manifest, verification output, generator, and machine-readable data.
-
----
-
-# Example A — minimal teaching package
-
-Input concept:
-
-```text
-goal = explain the system
-families = [affine, periodic, gaussian_peak]
-payload_bytes = 1024
-channels = 4
-candidates = 500
-paper_length = short
-```
-
-Expected story:
-
-```text
-1. generate synthetic payload
-2. encode a few numeric tables
-3. show one baseline-vs-published curve
-4. rank target among 500 mock candidates
-5. reject one high-ranking decoy
-6. decode target
-7. SHA-256 PASS
-```
-
-Use this for README/Quick Start examples.
-
----
-
-# Example B — standard 12-table mock paper
-
-Input concept:
-
-```text
-goal = [exact_recovery, locator_retrieval, publication_robustness]
-
-families:
-  affine:      low / medium / high residual budget
-  periodic:    low / medium / high residual budget
-  saturation:  low / medium / high residual budget
-  gaussian:    low / medium / high residual budget
-
-payload_bytes = 8192
-channels = 8
-q_candidates = [8, 16, 32]
-
-locator:
-  candidate_count = 1000
-  near_decoys = 20
-  shared_structure_fraction = 0.5
-```
-
-Expected paper structure:
-
-```text
-Table 1-3   affine      q8/q16/q32-like operating points
-Table 4-6   periodic    q8/q16/q32-like operating points
-Table 7-9   saturation  q8/q16/q32-like operating points
-Table 10-12 gaussian    q8/q16/q32-like operating points
-```
-
-Expected figures:
-
-```text
-Figure 1  baseline vs published periodic series
-Figure 2  adaptive-q schedule across tables
-Figure 3  locator -> strict verifier flow
-```
-
-The checked-in complete example should be referenced rather than duplicating
-large outputs in this file.
-
----
-
-# Quality checks before finalizing an artifact
-
-The skill must verify:
-
-### Labeling
-
-- title contains synthetic/mock label;
-- figures contain synthetic/mock label;
-- CSV samples contain a synthetic marker;
-- README states the package is not real experimental evidence.
-
-### Reproducibility
-
-- generator or exact construction parameters are included;
-- manifest is machine-readable;
-- payload and decoded SHA-256 are recorded.
-
-### Architecture clarity
-
-A new reader should be able to identify:
-
-```text
-WRITE
-FIND
-VERIFY
-```
-
-without first understanding all math.
-
-### Metric honesty
-
-Do not report:
-
-```text
-100% robust
 undetectable
-cryptographically secure
-realistic experimental evidence
+proven secure
+real experimental evidence
+universally compatible
+mechanism proven by fit
 ```
 
-unless the benchmark actually establishes that exact claim. In general it does
-not.
+unless a machine benchmark genuinely establishes that exact statement—which the current project does not.
 
 Prefer:
 
 ```text
 exact in this synthetic run
 all tested seeds passed
-empirical Top-K result
+empirical operating point
+descriptive fit
+morphology-based narrative archetype
+unresolved / pending under the current gate
 not a universal guarantee
 ```
-
----
-
-# Repository example
-
-The repository's complete example should live under a path such as:
-
-```text
-examples/mock-paper/
-```
-
-and contain a visibly labeled mock paper plus data/figures/manifests.
-
-A lightweight generator should live under:
-
-```text
-examples/generate_mock_paper.py
-```
-
-The example is a teaching artifact, not evidence for a real scientific result.

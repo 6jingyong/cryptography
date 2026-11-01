@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440">
-<rect width="100%" height="100%" fill="white"/>
-<text x="55" y="30" font-family="sans-serif" font-size="19" font-weight="bold">SIMULATED DATA — baseline vs published carrier</text>
-<line x1="55" y1="385" x2="845" y2="385" stroke="black"/>
-<line x1="55" y1="55" x2="55" y2="385" stroke="black"/>
-<polyline points="55.00,104.98 115.77,187.62 176.54,254.37 237.31,301.14 298.08,350.36 358.85,358.87 419.62,272.00 480.38,139.70 541.15,80.41 601.92,130.20 662.69,213.65 723.46,270.38 784.23,317.81 845.00,361.55" fill="none" stroke="#1f77b4" stroke-width="3"/>
-<polyline points="55.00,106.90 115.77,187.11 176.54,253.80 237.31,301.86 298.08,348.72 358.85,358.34 419.62,272.12 480.38,140.54 541.15,77.76 601.92,130.63 662.69,213.84 723.46,269.72 784.23,318.98 845.00,362.24" fill="none" stroke="#d62728" stroke-width="2" stroke-dasharray="8 5"/>
-<text x="55" y="428" font-family="sans-serif" font-size="12">MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS</text>
-</svg>
