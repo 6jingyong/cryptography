@@ -1,0 +1,65 @@
+{
+  "version": "v18-publication-damage-frontier-v1",
+  "scope": "synthetic-only",
+  "source_ci": {
+    "workflow_run_id": 41341310689,
+    "artifact_id": 13097233406,
+    "artifact_sha256": "c0f504a14883d3355fa3ba2bad9b3298d038c8ede760696f8aee5c075272d73b"
+  },
+  "frozen_plan": "results/v18-publication-damage-plan.md",
+  "lifecycle_position": "after V18 embedding and A-keyed public assignment; before c sealing / outer integrity",
+  "configuration": {
+    "seeds": [301,302,303,304],
+    "payload_bytes": 512,
+    "channels": 2,
+    "candidate_corpus": 2000,
+    "top_k": 100,
+    "requant_factors": [1.0,1.25,1.5,1.75,2.0,2.5,3.0],
+    "noise_sigma_over_delta": [0.0,0.05,0.10,0.15,0.20,0.25],
+    "combined_requant_factors": [1.5,2.0],
+    "combined_noise_sigma_over_delta": [0.05,0.10,0.15]
+  },
+  "harness_valid": true,
+  "frontier": {
+    "largest_requant_factor_all_seed_pass": 1.0,
+    "first_tested_requant_failure_factor": 1.25,
+    "largest_noise_sigma_over_delta_all_seed_pass": 0.10,
+    "first_tested_noise_failure_sigma_over_delta": 0.15,
+    "all_locator_target_ranks": 1,
+    "all_locator_scores": 1.0,
+    "failure_layer": "inner_decode_before_locator_failure"
+  },
+  "requantization": [
+    {"factor":1.0,"seed_exact":[true,true,true,true],"direct_exact_recovery_rate":1.0,"protocol_exact_recovery_rate":1.0,"recall_at_100":1.0,"pass":true},
+    {"factor":1.25,"seed_exact":[true,true,true,false],"direct_exact_recovery_rate":0.75,"protocol_exact_recovery_rate":0.75,"recall_at_100":1.0,"pass":false},
+    {"factor":1.5,"seed_exact":[true,false,true,false],"direct_exact_recovery_rate":0.5,"protocol_exact_recovery_rate":0.5,"recall_at_100":1.0,"pass":false},
+    {"factor":1.75,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false},
+    {"factor":2.0,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false},
+    {"factor":2.5,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false},
+    {"factor":3.0,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false}
+  ],
+  "additive_noise": [
+    {"sigma_over_delta":0.05,"seed_exact":[true,true,true,true],"direct_exact_recovery_rate":1.0,"protocol_exact_recovery_rate":1.0,"recall_at_100":1.0,"pass":true},
+    {"sigma_over_delta":0.10,"seed_exact":[true,true,true,true],"direct_exact_recovery_rate":1.0,"protocol_exact_recovery_rate":1.0,"recall_at_100":1.0,"pass":true},
+    {"sigma_over_delta":0.15,"seed_exact":[true,true,false,false],"direct_exact_recovery_rate":0.5,"protocol_exact_recovery_rate":0.5,"recall_at_100":1.0,"pass":false},
+    {"sigma_over_delta":0.20,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false},
+    {"sigma_over_delta":0.25,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false}
+  ],
+  "combined": [
+    {"requant_factor":1.5,"noise_sigma_over_delta":0.05,"seed_exact":[false,false,true,false],"direct_exact_recovery_rate":0.25,"protocol_exact_recovery_rate":0.25,"recall_at_100":1.0,"pass":false},
+    {"requant_factor":1.5,"noise_sigma_over_delta":0.10,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false},
+    {"requant_factor":1.5,"noise_sigma_over_delta":0.15,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false},
+    {"requant_factor":2.0,"noise_sigma_over_delta":0.05,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false},
+    {"requant_factor":2.0,"noise_sigma_over_delta":0.10,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false},
+    {"requant_factor":2.0,"noise_sigma_over_delta":0.15,"seed_exact":[false,false,false,false],"direct_exact_recovery_rate":0.0,"protocol_exact_recovery_rate":0.0,"recall_at_100":1.0,"pass":false}
+  ],
+  "accepted_claim": "Current V18 survives the tested unknown pre-seal additive transform-domain noise through sigma=0.10 delta for all four seeds, but no extra all-seed re-quantization margin beyond the existing publication grid was demonstrated.",
+  "rejected_claim": "Current V18 has broad publication robustness after embedding.",
+  "not_supported": [
+    "all-seed exact recovery at 1.25x or coarser re-quantization",
+    "all-seed exact recovery at additive noise sigma >= 0.15 delta",
+    "any tested 1.5x/2.0x combined re-quantization-plus-noise condition",
+    "post-seal tamper tolerance or outer package repair",
+    "real-publication robustness"
+  ]
+}
