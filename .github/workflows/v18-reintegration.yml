@@ -22,7 +22,6 @@ jobs:
         run: |
           rm -rf /tmp/v18-single
           python src/noisy_host_package_v18.py --seed 101 --payload-bytes 512 --channels 2 --out-dir /tmp/v18-single
-          cat /tmp/v18-single/noisy_host_v18_results.json
       - name: Eight-seed current-protocol gate
         run: |
           python protocol/real-package-v18.py \
@@ -33,4 +32,12 @@ jobs:
             --corpus-size 2000 \
             --top-k 100 \
             --out /tmp/v18-protocol-result.json
-          cat /tmp/v18-protocol-result.json
+      - name: Upload V18 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: v18-machine-results
+          path: |
+            /tmp/v18-single/noisy_host_v18_results.json
+            /tmp/v18-single/manifest_noisy_host_v18.json
+            /tmp/v18-protocol-result.json
+          if-no-files-found: error
