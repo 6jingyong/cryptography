@@ -1,5 +1,5 @@
 {
-  "version": "current-audited-summary-v4",
+  "version": "current-audited-summary-v5",
   "scope": "synthetic-only",
   "protocol": {
     "chain": "A -> c -> B -> b -> a",
@@ -30,18 +30,32 @@
       "residual_model_matrix": {
         "classification":"GENERAL_V18_SUPPORTED_WITHIN_DECLARED_SYNTHETIC_MATRIX",
         "models":["iid_gaussian","heteroscedastic_gaussian","ar1_rho_0p85","low_frequency_drift","gaussian_sparse_outliers"],
-        "passing_models":5,
-        "failing_models":0,
-        "q4_selected_per_model":12,
-        "q2_selected_per_model":0,
-        "seeds_per_model":4,
-        "all_models_exact_recovery_rate":1.0,
-        "all_models_recall_at_100":1.0,
+        "passing_models":5,"failing_models":0,"q4_selected_per_model":12,"q2_selected_per_model":0,"seeds_per_model":4,
+        "all_models_exact_recovery_rate":1.0,"all_models_recall_at_100":1.0,
         "largest_calibration_host_adjustment_nrmse":0.001104584449195157,
         "largest_protocol_adjustment_to_host_rms_ratio":0.49143277680614084,
         "evidence":"results/v18-residual-matrix.json"
       },
-      "boundary": "distribution-broad only for sender-observed, equal-energy synthetic hosts in the declared matrix; unknown post-embedding noise, stronger re-quantization, q2 fallback and real data remain untested"
+      "publication_damage_frontier": {
+        "lifecycle_position":"post-embedding and post-A-assignment, pre-c-seal",
+        "seeds":[301,302,303,304],
+        "baseline_pass":true,
+        "largest_requant_factor_all_seed_pass":1.0,
+        "first_tested_requant_failure_factor":1.25,
+        "requant_1p25_exact_recovery_rate":0.75,
+        "requant_1p50_exact_recovery_rate":0.5,
+        "requant_1p75_and_above_exact_recovery_rate":0.0,
+        "largest_noise_sigma_over_delta_all_seed_pass":0.10,
+        "first_tested_noise_failure_sigma_over_delta":0.15,
+        "noise_0p15_exact_recovery_rate":0.5,
+        "noise_0p20_and_above_exact_recovery_rate":0.0,
+        "all_tested_combined_conditions_pass":false,
+        "all_conditions_recall_at_100":1.0,
+        "all_conditions_target_rank":1,
+        "first_failure_layer":"inner_decode",
+        "evidence":"results/v18-publication-damage.json"
+      },
+      "boundary": "known-host distribution breadth is good within the declared matrix, but unknown post-embedding/pre-seal publication margin is narrow: no extra all-seed re-quantization margin beyond 1.00x was demonstrated, and additive-noise all-seed recovery was demonstrated only through sigma=0.10 delta"
     }
   },
   "locator_structural_v4": {
@@ -55,12 +69,13 @@
     "v18": {
       "classification":"CURRENT_BOUNDED_REINTEGRATION",
       "role":"sender-observed noisy-host b carrier; package-specific mode parameters belong in B",
-      "current_evidence":["results/noisy-host-v18-reintegration.json","results/v18-residual-matrix.json"],
+      "current_evidence":["results/noisy-host-v18-reintegration.json","results/v18-residual-matrix.json","results/v18-publication-damage.json"],
       "legacy_summary_status":"RETIRED_NOT_RESTORED",
-      "next_falsification":"unknown post-embedding channel damage / stronger re-quantization"
+      "rejected_upgrade":"broad post-embedding publication robustness",
+      "next_measurement":"refine the 1.00x-1.25x re-quantization and 0.10-0.15 delta additive-noise transition intervals without changing the carrier"
     },
     "v19": {"classification":"NEEDS-REINTEGRATION","role":"sender-side policy for choosing (b,B); A may define only allowed vocabulary","legacy_summary_status":"UNVERIFIED_NOT_CURRENT_EVIDENCE"},
-    "v20": {"classification":"NEEDS-REINTEGRATION","role":"outer package reliability in b/c; concrete shard/parity parameters belong in B","legacy_summary_status":"UNVERIFIED_NOT_CURRENT_EVIDENCE"},
+    "v20": {"classification":"NEEDS-REINTEGRATION","role":"outer package reliability in b/c; concrete shard/parity parameters belong in B","legacy_summary_status":"UNVERIFIED_NOT_CURRENT_EVIDENCE","boundary":"post-seal numeric corruption belongs here because strict outer integrity is expected to reject it before V18 decode"},
     "v21": {"classification":"HISTORICAL-BUT-VALID-PRINCIPLE_ONLY","retained_principle":"protocol constraints before rate","quantitative_locator_and_geometry_results":"STALE_NEEDS_RERUN_UNDER_CURRENT_A"}
   },
   "paper": {
