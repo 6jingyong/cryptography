@@ -1,9 +1,9 @@
 {
-  "version": "current-main-summary",
+  "version": "current-audited-summary-v2",
   "scope": "synthetic-only",
   "protocol": {
     "chain": "A -> c -> B -> b -> a",
-    "A": "pre-shared root locator/bootstrap codebook",
+    "A": "pre-shared root locator/canonicalization/bootstrap codebook",
     "B": "per-package reconstruction codebook",
     "real_package_v2": {
       "locator": {"target_rank": 1, "top_k": 100, "accepted_rank": 1, "attempt_count": 1},
@@ -12,6 +12,7 @@
     },
     "real_package_v3": {
       "fingerprint_source": "actual published NPZ public structure: morphology + x-grid length, A-keyed table ordering",
+      "locator_does_not_parse_B_before_ranking": true,
       "e5_multiseed": {
         "seeds": 8,
         "exact_recovery_rate": 1.0,
@@ -20,19 +21,58 @@
         "all_payload_hashes_unique": true,
         "median_target_rank": 1.0,
         "max_target_rank": 1,
-        "median_locator_score": 1.0,
-        "elapsed_sec": 55.21927618980408
+        "median_locator_score": 1.0
+      },
+      "fresh_ci_reproduction": {
+        "python": "3.12",
+        "seeds": [101, 102],
+        "both_exact_recovery": true,
+        "both_target_rank": 1,
+        "payload_hashes_distinct": true
       }
     }
   },
-  "technical": {
-    "v18": {"naive_additive_joint_pass_cells": 0, "naive_additive_total_cells": 60, "single_seed_syndrome_joint_pass_configs": 542, "single_seed_syndrome_total_configs": 960, "stable_policy_total_cells": 60, "stable_policy_feasible_cells": 59, "stable_policy_q4_selected": 57, "stable_policy_q2_selected": 2, "stable_policy_unresolved": 1},
-    "v19": {"noisy_residual_morphology_accuracy": 0.9288888888888889, "clean_host_v12_selection_rate": 1.0, "noisy_host_not_misrouted_to_v12_rate": 1.0, "middle_sigma2_v12_rate": 0.0, "samples": 3600},
-    "v20": {"cells_total": 60, "cells_outer_feasible": 59, "cells_disabled_or_unresolved": 1, "median_net_verified_bits_per_value": 0.5988304093567252, "min_net_verified_bits_per_value": 0.4862298195631529, "max_net_verified_bits_per_value": 0.6150150150150151, "median_parity_shards": 6.0, "max_parity_shards": 11, "outer_code_validation_all_pass": true},
-    "v21": {"hard_contract_pass": true, "locator_selected_schema": "rich_public_tuple_v2", "locator_hard_recall_at_20": 0.95, "locator_hard_recall_at_100": 0.99, "selected_package_geometry": {"shard_payload_bytes": 32, "tag_bytes": 4, "k_data_shards": 64, "minimum_final_net": 0.36977462066950917, "median_final_net": 0.48576429455392}}
+  "locator_structural_v4": {
+    "status": "AUDITED_DESCRIPTOR_MODEL",
+    "model": "12 labels; 1M candidates; 10k rank trials; 1% near-decoys with exactly 6/12 correct pairs; ties count ahead",
+    "baseline_recall_at_100": 1.0,
+    "deletion_25pct_recall_at_100": 1.0,
+    "deletion_50pct_recall_at_1000": 0.0,
+    "deletion_50pct_median_rank": 10589.0,
+    "substitution_20pct_recall_at_20": 0.9283,
+    "substitution_20pct_recall_at_100": 0.9793,
+    "substitution_20pct_recall_at_1000": 0.9812,
+    "combined_recall_at_1000": 0.0,
+    "boundary": "descriptor-level canonicalization research; not current v3 NPZ deletion/split-merge support"
+  },
+  "technical_history": {
+    "v18": {
+      "classification": "NEEDS-REINTEGRATION",
+      "role": "noisy-host b carrier; package-specific mode parameters belong in B",
+      "legacy_summary_status": "UNVERIFIED_NOT_CURRENT_EVIDENCE",
+      "legacy_summary": {"stable_policy_total_cells":60,"stable_policy_feasible_cells":59,"stable_policy_q4_selected":57,"stable_policy_q2_selected":2,"stable_policy_unresolved":1}
+    },
+    "v19": {
+      "classification": "NEEDS-REINTEGRATION",
+      "role": "sender-side policy for choosing (b,B); A may define only allowed vocabulary",
+      "legacy_summary_status": "UNVERIFIED_NOT_CURRENT_EVIDENCE",
+      "legacy_summary": {"noisy_residual_morphology_accuracy":0.9288888888888889,"clean_host_v12_selection_rate":1.0,"noisy_host_not_misrouted_to_v12_rate":1.0,"middle_sigma2_v12_rate":0.0,"samples":3600}
+    },
+    "v20": {
+      "classification": "NEEDS-REINTEGRATION",
+      "role": "outer package reliability in b/c; concrete shard/parity parameters belong in B",
+      "legacy_summary_status": "UNVERIFIED_NOT_CURRENT_EVIDENCE",
+      "legacy_summary": {"cells_total":60,"cells_outer_feasible":59,"cells_disabled_or_unresolved":1,"median_net_verified_bits_per_value":0.5988304093567252,"median_parity_shards":6.0,"max_parity_shards":11,"outer_code_validation_all_pass":true}
+    },
+    "v21": {
+      "classification": "HISTORICAL-BUT-VALID-PRINCIPLE_ONLY",
+      "retained_principle": "protocol constraints before rate",
+      "quantitative_locator_and_geometry_results": "STALE_NEEDS_RERUN_UNDER_CURRENT_A"
+    }
   },
   "paper": {
     "v6_experiment_summary": {"completed": 6, "requested_external": 0, "completed_pass": 6, "completed_fail": 0},
+    "v7_claim_gate": {"gate_pass": true, "claims_pass": ["C1","C2","C3","C4","C5","C6"], "C5_mandatory": true},
     "pending": []
   }
 }
