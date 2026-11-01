@@ -1,5 +1,5 @@
 {
-  "version": "current-audited-summary-v3",
+  "version": "current-audited-summary-v4",
   "scope": "synthetic-only",
   "protocol": {
     "chain": "A -> c -> B -> b -> a",
@@ -13,97 +13,59 @@
     "real_package_v3": {
       "fingerprint_source": "actual published NPZ public structure: morphology + x-grid length, A-keyed table ordering",
       "locator_does_not_parse_B_before_ranking": true,
-      "e5_multiseed": {
-        "seeds": 8,
-        "exact_recovery_rate": 1.0,
-        "recall_at_20": 1.0,
-        "recall_at_100": 1.0,
-        "all_payload_hashes_unique": true,
-        "median_target_rank": 1.0,
-        "max_target_rank": 1,
-        "median_locator_score": 1.0
-      },
-      "fresh_ci_reproduction": {
-        "python": "3.12",
-        "seeds": [101, 102],
-        "both_exact_recovery": true,
-        "both_target_rank": 1,
-        "payload_hashes_distinct": true
-      }
+      "e5_multiseed": {"seeds":8,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"all_payload_hashes_unique":true,"median_target_rank":1.0,"max_target_rank":1,"median_locator_score":1.0}
     },
     "real_package_v18": {
       "status": "CURRENT_BOUNDED_REINTEGRATION",
-      "carrier": "host-aware modulo-QIM on a non-zero synthetic smooth residual host",
+      "carrier": "host-aware modulo-QIM on sender-observed non-zero synthetic residual hosts",
       "locator_does_not_parse_B_before_ranking": true,
       "v18_specific_state_in_B": true,
-      "multiseed": {
-        "seeds": 8,
-        "all_payload_hashes_unique": true,
-        "exact_recovery_rate": 1.0,
-        "recall_at_20": 1.0,
-        "recall_at_100": 1.0,
-        "median_target_rank": 1.0,
-        "max_target_rank": 2
+      "smooth_reference": {
+        "seeds":8,"all_payload_hashes_unique":true,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"median_target_rank":1.0,"max_target_rank":2,
+        "q4_selected":12,"q2_selected":0,
+        "min_host_adjustment_nrmse":0.0007201639903283434,"max_host_adjustment_nrmse":0.0010926954532566903,"strictest_budget_nrmse":0.0045,
+        "median_adjustment_to_host_rms_ratio":0.4459463314354794,"max_adjustment_to_host_rms_ratio":0.4852376607415115,
+        "fixed_512B_gross_bits_per_numeric_value":0.11339977851605759
       },
-      "calibration": {
-        "tables": 12,
-        "q4_selected": 12,
-        "q2_selected": 0,
-        "all_exact_block_recovery": true,
-        "min_host_adjustment_nrmse": 0.0007201639903283434,
-        "max_host_adjustment_nrmse": 0.0010926954532566903,
-        "strictest_budget_nrmse": 0.0045
+      "residual_model_matrix": {
+        "classification":"GENERAL_V18_SUPPORTED_WITHIN_DECLARED_SYNTHETIC_MATRIX",
+        "models":["iid_gaussian","heteroscedastic_gaussian","ar1_rho_0p85","low_frequency_drift","gaussian_sparse_outliers"],
+        "passing_models":5,
+        "failing_models":0,
+        "q4_selected_per_model":12,
+        "q2_selected_per_model":0,
+        "seeds_per_model":4,
+        "all_models_exact_recovery_rate":1.0,
+        "all_models_recall_at_100":1.0,
+        "largest_calibration_host_adjustment_nrmse":0.001104584449195157,
+        "largest_protocol_adjustment_to_host_rms_ratio":0.49143277680614084,
+        "evidence":"results/v18-residual-matrix.json"
       },
-      "host_adjustment": {
-        "median_adjustment_to_host_rms_ratio": 0.4459463314354794,
-        "max_adjustment_to_host_rms_ratio": 0.4852376607415115
-      },
-      "fixed_512B_gross_bits_per_numeric_value": 0.11339977851605759,
-      "boundary": "current evidence applies only to the frozen smooth synthetic residual-host model; q2 fallback and other residual distributions remain untested"
+      "boundary": "distribution-broad only for sender-observed, equal-energy synthetic hosts in the declared matrix; unknown post-embedding noise, stronger re-quantization, q2 fallback and real data remain untested"
     }
   },
   "locator_structural_v4": {
-    "status": "AUDITED_DESCRIPTOR_MODEL",
-    "model": "12 labels; 1M candidates; 10k rank trials; 1% near-decoys with exactly 6/12 correct pairs; ties count ahead",
-    "baseline_recall_at_100": 1.0,
-    "deletion_25pct_recall_at_100": 1.0,
-    "deletion_50pct_recall_at_1000": 0.0,
-    "deletion_50pct_median_rank": 10589.0,
-    "substitution_20pct_recall_at_20": 0.9283,
-    "substitution_20pct_recall_at_100": 0.9793,
-    "substitution_20pct_recall_at_1000": 0.9812,
-    "combined_recall_at_1000": 0.0,
-    "boundary": "descriptor-level canonicalization research; not current v3 NPZ deletion/split-merge support"
+    "status":"AUDITED_DESCRIPTOR_MODEL",
+    "model":"12 labels; 1M candidates; 10k rank trials; 1% near-decoys with exactly 6/12 correct pairs; ties count ahead",
+    "baseline_recall_at_100":1.0,"deletion_25pct_recall_at_100":1.0,"deletion_50pct_recall_at_1000":0.0,"deletion_50pct_median_rank":10589.0,
+    "substitution_20pct_recall_at_20":0.9283,"substitution_20pct_recall_at_100":0.9793,"substitution_20pct_recall_at_1000":0.9812,"combined_recall_at_1000":0.0,
+    "boundary":"descriptor-level canonicalization research; not current v3 NPZ deletion/split-merge support"
   },
   "technical_history": {
     "v18": {
-      "classification": "CURRENT_BOUNDED_REINTEGRATION",
-      "role": "noisy-host b carrier; package-specific mode parameters belong in B",
-      "current_evidence": "results/noisy-host-v18-reintegration.json",
-      "legacy_summary_status": "RETIRED_NOT_RESTORED",
-      "legacy_summary": {"stable_policy_total_cells":60,"stable_policy_feasible_cells":59,"stable_policy_q4_selected":57,"stable_policy_q2_selected":2,"stable_policy_unresolved":1}
+      "classification":"CURRENT_BOUNDED_REINTEGRATION",
+      "role":"sender-observed noisy-host b carrier; package-specific mode parameters belong in B",
+      "current_evidence":["results/noisy-host-v18-reintegration.json","results/v18-residual-matrix.json"],
+      "legacy_summary_status":"RETIRED_NOT_RESTORED",
+      "next_falsification":"unknown post-embedding channel damage / stronger re-quantization"
     },
-    "v19": {
-      "classification": "NEEDS-REINTEGRATION",
-      "role": "sender-side policy for choosing (b,B); A may define only allowed vocabulary",
-      "legacy_summary_status": "UNVERIFIED_NOT_CURRENT_EVIDENCE",
-      "legacy_summary": {"noisy_residual_morphology_accuracy":0.9288888888888889,"clean_host_v12_selection_rate":1.0,"noisy_host_not_misrouted_to_v12_rate":1.0,"middle_sigma2_v12_rate":0.0,"samples":3600}
-    },
-    "v20": {
-      "classification": "NEEDS-REINTEGRATION",
-      "role": "outer package reliability in b/c; concrete shard/parity parameters belong in B",
-      "legacy_summary_status": "UNVERIFIED_NOT_CURRENT_EVIDENCE",
-      "legacy_summary": {"cells_total":60,"cells_outer_feasible":59,"cells_disabled_or_unresolved":1,"median_net_verified_bits_per_value":0.5988304093567252,"median_parity_shards":6.0,"max_parity_shards":11,"outer_code_validation_all_pass":true}
-    },
-    "v21": {
-      "classification": "HISTORICAL-BUT-VALID-PRINCIPLE_ONLY",
-      "retained_principle": "protocol constraints before rate",
-      "quantitative_locator_and_geometry_results": "STALE_NEEDS_RERUN_UNDER_CURRENT_A"
-    }
+    "v19": {"classification":"NEEDS-REINTEGRATION","role":"sender-side policy for choosing (b,B); A may define only allowed vocabulary","legacy_summary_status":"UNVERIFIED_NOT_CURRENT_EVIDENCE"},
+    "v20": {"classification":"NEEDS-REINTEGRATION","role":"outer package reliability in b/c; concrete shard/parity parameters belong in B","legacy_summary_status":"UNVERIFIED_NOT_CURRENT_EVIDENCE"},
+    "v21": {"classification":"HISTORICAL-BUT-VALID-PRINCIPLE_ONLY","retained_principle":"protocol constraints before rate","quantitative_locator_and_geometry_results":"STALE_NEEDS_RERUN_UNDER_CURRENT_A"}
   },
   "paper": {
-    "v6_experiment_summary": {"completed": 6, "requested_external": 0, "completed_pass": 6, "completed_fail": 0},
-    "v7_claim_gate": {"gate_pass": true, "claims_pass": ["C1","C2","C3","C4","C5","C6"], "C5_mandatory": true},
-    "pending": []
+    "v6_experiment_summary":{"completed":6,"requested_external":0,"completed_pass":6,"completed_fail":0},
+    "v7_claim_gate":{"gate_pass":true,"claims_pass":["C1","C2","C3","C4","C5","C6"],"C5_mandatory":true},
+    "pending":[]
   }
 }
