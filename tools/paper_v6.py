@@ -178,90 +178,55 @@ def experiment_results(curves,rows,counts,ranked,story,paper_limitation=True):
             if key=="materials_characterization":score+=.12*sum(v>=.15 for v in prof.values())
             rr.append((score,key))
         e4.append(max(rr)[1]==baseline_arch)
-    return {
-      "version":"paper-experiment-cycle-v6","scope":"synthetic-only","label":LABEL,
+    return {"version":"paper-experiment-cycle-v6","scope":"synthetic-only","label":LABEL,
       "results":[
        {"experiment_id":"E1","status":"COMPLETED","pass":all(x["story_retention_rate"]>=.95 for x in e1),"results":e1},
        {"experiment_id":"E2","status":"COMPLETED","pass":float(np.mean(e2))>=.9,"leave_one_out_story_retention_rate":float(np.mean(e2))},
        {"experiment_id":"E3","status":"COMPLETED","pass":float(np.mean(np.asarray(deltas)>0))>=.9 and float(np.median(deltas))>=.1,"matched_fit_beats_linear_fraction":float(np.mean(np.asarray(deltas)>0)),"median_delta_r2":float(np.median(deltas))},
        {"experiment_id":"E4","status":"COMPLETED","pass":float(np.mean(e4))>=.8,"leave_one_out_archetype_retention_rate":float(np.mean(e4))},
        {"experiment_id":"E5","status":"REQUESTED_BENCHMARK_ENGINE","pass":None,"kind":"multi_seed_reencode_recovery","purpose":"Repeat full package generation, locator ranking, and exact recovery over independent synthetic seeds."},
-       {"experiment_id":"E6","status":"COMPLETED","pass":bool(paper_limitation),"present_in_paper":bool(paper_limitation)}
-      ]}
+       {"experiment_id":"E6","status":"COMPLETED","pass":bool(paper_limitation),"present_in_paper":bool(paper_limitation)}]}
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument("--package",type=Path,required=True); ap.add_argument("--manifest",type=Path,required=True); ap.add_argument("--summary",type=Path,required=True); ap.add_argument("--out-dir",type=Path,default=Path("paper_v6_output")); args=ap.parse_args()
+    ap=argparse.ArgumentParser(); ap.add_argument("--package",type=Path,required=True); ap.add_argument("--manifest",type=Path,required=True); ap.add_argument("--summary",type=Path,required=True); ap.add_argument("--e5-result",type=Path,default=None); ap.add_argument("--out-dir",type=Path,default=Path("paper_v6_output")); args=ap.parse_args()
     if args.out_dir.exists():shutil.rmtree(args.out_dir)
     args.out_dir.mkdir(parents=True)
     summary=json.loads(args.summary.read_text(encoding="utf-8")); manifest,curves=load_curves(args.package,args.manifest)
     rows,counts,profile,ranked=infer(curves); story,_=choose_story(counts); ex=experiment_results(curves,rows,counts,ranked,story)
+    e5_completed = False
+    if args.e5_result is not None:
+        e5_data = json.loads(args.e5_result.read_text(encoding="utf-8"))
+        e5_summary = e5_data.get("summary", {})
+        e5_pass = bool(
+            e5_summary.get("exact_recovery_rate") == 1.0
+            and e5_summary.get("recall_at_100") == 1.0
+            and e5_summary.get("all_payload_hashes_unique") is True
+        )
+        for item in ex["results"]:
+            if item["experiment_id"] == "E5":
+                item.update({"status": "COMPLETED", "pass": e5_pass, "machine_result": e5_summary})
+        e5_completed = e5_pass
     domain={"version":"paper-v6-domain","scope":"synthetic-only","warning":"Morphology-based narrative archetype, not real provenance.","morphology_counts":counts,"morphology_profile":profile,"ranked_archetypes":ranked,"selected_archetype":ranked[0]}
     claims=[
       {"claim_id":"C1","role":"primary_conclusion","claim":"The synthetic package exhibits multiple distinct response regimes rather than one dominant morphology."},
       {"claim_id":"C2","role":"supporting_quantification","claim":"Morphology-matched descriptive models summarize the synthetic responses."},
       {"claim_id":"C4","role":"technical_control","claim":"The machine-readable package remains exactly recoverable under the recorded benchmark."},
       {"claim_id":"C5","role":"limitation_negative_result","claim":"Field framing and generic fits are descriptive presentation choices, not evidence of real provenance or mechanism."}]
-
     median_r2 = float(np.median([r["fit_r2"] for r in rows]))
     paper = (
-        f"# {LABEL}\n\n"
-        "# Synthetic Multi-Regime Response Characterization\n\n"
-        "**SYNTHETIC BENCHMARK / SIMULATED DATA ONLY**\n\n"
-        f"Selected narrative archetype: **{ranked[0]['display_name']}**\n\n"
-        "## Abstract\n\n"
-        f"The planner selected the **{story}** story from visible synthetic "
-        "curve morphology. "
-        f"The package contains {summary['payload_bytes']:,} synthetic payload "
-        f"bytes and exact recovery is **{str(summary['exact_recovery']).upper()}**. "
-        "Generic fits are descriptive only; field framing is not evidence of "
-        "real provenance.\n\n"
-        "## Primary conclusion\n\n"
-        f"{claims[0]['claim']}\n\n"
-        f"Morphology counts: `{counts}`.\n\n"
-        "## Descriptive quantification\n\n"
-        f"Median generic-fit R²: **{median_r2:.4f}**.\n\n"
-        "## Technical control\n\n"
-        f"Exact recovery: **{summary['exact_recovery']}**; "
-        f"locator rank: **{summary['locator']['target_rank']}/"
-        f"{summary['locator']['candidate_count']}**; "
-        f"best decoy: **{summary['strict_verification']['best_decoy']}**; "
-        f"target: **{summary['strict_verification']['target']}**.\n\n"
+        f"# {LABEL}\n\n# Synthetic Multi-Regime Response Characterization\n\n**SYNTHETIC BENCHMARK / SIMULATED DATA ONLY**\n\n"
+        f"Selected narrative archetype: **{ranked[0]['display_name']}**\n\n## Abstract\n\n"
+        f"The planner selected the **{story}** story from visible synthetic curve morphology. The package contains {summary['payload_bytes']:,} synthetic payload bytes and exact recovery is **{str(summary['exact_recovery']).upper()}**. Generic fits are descriptive only; field framing is not evidence of real provenance.\n\n"
+        f"## Primary conclusion\n\n{claims[0]['claim']}\n\nMorphology counts: `{counts}`.\n\n## Descriptive quantification\n\nMedian generic-fit R²: **{median_r2:.4f}**.\n\n"
+        f"## Technical control\n\nExact recovery: **{summary['exact_recovery']}**; locator rank: **{summary['locator']['target_rank']}/{summary['locator']['candidate_count']}**; best decoy: **{summary['strict_verification']['best_decoy']}**; target: **{summary['strict_verification']['target']}**.\n\n"
         "## Validation experiments\n\n"
-        "Completed local experiments: **5**. E1/E2/E3/E4/E6 pass under the "
-        "recorded criteria. **E5 remains REQUESTED_BENCHMARK_ENGINE and is not "
-        "a positive result.**\n\n"
-        "## Mandatory limitation\n\n"
-        f"{claims[-1]['claim']}\n\n"
-        f"**{LABEL}**\n"
+        + ("All six requested experiments now have machine results. E1/E2/E3/E4/E5/E6 pass under the recorded synthetic criteria. E5 completed the full multi-seed re-encode → locator → exact-recovery loop.\n\n" if e5_completed else "Completed local experiments: **5**. E1/E2/E3/E4/E6 pass under the recorded criteria. **E5 remains REQUESTED_BENCHMARK_ENGINE and is not a positive result.**\n\n")
+        + f"## Mandatory limitation\n\n{claims[-1]['claim']}\n\n**{LABEL}**\n"
     )
-    outputs = [
-        ("domain_archetype.json", domain),
-        ("fit_results.json", rows),
-        ("story_plan.json", {"story_type": story, "morphology_profile": profile}),
-        ("claim_evidence_map.json", claims),
-        ("experiment_results_v6.json", ex),
-    ]
-    for name, obj in outputs:
-        (args.out_dir / name).write_text(
-            json.dumps(obj, indent=2),
-            encoding="utf-8",
-        )
-    (args.out_dir / "paper_v6.md").write_text(paper, encoding="utf-8")
-    manifest_out = {
-        "version": "paper-v6-current",
-        "scope": "synthetic-only",
-        "label": LABEL,
-        "pending": ["E5"],
-        "rule": "REQUESTED work is not evidence.",
-    }
-    (args.out_dir / "paper_manifest.json").write_text(
-        json.dumps(manifest_out, indent=2),
-        encoding="utf-8",
-    )
-    print("story:", story)
-    print("archetype:", ranked[0]["display_name"])
-    print("pending: E5")
+    for name,obj in [("domain_archetype.json",domain),("fit_results.json",rows),("story_plan.json",{"story_type":story,"morphology_profile":profile}),("claim_evidence_map.json",claims),("experiment_results_v6.json",ex)]:
+        (args.out_dir/name).write_text(json.dumps(obj,indent=2),encoding="utf-8")
+    (args.out_dir/"paper_v6.md").write_text(paper,encoding="utf-8")
+    (args.out_dir/"paper_manifest.json").write_text(json.dumps({"version":"paper-v6-current","scope":"synthetic-only","label":LABEL,"pending":[] if e5_completed else ["E5"],"e5_completed":e5_completed,"rule":"REQUESTED work is not evidence."},indent=2),encoding="utf-8")
+    print("story:",story); print("archetype:",ranked[0]["display_name"]); print("E5:","COMPLETED" if e5_completed else "PENDING")
 
-
-if __name__ == "__main__":
-    main()
+if __name__=="__main__":main()

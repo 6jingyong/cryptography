@@ -46,6 +46,7 @@ protocol/
   version-remap-v12-v21.md
   real-package-v2.py
   real-package-v2-tests.py
+  real-package-v3.py
 
 src/
   adaptive_q_*_v12.py
@@ -80,6 +81,7 @@ The retained technical milestones are:
 | V20 | outer reliability and verified package rate |
 | V21 | constrained optimizer: protocol guarantees first, rate last |
 | Protocol v2 | real V12 `B+b` package tested end-to-end under `A→c→B→b→a` |
+| Protocol v3 | A-layer fingerprint bound to actual NPZ public table structure; multi-seed E5 closed |
 
 The project deliberately does **not** optimize rate before locator/bootstrap/reconstruction constraints.
 
@@ -114,7 +116,7 @@ wrong A -> reject
 locator false positive -> reject decoy, continue, accept real c
 ```
 
-See [`results/protocol-real-package-v2.md`](results/protocol-real-package-v2.md).
+See [`results/protocol-real-package-v2.md`](results/protocol-real-package-v2.md) and [`results/protocol-real-package-v3.md`](results/protocol-real-package-v3.md).
 
 ## Paper line
 
@@ -142,7 +144,7 @@ mock paper
 
 The paper layer may change presentation, terminology, section order, and figure selection. It may not invent benchmark numbers or convert requested work into completed evidence.
 
-Paper v6 currently requests six validation experiments. Five local experiments are complete and pass; one full multi-seed re-encode/locator/recovery experiment remains explicitly pending.
+Paper v6 requested six validation experiments. All six now have machine results and pass under the recorded synthetic criteria; E5 completed an 8-seed full re-encode → locator → exact-recovery cycle with eight unique payload hashes.
 
 See [`results/paper-v6-experiments.json`](results/paper-v6-experiments.json) and `tools/paper_v6.py`.
 

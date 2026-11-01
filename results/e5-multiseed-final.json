@@ -1,0 +1,34 @@
+{
+  "version": "E5-multiseed-full-reencode-final",
+  "scope": "synthetic-only",
+  "config": {
+    "seeds": 8,
+    "payload_bytes": 512,
+    "channels": 2,
+    "candidate_corpus": 2000,
+    "near_decoy_fraction": 0.01,
+    "top_k": 100,
+    "fingerprint_source": "actual published NPZ public structure: morphology + x-grid length; A-keyed table ordering"
+  },
+  "summary": {
+    "seeds": 8,
+    "exact_recovery_rate": 1.0,
+    "recall_at_20": 1.0,
+    "recall_at_100": 1.0,
+    "all_payload_hashes_unique": true,
+    "median_target_rank": 1.0,
+    "max_target_rank": 1,
+    "median_locator_score": 1.0,
+    "elapsed_sec": 55.21927618980408
+  },
+  "runs": [
+    {"payload_seed": 1, "target_rank": 1, "accepted_rank": 1, "exact_recovery": true, "target_locator_score": 1.0, "payload_sha256": "e53e7c24b5b352b98e923d2d54e31bfc23b027444d16dbd2d94624f76eece0af"},
+    {"payload_seed": 2, "target_rank": 1, "accepted_rank": 1, "exact_recovery": true, "target_locator_score": 1.0, "payload_sha256": "86446e391c652f45db036c6f864ee7b86b2d26ed8c9e971ba7f2839e9936b40f"},
+    {"payload_seed": 3, "target_rank": 1, "accepted_rank": 1, "exact_recovery": true, "target_locator_score": 1.0, "payload_sha256": "e30a56f8ce4c23e895e89771ded5177fb3fc58dbade73b2c6115127ca14fa102"},
+    {"payload_seed": 4, "target_rank": 1, "accepted_rank": 1, "exact_recovery": true, "target_locator_score": 1.0, "payload_sha256": "392012f29d002f6f1d4f9d4c38300e2257b3f9c91ada7bf3b7899b65a5e20e86"},
+    {"payload_seed": 5, "target_rank": 1, "accepted_rank": 1, "exact_recovery": true, "target_locator_score": 1.0, "payload_sha256": "2081dd864540acfcf88071352c626c0827266e64052b758b1f2c6ead65da583d"},
+    {"payload_seed": 6, "target_rank": 1, "accepted_rank": 1, "exact_recovery": true, "target_locator_score": 1.0, "payload_sha256": "3be9b5407ec8348c4f01b69a46ef1e4777dea855dcdce75c28bc82daa4995901"},
+    {"payload_seed": 7, "target_rank": 1, "accepted_rank": 1, "exact_recovery": true, "target_locator_score": 1.0, "payload_sha256": "795d6ade2ca753d24649cce8e8bd84f2ef14b61298370cf3d7ff1a44ce02f09c"},
+    {"payload_seed": 8, "target_rank": 1, "accepted_rank": 1, "exact_recovery": true, "target_locator_score": 1.0, "payload_sha256": "25558a5670510a69f661e894b00ed2e6ce1ea31614d121292696c78872419f78"}
+  ]
+}
