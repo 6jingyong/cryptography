@@ -6,7 +6,7 @@ Synthetic-only research on structured numeric carriers, locator protocols, and p
 
 ## Current protocol
 
-The project now uses the corrected two-codebook model:
+The corrected lifecycle is:
 
 ```text
 pre-shared root codebook A
@@ -29,11 +29,11 @@ public collection = c + d + d + d + ...
 The key distinction is:
 
 ```text
-A = long-lived root locator/bootstrap codebook
+A = long-lived root locator / canonicalization / bootstrap codebook
 B = per-package reconstruction codebook
 ```
 
-A does **not** need to know each package's concrete q, transform, ECC, or table geometry. Those package-specific values belong in B.
+A does **not** need each package's concrete q, transform, ECC, table geometry, payload length, or padding. Those package-specific values belong in B.
 
 See [`protocol/README.md`](protocol/README.md).
 
@@ -47,6 +47,7 @@ protocol/
   real-package-v2.py
   real-package-v2-tests.py
   real-package-v3.py
+  locator-structural-v4.py
 
 src/
   adaptive_q_*_v12.py
@@ -55,72 +56,83 @@ src/
 
 tools/
   paper_v6.py
+  audit_current.py
+  paper_claim_gate_v7.py
 
 results/
   README.md
-  milestone reports
-  compact authoritative summaries
-
-skills/synthetic-paper-benchmark/
-  SKILL.md
+  e5-multiseed-final.json
+  locator-structural-v4.json
+  locator-structural-v4.md
+  paper-v6-experiments.json
+  paper-claim-audit-v7.json
+  paper-claim-audit-v7.md
+  current-summary.json
 ```
 
-## Technical line
+## Audited technical spine
 
-The current tree keeps the protocol-relevant executable core small. Later V18–V21 findings are summarized in `results/current-summary.json` and remapped in the protocol history note; their pre-reset scripts remain in Git history until they are reintegrated cleanly into the corrected protocol.
+The current machine-verifiable spine is:
 
-The retained technical milestones are:
-
-| Version | Role after protocol reset |
+| Version | Audited role |
 |---|---|
 | V12 | adaptive-q numeric carrier for processed payload `b` |
-| V16 | labeled locator / erasure benchmark for A-layer discovery |
-| V17 | publication/canonicalization robustness across A/c/B boundaries |
-| V18 | host-aware residual carrier for noisy synthetic hosts |
-| V19 | sender-side regime selector for choosing `(b,B)` strategy |
-| V20 | outer reliability and verified package rate |
-| V21 | constrained optimizer: protocol guarantees first, rate last |
-| Protocol v2 | real V12 `B+b` package tested end-to-end under `A→c→B→b→a` |
-| Protocol v3 | A-layer fingerprint bound to actual NPZ public table structure; multi-seed E5 closed |
+| V16 | historical labeled locator / erasure research for A-layer discovery |
+| V17 | historical publication/canonicalization research, remapped across A/c/B |
+| Protocol v2 | V12 `B+b` tested end-to-end under `A→c→B→b→a` |
+| Protocol v3 | A-layer fingerprint bound to actual NPZ public table structure; clean-host E5 closed |
+| Structural v4 | explicit synthetic descriptor retrieval stress model with visible heavy-damage failures |
+| Paper claim gate v7 | machine gate for bounded C1–C6 claims; C5 remains mandatory |
 
 The project deliberately does **not** optimize rate before locator/bootstrap/reconstruction constraints.
 
-## Current real-package protocol test
+## Protocol-v3 / E5 evidence
 
-A real synthetic V12 package was inserted into the corrected protocol:
-
-```text
-a = 2,048 synthetic bytes
-B = real V12 manifest
-b = real V12 published NPZ
-candidate corpus = 3,000
-near-decoys = 30
-fingerprint erasure = 25%
-fingerprint substitution = 10%
-```
-
-Observed:
+Protocol-v3 derives its locator feature from the public NPZ structure itself:
 
 ```text
-target rank = 1
-accepted rank = 1
-exact a recovery = TRUE
+morphology class + local x-grid length
 ```
 
-Protocol tests also confirm:
+Candidate ranking reads public candidate structure and A-defined rules only. B is parsed after a candidate is opened.
+
+The recorded clean-host E5 benchmark contains:
 
 ```text
-corrupt B -> reject
-corrupt b -> reject
-wrong A -> reject
-locator false positive -> reject decoy, continue, accept real c
+8 seeded full re-encodes
+8 unique payload hashes
+8 / 8 exact recovery
+Recall@20  = 1.0
+Recall@100 = 1.0
+median target rank = 1
 ```
 
-See [`results/protocol-real-package-v2.md`](results/protocol-real-package-v2.md) and [`results/protocol-real-package-v3.md`](results/protocol-real-package-v3.md).
+The audit workflow also reruns fresh Protocol-v3 seeds on Python 3.12.
+
+See [`results/protocol-real-package-v3.md`](results/protocol-real-package-v3.md) and [`results/e5-multiseed-final.json`](results/e5-multiseed-final.json).
+
+## Structural v4 boundary
+
+The audited v4 model uses:
+
+```text
+12 stable labels
+1,000,000 candidates
+10,000 rank trials
+1% strong near-decoys
+near-decoys have exactly 6 / 12 correct label→ID pairs
+ties count ahead
+```
+
+Under that explicit model, 25% deletion remains inside Top-100 in the tested run, while 50% deletion fails even Top-1000 because the target falls to the six-match near-decoy boundary. This intentionally contradicts earlier unauditable handoff numbers rather than preserving them.
+
+`physical_reorder` and `labeled_split_merge` in v4 are descriptor-level canonicalization controls. They do **not** mean the current Protocol-v3 NPZ parser accepts a changed physical table count.
+
+See [`results/locator-structural-v4.md`](results/locator-structural-v4.md).
 
 ## Paper line
 
-The paper toolchain is downstream of machine results.
+The paper toolchain is downstream of machine results:
 
 ```text
 machine results
@@ -131,50 +143,40 @@ domain narrative archetype
     ↓
 generic descriptive fits
     ↓
-figure / story planning
-    ↓
-claim-evidence map
-    ↓
-experiment requests
-    ↓
-completed machine experiments only
+claim-evidence gate
     ↓
 mock paper
 ```
 
-The paper layer may change presentation, terminology, section order, and figure selection. It may not invent benchmark numbers or convert requested work into completed evidence.
+The paper layer may change presentation, terminology, section order, and figure selection. It may not invent benchmark numbers, convert requested work into completed evidence, claim real provenance, or turn descriptive fits into mechanism proof.
 
-Paper v6 requested six validation experiments. All six now have machine results and pass under the recorded synthetic criteria; E5 completed an 8-seed full re-encode → locator → exact-recovery cycle with eight unique payload hashes.
+Paper v6's six recorded experiments pass under their synthetic criteria. Paper claim gate v7 checks bounded C1–C6 roles against those results plus the explicit v4 boundary.
 
-See [`results/paper-v6-experiments.json`](results/paper-v6-experiments.json) and `tools/paper_v6.py`.
+See [`results/paper-v6-experiments.json`](results/paper-v6-experiments.json) and [`results/paper-claim-audit-v7.md`](results/paper-claim-audit-v7.md).
 
-## Start here
+## V18–V21 status
 
-For the protocol:
+V18–V20 still map conceptually into the corrected lifecycle, but their precise historical metrics do not currently have an auditable executable/raw-result chain in the inspected repository history. They are therefore **not current machine evidence**.
 
-```bash
-python protocol/real-package-v2.py \
-  --engine src/adaptive_q_package_v12.py \
-  --payload-bytes 2048 \
-  --channels 4 \
-  --corpus-size 3000
+```text
+V18 -> noisy-host b carrier; parameters in B -> NEEDS-REINTEGRATION
+V19 -> sender policy for choosing (b,B) -> NEEDS-REINTEGRATION
+V20 -> outer reliability in b/c; parameters in B -> NEEDS-REINTEGRATION
+V21 -> retain "protocol constraints before rate" only; old quantitative results STALE
 ```
 
-For protocol tests:
+See [`protocol/version-remap-v12-v21.md`](protocol/version-remap-v12-v21.md).
+
+## Run the audit
 
 ```bash
-python protocol/real-package-v2-tests.py
+python -m pip install -r requirements.txt
+python tools/audit_current.py
+python protocol/locator-structural-v4.py --json-out /tmp/v4.json --md-out /tmp/v4.md
+python tools/paper_claim_gate_v7.py --v4-result /tmp/v4.json --json-out /tmp/claims.json --md-out /tmp/claims.md
 ```
 
-The checked-in test script is synthetic-only and expects the repository layout above.
-
-## Historical versions
-
-The current working tree intentionally removes many V1–V11 exploratory scripts, old `dual-codebook` naming, duplicated docs, and obsolete mock-paper examples.
-
-Nothing is erased from Git history.
-
-See [`protocol/version-remap-v12-v21.md`](protocol/version-remap-v12-v21.md) for how retained findings map onto the corrected architecture.
+The GitHub Actions audit runs these checks on pull requests.
 
 ## Scope
 

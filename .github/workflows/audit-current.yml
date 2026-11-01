@@ -1,0 +1,32 @@
+name: audit-current
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run current evidence audit
+        run: python tools/audit_current.py
+      - name: Rebuild structural v4 stress model
+        run: |
+          python protocol/locator-structural-v4.py \
+            --json-out /tmp/locator-structural-v4.json \
+            --md-out /tmp/locator-structural-v4.md
+          cat /tmp/locator-structural-v4.json
+      - name: Run Paper v7 claim gate
+        run: |
+          python tools/paper_claim_gate_v7.py \
+            --v4-result /tmp/locator-structural-v4.json \
+            --json-out /tmp/paper-claim-audit-v7.json \
+            --md-out /tmp/paper-claim-audit-v7.md
+          cat /tmp/paper-claim-audit-v7.json

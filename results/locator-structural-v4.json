@@ -1,0 +1,31 @@
+{
+  "version": "locator-structural-v4-audit-rebuild",
+  "scope": "synthetic-descriptor-only",
+  "seed": 4004004,
+  "model": {
+    "labels": 12,
+    "candidate_corpus": 1000000,
+    "rank_trials": 10000,
+    "near_decoy_fraction": 0.01,
+    "near_decoy_count": 10000,
+    "near_decoy_exact_pairs": 6,
+    "random_decoys": "uniform random permutations of 12 IDs",
+    "score": "correct A-defined label->ID pairs / fixed 12-label contract",
+    "tie_policy": "all ties count ahead",
+    "random_rank_sampling": "exact permutation fixed-point tail + binomial corpus draw"
+  },
+  "important_boundary": {
+    "descriptor_canonicalization_only": true,
+    "current_v3_npz_deletion_support_claimed": false,
+    "current_v3_split_merge_support_claimed": false
+  },
+  "results": [
+    {"scenario":"baseline","median_intact_matches":12.0,"recall_at_20":1.0,"recall_at_100":1.0,"recall_at_1000":1.0,"median_rank":1.0,"p90_rank":1.0,"max_rank":2},
+    {"scenario":"physical_reorder","median_intact_matches":12.0,"recall_at_20":1.0,"recall_at_100":1.0,"recall_at_1000":1.0,"median_rank":1.0,"p90_rank":1.0,"max_rank":2},
+    {"scenario":"labeled_split_merge","median_intact_matches":12.0,"recall_at_20":1.0,"recall_at_100":1.0,"recall_at_1000":1.0,"median_rank":1.0,"p90_rank":1.0,"max_rank":2},
+    {"scenario":"deletion_25pct","median_intact_matches":9.0,"recall_at_20":1.0,"recall_at_100":1.0,"recall_at_1000":1.0,"median_rank":2.0,"p90_rank":3.0,"max_rank":8},
+    {"scenario":"deletion_50pct","median_intact_matches":6.0,"recall_at_20":0.0,"recall_at_100":0.0,"recall_at_1000":0.0,"median_rank":10589.0,"p90_rank":10621.0,"max_rank":10681},
+    {"scenario":"substitution_20pct","median_intact_matches":10.0,"recall_at_20":0.9283,"recall_at_100":0.9793,"recall_at_1000":0.9812,"median_rank":1.0,"p90_rank":14.0,"max_rank":29020},
+    {"scenario":"deletion_50pct_plus_substitution_20pct","median_intact_matches":5.0,"recall_at_20":0.0,"recall_at_100":0.0,"recall_at_1000":0.0,"median_rank":13640.0,"p90_rank":29139.5,"max_rank":1000000}
+  ]
+}

@@ -1,12 +1,11 @@
-# HANDOFF — audit before extension
+# HANDOFF — audited protocol state
 
 Repository: `6jingyong/cryptography`  
-Branch: `main`  
 Scope: **synthetic/mock benchmark only**
 
-> **Do not continue development first.** In the next conversation, fetch the current `main` head/tree and audit this handoff against the actual code and machine-result files. Mark every item `PASS`, `FAIL`, `UNVERIFIED`, or `STALE`. If this document conflicts with current code/results, trust the current code/results.
+This handoff was rebuilt after a strict audit. Current code, checked-in machine results, and reproducible CI are authoritative; historical prose is not.
 
-## 1. Authoritative protocol
+## 1. Authoritative lifecycle
 
 ```text
 pre-shared root codebook A
@@ -22,10 +21,8 @@ B explains b
 recover synthetic payload a
 ```
 
-Background records are `d`.
-
 ```text
-A = long-lived pre-shared locator / canonicalization / bootstrap protocol
+A = long-lived locator / canonicalization / bootstrap protocol
 B = per-package reconstruction codebook / manifest
 b = processed payload representation
 c = candidate package containing public fingerprint structure + B + b + integrity
@@ -33,30 +30,28 @@ a = final synthetic payload
 d = unrelated public/background record
 ```
 
-Hard invariant: A should **not** need package-specific q, transform, table geometry, ECC, payload length, padding, or decoder parameters. Those belong in B. The old pre-reset naming that reversed these roles is retired.
+Hard invariant: package-specific q, transform, geometry, ECC, payload length, padding, and decoder parameters belong in `B`, not long-lived `A`.
 
-## 2. Current protocol implementation
+## 2. Protocol-v3 locator independence
 
 Primary implementation: `protocol/real-package-v3.py`.
 
-Protocol v3 derives the A-layer fingerprint from **public structure of the published V12 NPZ itself**, rather than an extra attached synthetic fingerprint. The current public table identity uses:
+The locator derives its score from:
 
 ```text
-numeric morphology class + local x-grid length
+A + public NPZ structure
 ```
 
-A applies a pre-shared keyed ordering / assignment over those public table identities.
+using public morphology class + local x-grid length and A-keyed table ordering. Candidate ranking does **not** parse B. B is parsed only after a candidate is opened/verified.
 
-**Mandatory audit:** prove from code that locator ranking uses only `A + public candidate structure`; B must not be parsed to obtain locator features before candidate ranking. Parsing B is allowed only after a candidate is selected/opened.
+Status: **PASS**.
 
 ## 3. E5 nominal full re-encode
 
-Authoritative file: `results/e5-multiseed-final.json`.
-
-Recorded result:
+Authoritative result: `results/e5-multiseed-final.json`.
 
 ```text
-8 independently seeded synthetic payloads
+8 seeded full re-encodes
 8 distinct payload hashes
 8 / 8 exact recovery
 Recall@20  = 1.0
@@ -64,9 +59,13 @@ Recall@100 = 1.0
 median target rank = 1
 ```
 
-This closes the tested clean-host V12 E5 path. It is **nominal**, not structural-damage robustness, V18 noisy-host robustness, universal reliability, or cryptographic-security evidence.
+The audit CI additionally reruns fresh repository seeds 101 and 102 under Python 3.12. Both recover exactly at rank 1 and produce different payload hashes.
 
-## 4. A-layer structural robustness v4
+Status: **PASS for tested clean-host V12 nominal path only**.
+
+This is not V18 noisy-host evidence, structural-damage evidence, universal reliability, undetectability, or cryptographic-security evidence.
+
+## 4. A-layer structural robustness v4 — audited rebuild
 
 Files:
 
@@ -76,52 +75,50 @@ results/locator-structural-v4.json
 results/locator-structural-v4.md
 ```
 
-Stress model:
+Explicit model:
 
 ```text
+12 stable labels
 1,000,000 candidates
 10,000 rank trials
-1% strong near-decoys
-near-decoys preserve 6 / 12 exact label→ID pairs
-ties count ahead
+1% strong near-decoys = 10,000 candidates
+near-decoys have exactly 6 / 12 correct label→ID pairs
+random decoys are uniform random permutations of 12 IDs
+score = correct A-defined pairs / fixed 12-label contract
+ties count fully ahead
 ```
 
-Recorded boundary — re-read exact values from JSON during audit:
+Audited results:
 
 ```text
-baseline: Recall@20 ~0.924, Recall@100 1.000, median rank ~15
-physical reorder: Recall@100 1.000
-labeled split/merge: Recall@100 1.000
-25% deletion: Recall@100 1.000
-50% deletion: Recall@100 0, Recall@1000 1.000, median rank ~780
-20% substitution: Recall@100 0, Recall@1000 1.000, median rank ~223
-50% deletion + 20% substitution: Recall@1000 0, median rank ~2663
+baseline: R@20=1.0000, R@100=1.0000, median rank=1
+physical reorder after label canonicalization: R@100=1.0000
+labeled split/merge after logical canonicalization: R@100=1.0000
+25% deletion: R@100=1.0000, median rank=2
+50% deletion: R@1000=0, median rank=10589
+20% substitution: R@20=0.9283, R@100=0.9793, R@1000=0.9812, median rank=1
+50% deletion + 20% substitution: R@1000=0, median rank=13640
 ```
 
-Interpretation:
+The previous handoff values such as `50% deletion -> Recall@1000=1, median rank~780` were **wrong** under the stated exact-6/ties-ahead model and are retired.
+
+Important boundary: v4 is a **synthetic descriptor-level A-layer retrieval model**. `physical_reorder` / `labeled_split_merge` assume public labels reconstruct the same 12 logical identities. They do not prove that the current Protocol-v3 NPZ parser survives actual table deletion or a changed physical table count.
+
+## 5. Paper line / claim gate v7
+
+Executable presentation pipeline: `tools/paper_v6.py`  
+Claim gate: `tools/paper_claim_gate_v7.py`  
+Recorded audit: `results/paper-claim-audit-v7.json` and `.md`
+
+All bounded claim roles pass:
 
 ```text
-locator success != unique rank 1
-false positives are expected
-strict candidate verification is mandatory
-```
-
-“Labeled split/merge” does **not** mean arbitrary destructive/unlabeled split/merge is reversible. Heavy-damage failures are real; do not hide them by changing the metric or optimizing capacity first.
-
-## 5. Paper line
-
-Current executable: `tools/paper_v6.py`  
-Current claim audit: `results/paper-claim-audit-v7.md`
-
-Current claim roles:
-
-```text
-C1 primary conclusion — multiple synthetic response regimes, bounded by tested perturbation/LOO conditions
-C2 supporting quantification — morphology-matched descriptive fits beat the tested linear baseline on tested nonlinear tables
-C3 presentation support — morphology-based domain archetype is stable under tested LOO
-C4 technical control — exact recovery / locator / decoy rejection / E5
-C5 mandatory limitation — field framing/fits are descriptive, not real provenance or mechanism evidence
-C6 locator robustness — only within explicit v4 envelope and failure boundary
+C1 PASS — multiple synthetic response regimes, bounded by tested perturbation/LOO
+C2 PASS — morphology-matched descriptive fits beat tested linear baseline on tested nonlinear tables
+C3 PASS — morphology-based presentation archetype stable under tested LOO
+C4 PASS — clean-host E5 exact recovery / nominal locator evidence
+C5 PASS — mandatory limitation: descriptive framing/fits are not provenance or mechanism evidence
+C6 PASS — locator robustness only inside explicit descriptor-v4 model and visible failure boundary
 ```
 
 Never upgrade:
@@ -131,119 +128,75 @@ domain archetype -> real provenance
 high R² -> proven physical mechanism
 synthetic locator benchmark -> universal undetectability/security
 requested experiment -> completed evidence
+descriptor-level v4 canonicalization -> current v3 NPZ deletion/split-merge support
 ```
 
-`C5` must remain visible.
-
-## 6. Historical V12–V21 remap
+## 6. Historical V12–V21 classification
 
 ```text
-V12 -> b carrier / package-specific settings in B
-V16 -> A-layer labeled locator research
-V17 -> A/c/B publication + canonicalization boundary
-V18 -> noisy-host b carrier / settings in B
-V19 -> sender-side strategy for choosing (b,B)
-V20 -> outer package reliability / B parameters
-V21 -> retain “protocol constraints before rate”
+V12 -> CURRENT / b carrier; package-specific settings in B
+V16 -> HISTORICAL-BUT-VALID A-layer benchmark; old "second codebook" wording is stale
+V17 -> HISTORICAL-BUT-VALID observations; A/c/B responsibilities remapped
+V18 -> NEEDS-REINTEGRATION; noisy-host b carrier, settings in B
+V19 -> NEEDS-REINTEGRATION; sender policy for choosing (b,B)
+V20 -> NEEDS-REINTEGRATION; outer reliability in b/c, concrete parameters in B
+V21 -> HISTORICAL-BUT-VALID principle only: protocol constraints before rate; old quantitative results STALE
 ```
 
-Pre-reset V18–V21 scripts/results are historical research, not automatically authoritative implementations of the current lifecycle. They must be re-integrated and re-tested under `A -> c -> B -> b -> a`.
+Precise V18–V20 historical numbers preserved in old summaries are **UNVERIFIED_NOT_CURRENT_EVIDENCE** because no auditable executable/raw-result chain was found in the inspected repository history. Do not cite those numbers as current results until the modes are re-integrated and rerun.
 
 ## 7. Known unresolved issues
 
-1. Public label stability has been checked across payload seeds, not all package configurations.
-2. 50% structural deletion exceeds current Top-100 locator envelope.
-3. 20% structural substitution exceeds current Top-100 locator envelope.
-4. 50% deletion + 20% substitution exceeds Top-1000 in current v4 stress.
-5. Fingerprint assumes enough public table identity survives canonicalization.
-6. Strong near-decoys can create exact/tied locator matches; strict verification remains essential.
-7. Cross-platform deterministic basis generation remains unresolved; NumPy QR/eigh/sign canonicalization is not proven cross-platform deterministic.
-8. E5 closes clean-host V12, not V18 noisy-host.
-9. V18–V21 need protocol-level reintegration.
-10. `tools/paper_v6.py` is the cleaned current executable and may be simpler than the historical chain; audit functionality, not version prestige.
-11. No universal undetectability/security claim is supported.
-12. No real-publication deployment is in scope.
+1. Public label stability is not proven across all package configurations.
+2. Current Protocol-v3 NPZ locator is not proven robust to actual physical table deletion or changed table count.
+3. The 12-label descriptor model has a sharp failure boundary when the target falls to six or fewer correct pairs against 10,000 exact-six near-decoys.
+4. 20% substitution has a catastrophic tail even though median rank remains 1.
+5. Cross-platform deterministic basis generation remains unresolved; NumPy QR/eigh/sign behavior is not proven bit-identical across platforms.
+6. E5 closes clean-host V12 only, not V18 noisy-host.
+7. V18–V20 need protocol-level reintegration and fresh machine results.
+8. No universal undetectability/security claim is supported.
+9. No real-publication deployment is in scope.
 
-## 8. Mandatory next-conversation audit
+## 8. Reproducible audit gate
 
-Before coding anything new:
+Run:
 
-### A. Repository state
-- Fetch current `main`; record exact head SHA.
-- Fetch recursive tree.
-- Confirm this `HANDOFF.md` corresponds to that tree.
-- Identify files/commits newer than the handoff.
+```bash
+python tools/audit_current.py
+python protocol/locator-structural-v4.py --json-out /tmp/v4.json --md-out /tmp/v4.md
+python tools/paper_claim_gate_v7.py --v4-result /tmp/v4.json --json-out /tmp/claims.json --md-out /tmp/claims.md
+```
 
-### B. Terminology / architecture
-Inspect `README.md`, `protocol/README.md`, `protocol/schema-v1.json`, and `protocol/version-remap-v12-v21.md`. Verify A/B roles are consistent everywhere. Mark stale wording explicitly.
+The GitHub Actions workflow `.github/workflows/audit-current.yml` runs the same checks on pull requests.
 
-### C. Locator independence
-Inspect `protocol/real-package-v3.py`. Prove candidate ranking does not parse B for locator features. If it does, mark `FAIL`.
-
-### D. Code health
-Compile all current Python files and run a small Protocol-v3 end-to-end synthetic test. Record exact commands/results.
-
-### E. E5
-Inspect `results/e5-multiseed-final.json`: verify 8 runs, 8 distinct hashes, 8/8 exact recovery, Recall@20=1.0, Recall@100=1.0. Rerun at least 2 fresh synthetic seeds if supported.
-
-### F. Structural v4
-Cross-check `protocol/locator-structural-v4.py`, `results/locator-structural-v4.json`, and `.md`. Verify table/JSON agreement, near-decoy model, conservative tie handling, labeled-only split/merge claim, and visible heavy-damage failures.
-
-### G. Paper claim gate
-Inspect `tools/paper_v6.py` and `results/paper-claim-audit-v7.md`. Cross-check every upgraded claim against machine results; verify `C5` remains mandatory.
-
-### H. V18–V21 classification
-Mark each current reference as `CURRENT`, `HISTORICAL-BUT-VALID`, `NEEDS-REINTEGRATION`, or `STALE`.
-
-## 9. Required audit output
-
-| item | status | evidence | correction/action |
-|---|---|---|---|
-| main/head/tree | PASS/FAIL/... | SHA + files | ... |
-| A/B terminology | ... | ... | ... |
-| locator independence | ... | ... | ... |
-| Protocol-v3 run | ... | ... | ... |
-| E5 | ... | ... | ... |
-| v4 robustness | ... | ... | ... |
-| Paper-v7 claims | ... | ... | ... |
-| V18–V21 classification | ... | ... | ... |
-
-End with exactly one of:
+## 9. Audit status
 
 ```text
+A/B terminology                PASS
+locator independence           PASS
+Python compile                 PASS
+Protocol-v3 fresh run          PASS
+recorded E5 integrity          PASS
+fresh E5-style seeds           PASS
+structural v4 model/results    PASS
+Paper-v7 bounded claim gate    PASS
+V18–V21 classification         PASS
+```
+
+The status above means the **current evidence chain is internally auditable**, not that unresolved V18–V20 work has been completed.
+
+## 10. Next work after this gate
+
+Do **not** return to bit/value optimization first.
+
+The highest-value next step is to re-integrate **V18 noisy-host carrier** into the current lifecycle:
+
+```text
+A -> c -> B -> noisy-host b -> a
+```
+
+with all concrete V18 mode parameters stored in B, followed by an E5-style multi-seed benchmark.
+
+A-layer improvement remains relevant, especially stable public labels / richer or error-correcting fingerprint representation, but should be driven by the audited v4 failure boundary rather than by hiding it.
+
 AUDIT GATE: PASS — safe to continue development
-```
-
-or
-
-```text
-AUDIT GATE: FAIL — repair these items before extension
-```
-
-If the audit gate fails, do not continue substantial development in the same answer.
-
-## 10. Only after audit passes
-
-Do **not** return to bit/value optimization first. Preferred A-layer directions:
-
-```text
-richer / multi-view public fingerprint
-stable public labels
-error-correcting fingerprint representation
-hierarchical retrieval
-adaptive verification budget
-```
-
-Goal: improve Recall@K under deletion/substitution **without moving package-specific decoder state from B into A**.
-
-Then re-integrate V18 noisy-host carrier into `A -> c -> B -> b -> a` and run an E5-style multi-seed benchmark.
-
-## 11. Suggested first message for the next conversation
-
-> 先不要继续开发。连接 GitHub 仓库 `6jingyong/cryptography`，从当前 `main` 开始，对 `HANDOFF.md` 做严格、怀疑式审核。逐项核对代码、结果文件和实验数字，给出 PASS / FAIL / UNVERIFIED / STALE；发现冲突以当前代码和结果文件为准。尤其检查 A/B 职责、locator 是否未解析 B、E5 多 seed、结构鲁棒性 v4 的边界、paper v7 claim gate、以及历史 V18–V21 是否还能挂回当前协议。审核通过后再提出下一步，不要先追 bit/value。
-
-## 12. Handoff principle
-
-The next conversation is expected to **challenge this handoff**, not merely repeat it.
-
-The handoff is a map. The repository and reproducible machine results are the evidence.
