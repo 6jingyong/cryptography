@@ -1,0 +1,57 @@
+{
+  "version": "v18-publication-frontier-refine-v2",
+  "scope": "synthetic-only",
+  "source_ci": {
+    "workflow_run_id": 41341873027,
+    "artifact_id": 13097383059,
+    "artifact_sha256": "a2f840d8350b31fb854f5bbea99fb0276b5308290379f10afbcaf6365afa2786"
+  },
+  "frozen_plan": "results/v18-publication-frontier-refine-plan.md",
+  "parent_coarse_evidence": "results/v18-publication-damage.json",
+  "configuration": {
+    "fresh_seeds": [401,402,403,404,405,406,407,408],
+    "payload_bytes": 512,
+    "channels": 2,
+    "candidate_corpus": 2000,
+    "top_k": 100,
+    "requant_grid": [1.00,1.05,1.10,1.15,1.20,1.25],
+    "noise_sigma_over_delta_grid": [0.10,0.11,0.12,0.13,0.14,0.15],
+    "carrier_changes": "none"
+  },
+  "refinement_valid": true,
+  "controls": {
+    "requant_1p00_exact": "8/8",
+    "noise_0p10_exact": "8/8"
+  },
+  "requantization": [
+    {"factor":1.00,"exact":"8/8","pass":true,"recall_at_100":1.0},
+    {"factor":1.05,"exact":"7/8","pass":false,"recall_at_100":1.0,"failure_layer":"inner_decode"},
+    {"factor":1.10,"exact":"8/8","pass":true,"recall_at_100":1.0},
+    {"factor":1.15,"exact":"7/8","pass":false,"recall_at_100":1.0,"failure_layer":"inner_decode"},
+    {"factor":1.20,"exact":"7/8","pass":false,"recall_at_100":1.0,"failure_layer":"inner_decode"},
+    {"factor":1.25,"exact":"6/8","pass":false,"recall_at_100":1.0,"failure_layer":"inner_decode"}
+  ],
+  "additive_noise": [
+    {"sigma_over_delta":0.10,"exact":"8/8","pass":true,"recall_at_100":1.0},
+    {"sigma_over_delta":0.11,"exact":"8/8","pass":true,"recall_at_100":1.0},
+    {"sigma_over_delta":0.12,"exact":"7/8","pass":false,"recall_at_100":1.0,"failure_layer":"inner_decode"},
+    {"sigma_over_delta":0.13,"exact":"3/8","pass":false,"recall_at_100":1.0,"failure_layer":"inner_decode"},
+    {"sigma_over_delta":0.14,"exact":"6/8","pass":false,"recall_at_100":1.0,"failure_layer":"inner_decode"},
+    {"sigma_over_delta":0.15,"exact":"6/8","pass":false,"recall_at_100":1.0,"failure_layer":"inner_decode"}
+  ],
+  "methodology_findings": {
+    "requant_all_seed_pass_pattern_monotonic": false,
+    "requant_exact_count_monotonic_nonincreasing": false,
+    "noise_all_seed_pass_pattern_monotonic": true,
+    "noise_exact_count_monotonic_nonincreasing": false,
+    "requant_scalar_threshold_model_supported": false,
+    "noise_deterministic_threshold_model_supported": false
+  },
+  "accepted_claim": "Fresh seeds reproduce the baseline and the previous 0.10-delta additive-noise control. 0.11 delta also recovers 8/8 on this fresh set. Re-quantization response is non-monotonic on the tested grid, and additive-noise pass counts are not a deterministic nested threshold because each alpha uses an independent noise realization.",
+  "rejected_claims": [
+    "V18 has a scalar monotonic re-quantization failure threshold on the tested factor grid",
+    "the exact additive-noise threshold has been located",
+    "largest passing grid point is equivalent to a universal robustness frontier"
+  ],
+  "next_methodological_step": "Estimate condition success probability rather than another single threshold: use many fresh payload/host seeds; use paired/scaled noise realizations for alpha sweeps; map re-quantization success over a dense factor grid because grid/coset alignment is intrinsically non-monotonic."
+}
