@@ -1,14 +1,12 @@
 # cryptography
 
-Synthetic-only research on structured numeric carriers, locator protocols, package reliability, and clearly labeled paper-shaped benchmark reporting.
+Synthetic-only research on structured numeric carriers, locator protocols, package reliability, reproducibility, and clearly labeled paper-shaped benchmark reporting.
 
 > **This repository is a synthetic/mock benchmark. It does not claim real experimental evidence and is not intended for hiding real confidential material in real scientific publications.**
 
 ## What this project is actually trying to prove
 
-The project-level question is not “how many bits can one curve carry?” and it is not “how much noise can one QIM setting survive?”.
-
-The target is one coherent system:
+The project-level question is not “how many bits can one curve carry?” or “how much noise can one QIM setting survive?”. The target is one coherent system:
 
 ```text
 synthetic payload a
@@ -44,7 +42,7 @@ d = unrelated public/background record
 a = final synthetic payload
 ```
 
-Package-specific q, transform, geometry, ECC, host model, payload length, publication parameters, shard size, and parity geometry belong in `B`, not long-lived `A`.
+Package-specific q, transform, geometry, ECC, host model, payload length, publication parameters, basis version, shard size, and parity geometry belong in `B`, not long-lived `A`.
 
 Priority:
 
@@ -53,11 +51,46 @@ find c
 > open / authenticate c
 > interpret B
 > recover exact a
+> reproducible machine evidence
 > traceable presentation
 > only then optimize capacity / rate / overhead
 ```
 
 See [`protocol/README.md`](protocol/README.md).
+
+## Current engine and reproducibility milestone
+
+The current V18 carrier engine is:
+
+```text
+src/noisy_host_package_v18_deterministic.py
+```
+
+The previous engine remains as a legacy baseline:
+
+```text
+src/noisy_host_package_v18.py
+```
+
+Current basis contract:
+
+```text
+deterministic-dct-mgs-v1
+```
+
+It is explicit B state. The current decoder rejects a package declaring another basis version.
+
+The deterministic engine passed the frozen promotion gates in [`results/deterministic-basis-v1.md`](results/deterministic-basis-v1.md):
+
+```text
+Gate A: 8/8 exact current E2E, Recall@20=1, Recall@100=1, paper-v7 PASS
+Gate B: two independent CI runners, exact semantic equality, mismatch_count=0
+Gate C: existing V18/V20 bounded evidence passes with no q/delta/RS retuning
+```
+
+Gate B compares canonical B, all x/y float64 table arrays, all exported CSVs, current-V20 E5, paper-v7 numeric figure plan, morphology selection, and presentation archetype/story. The final semantic authority SHA-256 was identical across both runners.
+
+This resolves the earlier fixed-seed visible-carrier reproducibility blocker **within the declared independent GitHub Actions environment**. It is not a universal claim of bit-identical behavior across every CPU/libm/NumPy/Python implementation.
 
 ## Current project-level integration
 
@@ -67,7 +100,7 @@ Current runner:
 tools/current_end_to_end.py
 ```
 
-Frozen seeds `901..908` use the current V18 carrier + current bounded V20 reliability layer, a 2,000-candidate synthetic corpus, and the current paper analysis pipeline.
+Frozen seeds `901..908` use the deterministic current V18 carrier + bounded V20 reliability layer, a 2,000-candidate synthetic corpus, and the current paper analysis pipeline.
 
 Machine result:
 
@@ -80,7 +113,7 @@ median target rank = 1
 max target rank = 1
 ```
 
-The representative current V20 package is passed directly to the paper layer. Paper E5 is completed from the **same current-V20 8-seed result**, not a historical V12 fixture.
+The representative current V20 package is passed directly to the paper layer. Paper E5 is completed from the **same current-V20 8-seed result**, not a historical fixture.
 
 See:
 
@@ -97,14 +130,12 @@ See:
 | V17 | historical publication/canonicalization observations, responsibilities remapped |
 | Protocol v3 | A-layer fingerprint bound to actual public NPZ structure; locator does not parse B before ranking |
 | Structural v4 | explicit synthetic locator stress model with visible heavy-damage boundary |
-| V18 | current bounded host-aware modulo-QIM carrier on sender-observed residual hosts |
+| V18 deterministic | current bounded host-aware modulo-QIM carrier; deterministic DCT-II + fixed-order MGS basis |
 | V20 | current bounded logical outer-reliability layer with fixed RS geometry |
 | Paper v6/v7 | machine-results-first analysis, claim gate, multi-figure/raw-data paper bundle |
 | Current E2E | one current V20 technical package feeds recovery and the paper pipeline |
 
-## V18 — useful result and explicit rejection
-
-V18 was rebuilt rather than restoring old unauditable summaries.
+## V18 — bounded carrier, not universal publication robustness
 
 Current evidence includes:
 
@@ -116,7 +147,7 @@ re-quantization: alignment-dependent / non-monotonic
 transition-region residual errors: sparse after inner Hamming correction
 ```
 
-A broad “publication robust” claim is **rejected**. The useful result is an explicit measured operating envelope and a known sparse failure structure.
+A broad “publication robust” claim remains **rejected**. The useful result is an explicit measured operating envelope and a known sparse failure structure.
 
 See [`results/v18-publication-statistics.json`](results/v18-publication-statistics.json) and [`results/v18-error-profile.json`](results/v18-error-profile.json).
 
@@ -195,83 +226,28 @@ periodic   -> table 9
 saturating -> table 1
 ```
 
-Independent audit confirmed:
-
-```text
-Figure 2 rule selection: exact
-Figure 3 matched-fit values: exact vs machine analysis
-Figure 3 linear baselines: exact when recomputed from same current curves
-Figure 4: same current-V20 E5 used by paper E5
-nested manifest mismatch count: 0
-final complete manifest mismatch count: 0
-```
-
-Status:
-
-```text
-PASS_WITH_REPRODUCIBILITY_BOUNDARY
-```
-
-See:
-
-- [`results/paper-bundle-v7-plan.md`](results/paper-bundle-v7-plan.md)
-- [`results/paper-bundle-v7.json`](results/paper-bundle-v7.json)
-- [`results/paper-bundle-v7.md`](results/paper-bundle-v7.md)
+The earlier paper-v7 cross-run boundary is now resolved for the declared CI environment. The final 1e-16-level drift was traced to `np.polyfit` in the Figure 3 linear baseline and replaced with fixed-order analytic regression plus `math.fsum` R² calculation.
 
 The paper bundle remains visibly labeled as synthetic/mock, and generic fits / morphology framing remain presentation choices rather than provenance or mechanism evidence.
-
-## Important current system boundary: fixed-seed visible data are not yet numerically deterministic
-
-Two independent successful fresh CI runs with the same frozen seeds preserved:
-
-```text
-representative payload SHA-256
-current-V20 E5 hash/result
-morphology representative selection
-presentation archetype
-story type
-```
-
-but differed in:
-
-```text
-current NPZ hash
-current B manifest hash
-visible response values in 8 / 12 tables
-```
-
-Thus the current system is fully traceable **within each generated artifact**, but it does not yet guarantee numerically identical visible carrier data for the same seed across independent runs.
-
-This makes the previously known numerical basis-determinism issue (`QR/eigh/sign`) the next project-level reproducibility priority rather than a low-level footnote.
 
 ## Current status
 
 ```text
 V12 -> CURRENT clean-host carrier
-V18 -> CURRENT_BOUNDED_REINTEGRATION
-V19 -> NEEDS-REINTEGRATION, but not immediate priority
+V18 deterministic -> CURRENT_BOUNDED_REINTEGRATION + CI semantic determinism PASS
+V19 -> NEEDS-REINTEGRATION, not immediate priority
 V20 -> CURRENT_BOUNDED_REINTEGRATION with mapped capacity-aligned failure envelope
 V21 -> retain "protocol constraints before rate" principle only; old quantitative results stale
-Current E2E -> PASS, with cross-run visible-data determinism caveat
-Paper bundle v7 -> PASS_WITH_REPRODUCIBILITY_BOUNDARY
+Current E2E -> PASS
+Paper bundle v7 -> PASS
+Deterministic basis v1 -> PROMOTION_GATES_PASS
 ```
 
 ## Next priority
 
-Do **not** add more figures, another dense damage grid, tune parity, or optimize bit/value next.
+Do **not** return immediately to dense noise grids, parity tuning, or bit/value optimization.
 
-The next high-value system task is:
-
-```text
-same seed + same current protocol
--> same semantic B
--> same numeric table arrays
--> same exported CSV values
--> stable figure inputs
-while locator / exact recovery / V20 gates remain intact
-```
-
-The first technical hypothesis is deterministic basis construction, not paper selection or payload RNG.
+The main technical/paper path is now coherent and reproducible in the declared CI environment. The next high-value work should be chosen by what improves the complete system, for example actual physical-structure loss behavior (table deletion/truncation) if it blocks realistic package handling, or broader paper/package usability if presentation is the limiting side. V19 should only be rebuilt when multiple genuinely current carrier modes exist and a selector has something meaningful to choose between.
 
 ## Run the current integration
 
@@ -279,7 +255,7 @@ The first technical hypothesis is deterministic basis construction, not paper se
 python -m pip install -r requirements.txt
 python tools/current_end_to_end.py \
   --v20 protocol/real-package-v20.py \
-  --engine src/noisy_host_package_v18.py \
+  --engine src/noisy_host_package_v18_deterministic.py \
   --paper-tool tools/paper_v6.py \
   --seeds 901,902,903,904,905,906,907,908 \
   --representative-seed 901 \
