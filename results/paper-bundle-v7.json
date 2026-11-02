@@ -1,0 +1,7 @@
+{
+  "version": "paper-bundle-v7-result-v1",
+  "scope": "synthetic-only",
+  "status": "PENDING_CI",
+  "gate_pass": null,
+  "note": "No positive paper-v7 integration claim is made until the frozen workflow produces and is audited against the uploaded bundle."
+}
