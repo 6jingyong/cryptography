@@ -1,7 +1,92 @@
 {
   "version": "paper-bundle-v7-result-v1",
   "scope": "synthetic-only",
-  "status": "PENDING_CI",
-  "gate_pass": null,
-  "note": "No positive paper-v7 integration claim is made until the frozen workflow produces and is audited against the uploaded bundle."
+  "status": "PASS_WITH_REPRODUCIBILITY_BOUNDARY",
+  "gate_pass": true,
+  "source_ci": {
+    "final_workflow_run_id": 41377319772,
+    "final_artifact_id": 13111387910,
+    "final_artifact_sha256": "9be547a7fb26344172ffb1ed0654123bca9b3506479d38d9a4fac9f790836c8f",
+    "first_success_workflow_run_id": 41377065172,
+    "first_success_artifact_id": 13111592914,
+    "first_success_artifact_sha256": "0345258eced71bd8d572530cedc8a9c10e63d7ecfd78c4bcc47b1a2fe63fa041"
+  },
+  "final_bundle": {
+    "figure_count": 4,
+    "raw_data_table_count": 12,
+    "nonlinear_fit_ablation_tables": 9,
+    "selected_morphology_examples": {
+      "bell_peak": 7,
+      "linear": 11,
+      "periodic": 9,
+      "saturating": 1
+    },
+    "presentation_archetype": "materials characterization / physical chemistry",
+    "story_type": "multi_regime_characterization",
+    "source_npz_sha256": "6e7c1c1012119674d7030e84fc561bd7b1dbf972c337b8c89a598596d6360fdf",
+    "source_payload_sha256": "c9507550ad695236dae78c8a07cdff00ba4c140c331af0104314a81db93dd768",
+    "current_e5": {
+      "seed_count": 8,
+      "exact_recovery_rate": 1.0,
+      "recall_at_20": 1.0,
+      "recall_at_100": 1.0,
+      "all_payload_hashes_unique": true,
+      "median_target_rank": 1.0,
+      "max_target_rank": 1
+    },
+    "paper_v6_e5_matches_current_e5": true,
+    "required_claims_traced": ["C1", "C2", "C4", "C5"],
+    "synthetic_labels_present": true,
+    "mandatory_limitation_present": true,
+    "complete_bundle_manifest": {
+      "file_count_excluding_itself": 23,
+      "covers_validation_result": true,
+      "covers_paper_v7_manifest": true,
+      "nested_manifest_mismatch_count": 0,
+      "independent_final_manifest_mismatch_count": 0
+    }
+  },
+  "cross_run_audit": {
+    "purpose": "audit whether the same frozen seed reproduces identical visible paper carrier data across independent CI runs",
+    "payload_sha256_equal": true,
+    "e5_current_v20_sha256_equal": true,
+    "selected_morphology_examples_equal": true,
+    "presentation_archetype_equal": true,
+    "story_type_equal": true,
+    "current_npz_byte_hash_equal": false,
+    "current_manifest_byte_hash_equal": false,
+    "first_run_npz_sha256": "551e6a8cb487b211e86c4d44f50064205769a835b1b6a960a4ba40a81da40213",
+    "final_run_npz_sha256": "6e7c1c1012119674d7030e84fc561bd7b1dbf972c337b8c89a598596d6360fdf",
+    "visible_tables_with_numeric_differences": 8,
+    "visible_table_count": 12,
+    "differing_visible_table_ids": [0, 2, 3, 5, 6, 7, 10, 11],
+    "max_visible_absolute_difference_by_table": {
+      "0": 0.08786102598605083,
+      "2": 0.03096988508776377,
+      "3": 0.11375000000000313,
+      "5": 0.10699967667999033,
+      "6": 0.048749999999998295,
+      "7": 0.1321212924745936,
+      "10": 0.031089283202241802,
+      "11": 0.11375000000000313
+    },
+    "interpretation": "paper-v7 is fully traceable within each generated artifact and preserves the same payload/E5/high-level paper story, but the visible current V18/V20 carrier data are not yet numerically identical across independent fresh runs with the same seed. Cross-run visible-carrier determinism therefore remains an explicit system-level gap."
+  },
+  "accepted_claims": [
+    "one current V20 package can be rendered into four non-empty synthetic figures and twelve raw-data CSV tables with machine-verifiable hashes",
+    "Figure 2 representative selection follows the frozen highest-confidence-per-morphology rule",
+    "Figure 3 matched-fit values equal the current paper-v6 machine analysis and its linear baselines are recomputed from the same visible current curves",
+    "Figure 4 uses the same current-V20 E5 machine result that completed paper E5",
+    "C1, C2, C4 and C5 are explicitly traced to figures, raw data and/or current machine evidence",
+    "the final paper-v7 bundle manifest covers every pre-existing paper-v7 file and independently recomputes without mismatch"
+  ],
+  "not_supported": [
+    "cross-run numerical identity of the visible carrier for a fixed seed",
+    "real experimental evidence or provenance",
+    "physical mechanism proof",
+    "real-publication covert deployment",
+    "undetectability or cryptographic security of the numeric carrier",
+    "optimal carrier rate or parity overhead"
+  ],
+  "next_system_level_gap": "make the current visible carrier numerically deterministic across independent runs without changing the audited protocol meaning or tuning carrier performance"
 }
