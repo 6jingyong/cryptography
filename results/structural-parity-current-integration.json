@@ -1,0 +1,81 @@
+{
+  "version": "structural-parity-current-integration-result-v1",
+  "scope": "synthetic-only",
+  "status": "WHOLE_SYSTEM_VIABILITY_PASS",
+  "gate_pass": true,
+  "promotion_status": "DETERMINISM_RECHECK_PENDING",
+  "configuration": {
+    "seeds": [1301,1302,1303,1304,1305,1306,1307,1308],
+    "representative_seed": 1301,
+    "payload_bytes": 512,
+    "channels": 2,
+    "corpus_size": 2000,
+    "near_decoy_fraction": 0.01,
+    "top_k": 100,
+    "A_candidate": "A-v4-erasure-xlen",
+    "structural_code": "11 data tables + 1 XOR parity table inside 12 public tables",
+    "carrier": "src/noisy_host_package_v18_deterministic.py",
+    "basis_version": "deterministic-dct-mgs-v1",
+    "V20": "unchanged 4x128 B + 8 parity B/shard",
+    "paper_v6_changed": false,
+    "paper_v7_changed": false
+  },
+  "technical": {
+    "seed_count": 8,
+    "exact_recovery_rate": 1.0,
+    "recall_at_20": 1.0,
+    "recall_at_100": 1.0,
+    "all_payload_hashes_unique": true,
+    "median_target_rank": 1.0,
+    "max_target_rank": 1
+  },
+  "representative": {
+    "payload_sha256": "dd901bfd73c39260d98ce3198a9d2d583fc162fa5d3168ca797e50d416afa6c3",
+    "target_rank": 1,
+    "target_locator_score": 1.0,
+    "decoy_rejected": true,
+    "repair_field_tamper_rejected": true,
+    "structural_data_tables": 11,
+    "structural_physical_tables": 12,
+    "structural_parity_bits": 373,
+    "v20_data_shard_bytes": 128,
+    "v20_parity_bytes_per_shard": 8,
+    "published_npz_sha256": "76589f23ef5ee43eaf214ac90b93af2a079c1323ceff6daa99b322b437bade88",
+    "manifest_sha256": "a1f7e799fcaef8409841ccc908305863667061fa68adf897473b407f21124607",
+    "e5_sha256": "76dc8c25b965ac736f6480c12e6582514931f59a6bf8aff08da3b7f0a36c341e"
+  },
+  "paper_v6": {
+    "e5_completed": true,
+    "e5_pass": true,
+    "same_machine_result": true,
+    "synthetic_labels_present": true,
+    "mandatory_non_provenance_limitation_present": true,
+    "presentation_archetype": "materials characterization / physical chemistry",
+    "story_type": "multi_regime_characterization"
+  },
+  "paper_v7": {
+    "gate_pass": true,
+    "figure_count": 4,
+    "raw_data_table_count": 12,
+    "selected_morphology_examples": {"bell_peak":3,"linear":10,"periodic":7,"saturating":0},
+    "nonlinear_fit_ablation_tables": 9,
+    "paper_v6_e5_matches_current_e5": true,
+    "required_claims_traced": ["C1","C2","C4","C5"],
+    "synthetic_labels_present": true,
+    "mandatory_limitation_present": true,
+    "final_bundle_file_count": 23,
+    "final_bundle_covers_validation_result": true,
+    "final_bundle_covers_paper_v7_manifest": true,
+    "nested_manifest_mismatch_count": 0
+  },
+  "evidence": {
+    "frozen_plan": "results/structural-parity-current-integration-plan.md",
+    "runner": "tools/structural_parity_current_end_to_end.py",
+    "workflow_run": 41497969290,
+    "job_id": 125457790006,
+    "artifact_id": 13167542189,
+    "artifact_zip_sha256": "be02968d1c26207742999f567c024a84eab6b69d3fbfc4e2c9727f2a6904770d"
+  },
+  "interpretation": "A-v4 + 11+1 structural parity + deterministic V18 + unchanged V20 can feed the unchanged current technical and paper-v7 pipeline in the frozen declared CI run without regression. Whole-system promotion still requires an independent-run semantic determinism recheck.",
+  "boundary": "synthetic/mock viability only; not yet promoted, not a two-run determinism result, not general package-configuration stability, real-publication robustness, optimal redundancy, or security"
+}
