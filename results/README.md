@@ -5,28 +5,27 @@ Only milestones still useful under the corrected protocol remain in the current 
 | File | Current meaning |
 |---|---|
 | `adaptive_q_v12.md` | adaptive-q clean-host carrier for processed payload `b` |
-| `locator_v16.md` | historical A-layer labeled locator / erasure benchmark; pre-reset wording may be stale |
-| `publication_robustness_v17.md` | historical publication/canonicalization robustness; responsibilities remapped |
+| `locator_v16.md` | historical A-layer labeled locator / erasure benchmark |
+| `publication_robustness_v17.md` | historical publication/canonicalization observations; responsibilities remapped |
 | `protocol-real-package-v3.md` | A fingerprint bound to actual NPZ public structure |
-| `e5-multiseed-final.json` | recorded 8-seed clean-host full re-encode → locator → exact-recovery result |
+| `e5-multiseed-final.json` | recorded clean-host full re-encode → locator → exact-recovery result |
 | `locator-structural-v4.json/.md` | audited A-layer descriptor stress model and failure boundary |
-| `noisy-host-v18-reintegration.json/.md` | bounded V18 smooth-host calibration + current-protocol result |
+| `noisy-host-v18-reintegration.json/.md` | bounded V18 noisy-host calibration + current-protocol result |
 | `v18-residual-matrix.json/.md` | five sender-observed residual families pass the declared matrix |
 | `v18-publication-damage.json/.md` | broad V18 publication robustness rejected |
-| `v18-publication-statistics.json/.md` | 24-seed alignment-dependent re-quantization + paired-noise success curve |
-| `v18-error-profile.json/.md` | failed V18 packages have sparse post-Hamming residual errors |
-| `v20-bounded-reintegration-plan.md` | frozen first V20 RS geometry and refusal gate |
-| `v20-bounded-reintegration.json/.md` | fixed 6.25% RS geometry passes initial 24-seed six-condition post-seal matrix |
-| `v20-failure-envelope-plan.md` | frozen stronger damage grid with V20 geometry held fixed |
-| `v20-failure-envelope.json/.md` | V20 first tested failures align exactly with per-shard RS capacity exceedance |
-| `current-e2e-integration-plan.md` | frozen project-level integration gate |
-| `current-e2e-integration.json/.md` | current V18/V20 technical path and paper_v6 renderer pass as one reproducible bundle |
-| `paper-claim-audit-v7.json/.md` | bounded paper claim gate and mandatory limitations |
+| `v18-publication-statistics.json/.md` | paired-noise transition + alignment-dependent re-quantization |
+| `v18-error-profile.json/.md` | failed V18 packages leave sparse post-Hamming residual errors |
+| `v20-bounded-reintegration.json/.md` | fixed 6.25% RS geometry passes initial post-seal matrix |
+| `v20-failure-envelope.json/.md` | tested V20 failures align exactly with per-shard RS capacity exceedance |
+| `current-e2e-integration.json/.md` | current technical path and paper-v6 consume the same current V20 package/evidence |
+| `paper-bundle-v7-plan.md` | frozen multi-figure/raw-data/traceability paper-package plan |
+| `paper-bundle-v7.json/.md` | paper-v7 passes per-artifact traceability; cross-run visible-carrier numerical identity remains unresolved |
+| `paper-claim-audit-v7.json/.md` | bounded claim gate and mandatory limitations |
 | `current-summary.json` | compact audited current state |
 
-## Project-level result
+## Current whole-system state
 
-The current repository now has one integrated synthetic path rather than only separately passing components:
+The repository now has one integrated synthetic path:
 
 ```text
 synthetic a
@@ -34,13 +33,13 @@ synthetic a
 -> c mixed among d
 -> A locator/bootstrap
 -> authenticated open
--> B decode / optional repair
+-> B decode / optional V20 repair
 -> exact a
--> same current package + same current multiseed evidence
--> paper_v6 mock-paper output
+-> same current package + current machine evidence
+-> multi-figure paper-shaped synthetic bundle
 ```
 
-Fresh seeds `901..908`:
+Current E2E machine control, seeds `901..908`:
 
 ```text
 8 / 8 distinct payload hashes
@@ -51,51 +50,88 @@ median target rank = 1
 max target rank = 1
 ```
 
-The representative current V20 NPZ and B manifest are consumed directly by `tools/paper_v6.py`, and the same current-V20 8-seed result completes paper E5. Visible mock/synthetic labels and the mandatory non-provenance limitation are retained.
+## Paper bundle v7
 
-The CI bundle contains technical + paper outputs and a SHA-256 manifest covering 14 files; independent recomputation found zero mismatches.
-
-This is now the preferred high-level evidence when asking whether the project works as a system.
-
-## Technical boundary that still matters
-
-V18 is **CURRENT_BOUNDED_REINTEGRATION**, not broadly publication-robust. Its transition-region failures are sparse after inner Hamming correction.
-
-V20 uses fixed logical outer reliability:
+Paper-v7 now generates from one fresh current V20 bundle:
 
 ```text
-512-byte payload
-4 x 128-byte RS data shards
-8 parity bytes / shard
-<=4 byte-error correction / shard
-32 parity bytes total = 6.25% payload parity overhead
+4 SVG figures
+12 per-table raw-data CSV files
+figure/data manifests
+C1/C2/C4/C5 traceability
+clearly labeled synthetic manuscript
+complete final bundle hash manifest
 ```
 
-The first V20 frozen matrix passed 49/49 attempted repairs. A stronger fresh-seed envelope then showed:
+Frozen rule-selected morphology examples:
 
 ```text
-V20 failure <=> at least one shard exceeds the declared four-byte RS correction bound
+bell_peak  -> table 7
+linear     -> table 11
+periodic   -> table 9
+saturating -> table 1
 ```
 
-Mismatch count: **0** in the tested stronger grid. Locator structural score remained 1.0 throughout.
+Independent audit confirmed:
 
-This makes V20's current synthetic failure boundary interpretable, but does not prove universal robustness or optimality of the 6.25% overhead.
+```text
+Figure 2 selection rule: exact
+Figure 3 matched-fit values: exact vs current paper-v6 analysis
+Figure 3 linear baselines: exact when recomputed from same current curves
+Figure 4 E5 source: same current-V20 machine result used by paper E5
+nested manifest mismatches: 0
+final complete manifest mismatches: 0
+```
+
+Status:
+
+```text
+PASS_WITH_REPRODUCIBILITY_BOUNDARY
+```
+
+## Newly exposed system-level boundary
+
+Two independent successful fresh CI runs with the same frozen seeds preserve:
+
+```text
+representative payload hash
+current-V20 E5 hash/result
+morphology representative selection
+presentation archetype
+story type
+```
+
+but do **not** produce numerically identical visible carrier data:
+
+```text
+NPZ hash differs
+B manifest hash differs
+8 / 12 visible tables differ numerically
+```
+
+Differing visible table IDs:
+
+```text
+0, 2, 3, 5, 6, 7, 10, 11
+```
+
+Thus current paper artifacts are completely traceable **within a run**, but fixed-seed cross-run numerical identity is not yet established.
+
+This elevates the previously known QR/eigh/sign deterministic-basis issue from a technical footnote to the next whole-system reproducibility priority.
 
 ## What not to optimize next
 
-Further dense points on the same numeric-noise grids, immediate parity tuning, or bit/value optimization have diminishing project value.
+Do not respond by adding more figures, more noise-grid points, tuning parity, or optimizing bit/value.
 
-The thinner side of the now-integrated system is the **paper-shaped artifact**. The next high-value milestone should make the current paper output genuinely multi-figure and traceable to the same current V20 data:
+The next high-value milestone is:
 
 ```text
-actual synthetic figures
-multi-figure layout chosen from morphology
-machine-backed captions / claim map
-downloadable synthetic raw-data tables
-clearly labeled mock-paper manuscript/package
-bundle-level traceability to current machine artifacts
+same seed + same protocol
+-> same semantic B
+-> same numeric visible table arrays
+-> same exported raw-data values
+-> stable paper inputs
+while preserving existing locator / exact recovery / V20 gates
 ```
-
-Structural-damage tests and V19 remain valid future work, but they should be pulled in when they unblock this whole-system objective rather than because an unresolved checkbox exists.
 
 Still unsupported: real-publication deployment, real confidential payload hiding, universal undetectability/security, real provenance/mechanism, or restoration of historical V18/V20 numerical summaries.
