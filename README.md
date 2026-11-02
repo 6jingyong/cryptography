@@ -1,152 +1,74 @@
 # cryptography
 
-Synthetic-only research on structured numeric carriers, locator protocols, and paper-shaped benchmark reporting.
+Synthetic-only research on structured numeric carriers, locator protocols, package reliability, and clearly labeled paper-shaped benchmark reporting.
 
 > **This repository is a synthetic/mock benchmark. It does not claim real experimental evidence and is not intended for hiding real confidential material in real scientific publications.**
 
-## Current protocol
+## What this project is actually trying to prove
 
-The corrected lifecycle is:
+The project-level question is not “how many bits can one curve carry?” and it is not “how much noise can one QIM setting survive?”.
 
-```text
-pre-shared root codebook A
-        ↓
-locate / bootstrap candidate package c
-        ↓
-extract per-package codebook B + processed payload b
-        ↓
-B explains b
-        ↓
-recover synthetic payload a
-```
-
-With background records:
+The target is one coherent system:
 
 ```text
-public collection = c + d + d + d + ...
+synthetic payload a
+    ↓
+encode into numeric representation b
+    ↓
+create per-package reconstruction/reliability manifest B
+    ↓
+construct candidate package c
+    ↓
+mix c among unrelated synthetic public/background records d
+    ↓
+pre-shared root codebook A locates / bootstraps c
+    ↓
+authenticated open
+    ↓
+B explains b; optional reliability data r repairs sparse damage
+    ↓
+recover exact a
+    ↓
+feed the same machine package/results into a clearly labeled mock-paper renderer
 ```
 
-The key distinction is:
+The core separation is:
 
 ```text
-A = long-lived root locator / canonicalization / bootstrap codebook
-B = per-package reconstruction codebook
+A = long-lived locator / canonicalization / bootstrap root
+B = per-package reconstruction + reliability manifest
+b = processed numeric payload representation
+r = optional authenticated/masked repair data
+c = discoverable public candidate package
+d = unrelated public/background record
+a = final synthetic payload
 ```
 
-A does **not** need each package's concrete q, transform, ECC, table geometry, host model, payload length, padding, or publication parameters. Those package-specific values belong in B.
+Package-specific q, transform, geometry, ECC, host model, payload length, publication parameters, shard size, and parity geometry belong in `B`, not long-lived `A`.
+
+The optimization priority is therefore:
+
+```text
+find c
+> open / authenticate c
+> interpret B
+> recover exact a
+> only then optimize capacity / rate / overhead
+```
 
 See [`protocol/README.md`](protocol/README.md).
 
-## Repository map
+## Current project-level integration milestone
+
+The repository now has a current end-to-end integration runner:
 
 ```text
-protocol/
-  README.md
-  schema-v1.json
-  version-remap-v12-v21.md
-  real-package-v2.py
-  real-package-v2-tests.py
-  real-package-v3.py
-  real-package-v18.py
-  locator-structural-v4.py
-
-src/
-  adaptive_q_*_v12.py
-  noisy_host_package_v18.py
-  locator_erasure_scaling_v16.py
-  publication_robustness_v17.py
-
-tools/
-  paper_v6.py
-  audit_current.py
-  paper_claim_gate_v7.py
-
-results/
-  README.md
-  e5-multiseed-final.json
-  locator-structural-v4.json
-  locator-structural-v4.md
-  noisy-host-v18-reintegration.json
-  noisy-host-v18-reintegration.md
-  v18-reintegration-plan.md
-  paper-v6-experiments.json
-  paper-claim-audit-v7.json
-  paper-claim-audit-v7.md
-  current-summary.json
+tools/current_end_to_end.py
 ```
 
-## Audited technical spine
+Frozen fresh seeds `901..908` use the current V18 carrier + current bounded V20 reliability layer, a 2,000-candidate synthetic corpus, and the current `paper_v6.py` renderer.
 
-| Version | Audited role |
-|---|---|
-| V12 | adaptive-q clean-host numeric carrier for processed payload `b` |
-| V16 | historical labeled locator / erasure research for A-layer discovery |
-| V17 | historical publication/canonicalization research, remapped across A/c/B |
-| Protocol v2 | V12 `B+b` tested end-to-end under `A→c→B→b→a` |
-| Protocol v3 | A-layer fingerprint bound to actual NPZ public table structure; clean-host E5 closed |
-| Structural v4 | explicit synthetic descriptor retrieval stress model with visible heavy-damage failures |
-| V18 rebuilt | host-aware modulo-QIM on a non-zero smooth synthetic residual host; bounded 8-seed current-protocol result |
-| Paper claim gate v7 | machine gate for bounded C1–C6 claims; C5 remains mandatory |
-
-The project deliberately does **not** optimize rate before locator/bootstrap/reconstruction constraints.
-
-## Protocol-v3 / clean-host E5 evidence
-
-Protocol-v3 derives its locator feature from the public NPZ structure itself:
-
-```text
-morphology class + local x-grid length
-```
-
-Candidate ranking reads public candidate structure and A-defined rules only. B is parsed after a candidate is opened.
-
-The recorded clean-host E5 benchmark contains:
-
-```text
-8 seeded full re-encodes
-8 unique payload hashes
-8 / 8 exact recovery
-Recall@20  = 1.0
-Recall@100 = 1.0
-median target rank = 1
-```
-
-See [`results/protocol-real-package-v3.md`](results/protocol-real-package-v3.md) and [`results/e5-multiseed-final.json`](results/e5-multiseed-final.json).
-
-## Structural v4 boundary
-
-The audited v4 model uses:
-
-```text
-12 stable labels
-1,000,000 candidates
-10,000 rank trials
-1% strong near-decoys
-near-decoys have exactly 6 / 12 correct label→ID pairs
-ties count ahead
-```
-
-Under that explicit model, 25% deletion remains inside Top-100 in the tested run, while 50% deletion fails even Top-1000 because the target falls to the six-match near-decoy boundary. This intentionally contradicts earlier unauditable handoff numbers rather than preserving them.
-
-`physical_reorder` and `labeled_split_merge` in v4 are descriptor-level canonicalization controls. They do **not** mean the current Protocol-v3 NPZ parser accepts a changed physical table count.
-
-See [`results/locator-structural-v4.md`](results/locator-structural-v4.md).
-
-## V18 bounded noisy-host result
-
-V18 was rebuilt instead of restoring the old unauditable numbers. The new carrier first generates a non-zero smooth synthetic residual in the free subspace, then uses host-aware modulo-QIM to move coefficients to the nearest payload coset. All concrete host/QIM/q/geometry parameters remain in B.
-
-Frozen first-pass calibration:
-
-```text
-12 / 12 tables selected q=4
-q=2 fallback was not exercised
-all selected-table exact block recovery = 1.0
-host-adjustment NRMSE ~= 0.000720 .. 0.001093
-strictest declared budget = 0.0045
-```
-
-Current-protocol seeds 101–108:
+Machine result:
 
 ```text
 8 / 8 distinct payload hashes
@@ -154,73 +76,143 @@ Current-protocol seeds 101–108:
 Recall@20  = 1.0
 Recall@100 = 1.0
 median target rank = 1
-maximum target rank = 2
+max target rank = 1
 ```
 
-Embedding adjustment is material rather than negligible: median adjustment RMS is about `0.446 ×` host-residual RMS, with maximum observed ratio about `0.485`. The fixed 512-byte single-seed run had gross rate about `0.1134 payload bit / published numeric value`; rate was intentionally not optimized.
+The representative current V20 package is then passed directly to `tools/paper_v6.py`. Paper E5 is completed from the **same current-V20 8-seed result**, not a historical V12 fixture.
 
-This supports only a bounded claim: the carrier is viable for the tested smooth synthetic residual model. It does not restore old V18 quantitative summaries, prove q=2 fallback, cover other residual distributions, or establish invisibility/security.
+The generated bundle contains:
 
-See [`results/noisy-host-v18-reintegration.md`](results/noisy-host-v18-reintegration.md).
+```text
+published_v20.npz
+manifest_v20.json
+candidate_c.json
+collection_recipe.json
+technical_summary.json
+e5_current_v20.json
+integration_result.json
+paper_v6_output/*
+bundle_manifest.json
+```
+
+The bundle keeps visible mock/synthetic labels and the mandatory limitation that narrative framing and descriptive fits are not evidence of real provenance or physical mechanism. Its per-file SHA-256 manifest was independently recomputed with zero mismatches.
+
+See:
+
+- [`results/current-e2e-integration-plan.md`](results/current-e2e-integration-plan.md)
+- [`results/current-e2e-integration.json`](results/current-e2e-integration.json)
+- [`results/current-e2e-integration.md`](results/current-e2e-integration.md)
+
+## Current technical spine
+
+| Layer | Current meaning |
+|---|---|
+| V12 | clean-host adaptive-q carrier for processed payload `b` |
+| V16 | historical A-layer labeled locator / erasure research |
+| V17 | historical publication/canonicalization observations, responsibilities remapped |
+| Protocol v3 | A-layer fingerprint bound to actual public NPZ structure; locator does not parse B before ranking |
+| Structural v4 | explicit synthetic locator stress model with visible heavy-damage boundary |
+| V18 | current bounded host-aware modulo-QIM carrier on sender-observed residual hosts |
+| V20 | current bounded logical outer-reliability layer with fixed RS geometry |
+| Paper v6/v7 | machine-results-first mock-paper renderer + bounded claim gate |
+| Current E2E | one current V20 technical package feeds both recovery and mock-paper generation |
+
+## V18 — useful result and explicit rejection
+
+V18 was rebuilt rather than restoring old unauditable summaries.
+
+Current evidence includes:
+
+```text
+smooth residual host: current-protocol exact recovery
+five frozen sender-observed residual families: pass
+paired additive-noise transition: measured over 24 seeds
+re-quantization: alignment-dependent / non-monotonic
+transition-region residual errors: sparse after inner Hamming correction
+```
+
+A broad “publication robust” claim is **rejected**. The point of the V18 work is not that the carrier survives everything; it is that the current channel has an explicit, measured operating envelope and a known sparse failure structure.
+
+See [`results/v18-publication-statistics.json`](results/v18-publication-statistics.json) and [`results/v18-error-profile.json`](results/v18-error-profile.json).
+
+## V20 — bounded reliability, not magic robustness
+
+Current fixed geometry:
+
+```text
+payload                 512 bytes
+RS data shards           4 x 128 bytes
+parity per shard         8 bytes
+RS correction bound      <=4 byte errors / shard
+parity total             32 bytes
+payload parity overhead  6.25%
+```
+
+The first frozen 24-seed matrix passed all six damaged conditions with 49/49 repair attempts successful.
+
+A stronger fresh-seed envelope then held the geometry fixed. Every tested V20 failure coincided exactly with at least one shard exceeding the declared four-byte RS correction capacity; mismatch count was zero. Locator score remained 1.0 throughout.
+
+This supports a bounded reliability claim, not universal post-seal robustness and not optimality of 6.25% overhead.
+
+See:
+
+- [`results/v20-bounded-reintegration.json`](results/v20-bounded-reintegration.json)
+- [`results/v20-failure-envelope.json`](results/v20-failure-envelope.json)
 
 ## Paper line
 
-The paper toolchain is downstream of machine results:
+The paper layer is downstream of machine evidence:
 
 ```text
-machine results
+current machine package/results
     ↓
 morphology analysis
     ↓
-domain narrative archetype
+narrative archetype
     ↓
 generic descriptive fits
     ↓
-claim-evidence gate
+claim / experiment gate
     ↓
-mock paper
+clearly labeled mock paper
 ```
 
-The paper layer may change presentation, terminology, section order, and figure selection. It may not invent benchmark numbers, convert requested work into completed evidence, claim real provenance, or turn descriptive fits into mechanism proof.
+It may choose presentation style, terminology, section order, and descriptive fits. It may not invent benchmark numbers, turn requested work into completed evidence, claim real provenance, or turn high R² into mechanism proof.
 
-Paper v6's six recorded experiments pass under their synthetic criteria. Paper claim gate v7 checks bounded C1–C6 roles against those results plus the explicit v4 boundary.
+The current integration milestone confirms that the paper renderer can consume a **current V20 package and current V20 multi-seed result directly**.
 
-See [`results/paper-v6-experiments.json`](results/paper-v6-experiments.json) and [`results/paper-claim-audit-v7.md`](results/paper-claim-audit-v7.md).
+The next high-value paper milestone is therefore not another carrier tweak; it is a more complete **multi-figure paper-shaped bundle** generated from the same current carrier data while retaining explicit synthetic/mock labeling and machine-backed claims.
 
-## V18–V21 status
+## Current status
 
 ```text
-V18 -> CURRENT_BOUNDED_REINTEGRATION under the new smooth-host implementation; old quantitative summary retired
-V19 -> sender policy for choosing (b,B) -> NEEDS-REINTEGRATION
-V20 -> outer reliability in b/c; parameters in B -> NEEDS-REINTEGRATION
-V21 -> retain "protocol constraints before rate" only; old quantitative results STALE
+V12 -> CURRENT clean-host carrier
+V18 -> CURRENT_BOUNDED_REINTEGRATION
+V19 -> NEEDS-REINTEGRATION, but not immediate priority while one integrated current mode is primary
+V20 -> CURRENT_BOUNDED_REINTEGRATION with mapped capacity-aligned failure envelope
+V21 -> retain "protocol constraints before rate" principle only; old quantitative results stale
+Current E2E -> PASS
 ```
 
-Before V19 is built around V18, the next high-value falsification is a frozen residual-model matrix: iid Gaussian, heteroscedastic Gaussian, AR(1)-like correlation, low-frequency/batch drift, and Gaussian plus sparse outliers.
-
-See [`protocol/version-remap-v12-v21.md`](protocol/version-remap-v12-v21.md).
-
-## Run the audit
+## Run the current integration
 
 ```bash
 python -m pip install -r requirements.txt
-python tools/audit_current.py
-python protocol/locator-structural-v4.py --json-out /tmp/v4.json --md-out /tmp/v4.md
-python tools/paper_claim_gate_v7.py --v4-result /tmp/v4.json --json-out /tmp/claims.json --md-out /tmp/claims.md
-```
-
-Run V18:
-
-```bash
-python src/noisy_host_package_v18.py --seed 101 --payload-bytes 512 --channels 2 --out-dir /tmp/v18-single
-python protocol/real-package-v18.py \
+python tools/current_end_to_end.py \
+  --v20 protocol/real-package-v20.py \
   --engine src/noisy_host_package_v18.py \
-  --seeds 101,102,103,104,105,106,107,108 \
-  --payload-bytes 512 --channels 2 --corpus-size 2000 --top-k 100 \
-  --out /tmp/v18-protocol-result.json
+  --paper-tool tools/paper_v6.py \
+  --seeds 901,902,903,904,905,906,907,908 \
+  --representative-seed 901 \
+  --payload-bytes 512 \
+  --channels 2 \
+  --corpus-size 2000 \
+  --near-decoy-fraction 0.01 \
+  --top-k 100 \
+  --out-dir /tmp/current-e2e-bundle
 ```
 
-GitHub Actions runs both audit and V18 gates on pull requests.
+For the broader audit suite, see [`HANDOFF.md`](HANDOFF.md) and [`results/current-summary.json`](results/current-summary.json).
 
 ## Scope
 
@@ -243,7 +235,7 @@ real experimental evidence
 real confidential payload hiding
 real-paper covert deployment
 claims of universal undetectability
-claims of cryptographic security for the carrier itself
+claims of cryptographic security for the numeric carrier itself
 ```
 
 MIT licensed.
