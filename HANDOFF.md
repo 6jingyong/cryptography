@@ -8,19 +8,20 @@ Current code, checked-in machine results, and reproducible CI are authoritative.
 ## 1. Authoritative lifecycle
 
 ```text
-A -> locate/rank c -> strict open -> extract B+b -> B decodes b -> recover a
+A -> locate/rank c -> authenticated open -> decode b -> optional outer repair -> exact a
 ```
 
 ```text
-A = long-lived locator / canonicalization / bootstrap protocol
-B = per-package reconstruction codebook / manifest
-b = processed payload representation
-c = public candidate package containing fingerprint structure + B + b + integrity
+A = long-lived locator / canonicalization / bootstrap root
+B = per-package reconstruction + reliability manifest
+b = processed numeric payload representation
+r = optional V20 repair bytes, masked and authenticated with B
+c = public candidate package
 a = final synthetic payload
-d = unrelated background record
+d = unrelated public/background record
 ```
 
-Package-specific q, transform, geometry, ECC, host model, payload length, padding, publication parameters, and decoder parameters belong in `B`, not long-lived `A`.
+Package-specific q, transform, geometry, ECC, host model, payload length, padding, publication parameters, outer-code family, shard size and parity geometry belong in `B`, not long-lived `A`.
 
 ## 2. Audited base state
 
@@ -29,9 +30,9 @@ Package-specific q, transform, geometry, ECC, host model, payload length, paddin
 - Structural-v4 remains descriptor-level A-layer evidence only; it does not prove arbitrary physical NPZ deletion/split/merge survival.
 - Paper claim gate v7 remains PASS only for bounded C1–C6 claims; C5 remains mandatory.
 
-## 3. V18 rebuilt carrier
+## 3. V18 current state
 
-Implementation:
+Current V18 implementation:
 
 ```text
 src/noisy_host_package_v18.py
@@ -40,87 +41,56 @@ protocol/real-package-v18.py
 
 The sender observes a non-zero residual host before embedding. Host-aware modulo-QIM moves free-subspace coefficients to payload cosets. Concrete q/host/geometry/decoder state remains in B.
 
-Smooth-reference first pass:
+Supported bounded evidence:
 
 ```text
-12/12 tables selected q=4
-q=2 fallback not exercised
-host-adjustment NRMSE ~= 0.000720 .. 0.001093
-strictest table budget = 0.0045
-8/8 full-protocol seeds exact
-Recall@100 = 1.0
+smooth reference: 8/8 current-protocol exact
+known-host matrix: 5/5 frozen residual families pass
+q=4 selected for all tested tables; q=2 fallback remains unexercised
 ```
 
-Embedding adjustment is material: median adjustment RMS is about `0.446 ×` host-residual RMS; maximum observed about `0.485`.
+Broad V18 publication robustness is **REJECTED**.
 
-The historical V18 `59/60`, `57 q4 / 2 q2 / 1 unresolved` summary remains **retired** and was not restored.
-
-## 4. Known-host residual breadth
-
-The frozen equal-energy matrix passed all five declared sender-observed host families: iid Gaussian, heteroscedastic Gaussian, AR(1) rho=.85, low-frequency drift, and Gaussian+sparse outliers. Each passed all 12 calibration tables and 4/4 current-protocol seeds.
-
-Interpretation: **distribution-broad within the declared sender-observed synthetic host matrix**, not universal noisy-host robustness.
-
-## 5. Publication-damage statistics
-
-Damage is applied after V18 embedding and A-keyed public assignment but before c is sealed to isolate the inner carrier.
-
-Broad publication robustness is **REJECTED**. Failures begin inside `B + damaged b`; locator retrieval remains intact.
-
-24-seed paired additive noise (`501..524`) is monotonic per seed when one base noise field is scaled across alpha:
+24-seed paired additive noise established a monotonic strength axis under paired scaling:
 
 ```text
 sigma/delta : exact/24
-0.08        : 24
-0.09        : 24
-0.10        : 24
-0.11        : 24
-0.12        : 24
-0.13        : 23
-0.14        : 20
-0.15        : 16
-0.16        :  9
-0.17        :  4
-0.18        :  1
+0.08..0.12 : 24/24
+0.13       : 23/24
+0.14       : 20/24
+0.15       : 16/24
+0.16       :  9/24
+0.17       :  4/24
+0.18       :  1/24
 ```
 
-Dense re-quantization remains non-monotonic: e.g. `1.06x -> 19/24`, `1.10x -> 22/24`; `1.20x -> 17/24`, `1.22x -> 22/24`. Treat factor as an alignment variable, not scalar damage severity.
+Dense re-quantization is non-monotonic and alignment-dependent; a scalar threshold is rejected.
 
-Evidence:
+## 4. V18 residual-error profile
+
+Fresh seeds 601–624 showed that transition-region failures are sparse after the existing inner Hamming code.
+
+Across 37 failed paired-noise packages:
 
 ```text
-results/v18-publication-statistics-plan.md
-results/v18-publication-statistics.json
-results/v18-publication-statistics.md
+payload bit errors        median 2, p90 4, max 4
+bad tables                median 1, p90 2, max 3
+bad corrected codewords   median 1, p90 2, max 3
+raw payload-symbol errors median 18
+post-Hamming symbol errs  median 2
 ```
 
-## 6. Residual error profile — current decision evidence
-
-Fresh seeds `601..624`; no carrier changes. The experiment decomposes failed packages into payload bit errors, bad codewords, and bad tables after the existing per-codeword Hamming correction.
-
-Across 37 failed paired-noise packages (`0.12..0.16 delta`):
+Across 23 failed representative re-quantized packages:
 
 ```text
-payload bit errors:        median 2, p90 4, max 4
-bad tables:                median 1, p90 2, max 3
-bad corrected codewords:   median 1, p90 2, max 3
-raw payload-symbol errors: median 18, p90 26, max 29
-post-Hamming symbol errors: median 2, p90 3, max 3
+payload bit errors        median 2, p90 3, max 5
+bad tables                median 1, p90 1, max 2
+bad corrected codewords   median 1, p90 1, max 2
+raw payload-symbol errors median 15
+post-Hamming symbol errs  median 1
 ```
 
-Across 23 failed representative re-quantization packages:
-
-```text
-payload bit errors:        median 2, p90 3, max 5
-bad tables:                median 1, p90 1, max 2
-bad corrected codewords:   median 1, p90 1, max 2
-raw payload-symbol errors: median 15, p90 17.8, max 22
-post-Hamming symbol errors: median 1, p90 2, max 3
-```
-
-Every failed package in this profile had at most four bad corrected codewords. About 95.7% of failed re-quantized packages concentrated all final bit errors in one table.
-
-Interpretation: current V18 failures near the measured transition are **sparse residual failures after a strong inner-code reduction**, not package-wide collapse. This is sufficient evidence to justify a **bounded V20 outer-reliability prototype**.
+This justified testing a small V20 outer code rather than enlarging V18 delta or retuning the carrier.
 
 Evidence:
 
@@ -128,20 +98,106 @@ Evidence:
 results/v18-error-profile-plan.md
 results/v18-error-profile.json
 results/v18-error-profile.md
-protocol/v18-error-profile.py
 ```
 
-This does not prove any V20 code/geometry yet, and it does not prove real post-seal corruption has exactly the same error distribution as the pre-seal diagnostic.
+## 5. V20 bounded reintegration — CURRENT within declared matrix
 
-## 7. V18 / V20 boundary
+Implementation:
 
-Pre-seal numeric damage is a V18 inner-carrier question.
+```text
+protocol/real-package-v20.py
+protocol/v20-bounded-reintegration.py
+```
 
-Numeric corruption **after c is sealed** should fail strict outer integrity before inner decoding. Repair/survival of post-seal corruption belongs to **V20 outer reliability**.
+Frozen first geometry:
 
-The error profile now gives a reason to test V20: residual errors are sparse enough that a small outer code may be efficient. V20 must still be evaluated under an explicit post-seal lifecycle with strict final integrity verification.
+```text
+payload                  512 bytes
+RS data shards            4 x 128 bytes
+parity / shard            8 bytes
+parity total              32 bytes
+payload parity overhead   6.25%
+```
 
-## 8. Current classification
+No alternate geometry was tried in the result set.
+
+### V20 integrity semantics
+
+V20 deliberately does **not** reuse v3/v18 raw `HMAC(B+b)` semantics, because raw-b authentication would reject any post-seal numeric publication transform before repair.
+
+Instead:
+
+```text
+v20_tag = HMAC_A(B_bytes || masked_r)
+```
+
+Raw `b` is excluded from this envelope tag. B contains the authenticated expected final payload SHA-256 and concrete outer-code geometry.
+
+Receiver flow:
+
+1. locator ranks from public b without parsing B;
+2. authenticate B + masked r;
+3. decode damaged b to candidate payload;
+4. accept directly if candidate hash equals authenticated target;
+5. otherwise repair candidate using authenticated RS parity;
+6. accept only if repaired payload SHA-256 exactly equals the authenticated target in B.
+
+Repair bytes are HMAC-stream masked under A before storage in `r`. A repair-field bitflip with unchanged tag is rejected.
+
+### Frozen 24-seed post-seal result
+
+Clean:
+
+```text
+24/24 exact; no repairs attempted
+```
+
+Paired additive noise:
+
+```text
+condition    V18 direct   V20 final
+0.14 delta   20/24        24/24
+0.15 delta   15/24        24/24
+0.16 delta    7/24        24/24
+```
+
+Representative re-quantization:
+
+```text
+condition    V18 direct   V20 final
+1.06x        17/24        24/24
+1.20x        19/24        24/24
+1.30x        17/24        24/24
+```
+
+Across all six damaged conditions:
+
+```text
+49 repair attempts
+49 successful repairs
+corrected shards: median ~1, maximum 2
+all accepted final payload hashes exact
+all locator structural scores = 1.0
+repair-field tamper control rejected
+```
+
+Frozen gate: **PASS**.
+
+Evidence:
+
+```text
+results/v20-bounded-reintegration-plan.md
+results/v20-bounded-reintegration.json
+results/v20-bounded-reintegration.md
+```
+
+Supported claim:
+
+> A bounded V20 logical outer-reliability layer with 6.25% RS parity overhead passes the declared synthetic 24-seed / six-condition post-seal numeric-damage matrix.
+
+Do not upgrade this to universal post-seal robustness, real-publication robustness, optimal redundancy, raw-b byte integrity, cryptographic security, or restoration of historical V20 metrics.
+
+## 6. Current classification
 
 ```text
 V12 -> CURRENT clean-host b carrier
@@ -149,37 +205,37 @@ V16 -> HISTORICAL-BUT-VALID A-layer benchmark; old terminology stale
 V17 -> HISTORICAL-BUT-VALID observations; responsibilities remapped
 V18 -> CURRENT_BOUNDED_REINTEGRATION
        - known-host feasibility supported
-       - tested host-distribution breadth supported
        - broad publication robustness REJECTED
-       - scalar monotonic re-quantization threshold REJECTED
-       - paired additive-noise transition measured statistically
-       - transition-region residual errors measured as sparse
+       - re-quantization scalar threshold REJECTED
+       - sparse residual-error profile measured
 V19 -> NEEDS-REINTEGRATION
-V20 -> JUSTIFIED_FOR_BOUNDED_REINTEGRATION_EXPERIMENT
-       - no current V20 implementation/effectiveness claim yet
+V20 -> CURRENT_BOUNDED_REINTEGRATION
+       - fixed 6.25% RS geometry passes frozen six-condition matrix
+       - logical B+r authentication + final payload hash, not raw-b integrity
 V21 -> retain "protocol constraints before rate" only; old quantitative results STALE
 ```
 
-## 9. Known unresolved issues
+Historical V18/V20 precise summaries remain retired unless recreated by current executable evidence.
+
+## 7. Known unresolved issues
 
 1. Public locator-label stability is not proven across all package configurations.
 2. Current NPZ locator is not proven robust to actual physical table deletion / changed table count.
 3. Cross-platform QR/eigh/sign basis determinism remains unresolved.
 4. V18 q=2 fallback remains unexercised.
 5. Re-quantization alignment structure is measured but not mechanistically modeled.
-6. V20 code family, redundancy geometry, overhead, and post-seal lifecycle are not yet validated.
-7. Pre-seal V18 error geometry may not equal real post-seal package corruption geometry.
-8. V19 is not current.
-9. No universal undetectability/security or real-publication claim is supported.
+6. V20 has only one frozen RS geometry and one 24-seed / six-condition damage matrix.
+7. V20 behavior under stronger, differently structured, burst/table-level, repair-field loss, or manifest damage is not characterized.
+8. 6.25% parity overhead is not shown optimal or minimal.
+9. V19 is not current.
+10. No universal undetectability/security or real-publication claim is supported.
 
-## 10. Next work
+## 8. Next work
 
-Do **not** optimize bit/value and do not restore historical V20 numbers.
+Do **not** optimize bit/value and do not tune V20 redundancy downward/upward yet.
 
-Next step: rebuild a **minimal V20 outer-reliability prototype** against the current `A -> c -> B -> b -> a` lifecycle. Freeze redundancy before results, keep concrete parity/shard geometry in B/c rather than A, inject post-seal damage, attempt repair before final integrity acceptance, and require exact final payload hash.
+The next useful step is to characterize the **failure envelope of the now-fixed V20 geometry**, not to search for a better code immediately. Use fresh seeds and hold 4x128B + 8 parity bytes/shard fixed while testing stronger or structurally different post-seal damage, including conditions designed to exceed four byte errors within one shard and conditions that spread damage across shards.
 
-The first V20 experiment should be deliberately small: enough redundancy to target the measured few-bit/few-codeword residual regime, not a large code designed to force success.
+Also separate recoverable numeric-b damage from unrecoverable/authentication-sensitive B/r damage. The goal is to identify where this exact V20 geometry stops working. If it fails, record the boundary before considering another geometry.
 
-If that bounded prototype fails despite sparse errors, reject the proposed V20 geometry rather than increasing redundancy until it passes.
-
-AUDIT GATE: PASS — V18 remains bounded; sparse residual-error evidence now justifies a minimal V20 reintegration experiment
+AUDIT GATE: PASS — V18 remains bounded; V20 first fixed geometry passes its frozen post-seal matrix
