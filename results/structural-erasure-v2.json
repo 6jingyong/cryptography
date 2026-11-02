@@ -1,0 +1,121 @@
+{
+  "version": "structural-erasure-v2-candidate-summary",
+  "scope": "synthetic-only",
+  "status": "EXECUTION_GATE_FAIL_EVIDENCE_VALID",
+  "promotion": "DEFERRED",
+  "frozen_plan": "results/structural-erasure-v2-plan.md",
+  "candidate": {
+    "A": "A-v4-erasure-xlen",
+    "A_public_label": "independent public x-grid length",
+    "decoder": "decoder-v2-prefix-erasure",
+    "current_A_v3_replaced": false,
+    "current_V18_replaced": false,
+    "current_V20_replaced": false,
+    "V20_geometry_changed": false
+  },
+  "configuration": {
+    "seeds": [1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,1115,1116,1117,1118,1119,1120,1121,1122,1123,1124],
+    "payload_bytes": 512,
+    "channels": 2,
+    "corpus_size": 2000,
+    "near_decoy_fraction": 0.01,
+    "engine": "src/noisy_host_package_v18_deterministic.py",
+    "V20": {
+      "data_shards": 4,
+      "data_shard_bytes": 128,
+      "parity_bytes_per_shard": 8,
+      "total_parity_bytes": 32,
+      "byte_error_capacity_per_shard": 4
+    }
+  },
+  "execution_gate": {
+    "definition": "clean controls + A-v4 profile exactness only; damaged outcomes never gate",
+    "pass": false,
+    "failed_clause": "clean target rank must equal 1 for every seed",
+    "observed_clean_max_rank": 2,
+    "rank2_seed": 1116
+  },
+  "summary": {
+    "clean": {
+      "runs": 24,
+      "locator_score_median": 1.0,
+      "recall_at_100": 1.0,
+      "median_target_rank": 1.0,
+      "max_target_rank": 2,
+      "candidate_produced_runs": 24,
+      "direct_exact_runs": 24,
+      "V20_accepted_runs": 24
+    },
+    "drop_logical_first_table": {
+      "runs": 24,
+      "locator_score_median": 0.9166666666666666,
+      "recall_at_100": 1.0,
+      "median_target_rank": 1.0,
+      "max_target_rank": 2,
+      "candidate_produced_runs": 24,
+      "erased_bits_median": 341.0,
+      "erased_bytes_median": 43.0,
+      "candidate_byte_errors_median": 43.0,
+      "candidate_byte_errors_max": 43,
+      "max_shard_byte_errors_max": 43,
+      "repair_attempts": 24,
+      "repair_successes": 0,
+      "V20_accepted_runs": 0
+    },
+    "truncate_one_tail_segment": {
+      "runs": 24,
+      "locator_score_median": 1.0,
+      "recall_at_100": 1.0,
+      "median_target_rank": 1.0,
+      "max_target_rank": 2,
+      "candidate_produced_runs": 24,
+      "erased_bits_median": 5.0,
+      "erased_bytes_median": 1.0,
+      "candidate_byte_errors_median": 1.0,
+      "candidate_byte_errors_max": 1,
+      "max_shard_byte_errors_max": 1,
+      "direct_exact_runs": 3,
+      "repair_attempts": 21,
+      "repair_successes": 21,
+      "V20_accepted_runs": 24
+    }
+  },
+  "post_run_collision_diagnosis": {
+    "seed": 1116,
+    "target_index": 1058,
+    "full_score_decoy_index": 842,
+    "decoy_is_near_decoy": true,
+    "decoy_locator_score": 1.0,
+    "cause": "the existing descriptor near-decoy generator preserves six positions and shuffles the other six; the shuffle can be the identity, yielding a 12/12 descriptor collision",
+    "interpretation": "an exact A-visible descriptor duplicate cannot be distinguished by any locator using only that descriptor; Top-K plus authenticated open remains the protocol-level disambiguation path",
+    "post_hoc_gate_relaxation": false
+  },
+  "information_bound": {
+    "whole_table_erased_payload_bits": 341,
+    "current_V20_total_parity_bits": 256,
+    "redundancy_shortfall_bits_for_arbitrary_single_table_erasure": 85,
+    "interpretation": "even with perfect erasure location and ideal use of existing V20 parity, 256 parity bits cannot guarantee recovery of 341 arbitrary unknown payload bits; interleaving alone cannot solve whole-table loss"
+  },
+  "accepted_findings": [
+    "independent x-grid labels prevent one missing table from collapsing the whole locator fingerprint in the tested current 12-table profile",
+    "decoder-v2 converts both tested structural damages into full candidate payloads in all 24 seeds",
+    "one tail-segment truncation is within the unchanged V20 recovery envelope in all 24 seeds",
+    "whole-table loss is far beyond unchanged V20 capacity and requires additional structural redundancy or less data exposed per independently losable table",
+    "the frozen rank-1 promotion gate fails and was not relaxed after observing results"
+  ],
+  "not_supported": [
+    "promotion of A-v4 as current A",
+    "universal locator robustness",
+    "arbitrary insertion/reordering/multi-table-loss handling",
+    "optimal structural parity geometry",
+    "real-publication behavior",
+    "confidential payload hiding or undetectability"
+  ],
+  "evidence": {
+    "workflow_run_1": 41452612409,
+    "workflow_run_2": 41453152997,
+    "job_2": 125303077515,
+    "artifact_id": 13144773631,
+    "artifact_zip_sha256": "3dbd1a245c224f5cb466ec988a5c1f0ee11f1860663b950d08d65e50a581c47c"
+  }
+}
