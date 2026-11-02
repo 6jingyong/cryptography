@@ -1,0 +1,58 @@
+{
+  "version": "v20-bounded-reintegration-summary-v1",
+  "scope": "synthetic-only",
+  "source_ci": {
+    "workflow_run_id": 41374655647,
+    "artifact_id": 13109779354,
+    "artifact_sha256": "4c080cee1bf1fc2ca9bee35efcb1023e7f2c31ee74870b1fec53ead20739682c"
+  },
+  "frozen_plan": "results/v20-bounded-reintegration-plan.md",
+  "configuration": {
+    "seeds": [701,702,703,704,705,706,707,708,709,710,711,712,713,714,715,716,717,718,719,720,721,722,723,724],
+    "payload_bytes": 512,
+    "data_shard_bytes": 128,
+    "parity_bytes_per_shard": 8,
+    "shard_count": 4,
+    "total_parity_bytes": 32,
+    "payload_parity_overhead": 0.0625,
+    "damage_position": "after c construction/seal; numeric b replaced; B/r/tag unchanged",
+    "raw_b_in_v20_tag": false,
+    "integrity_mode": "authenticate B + masked repair envelope; require exact authenticated final payload SHA-256"
+  },
+  "clean_control": {
+    "exact_count": 24,
+    "seed_count": 24,
+    "all_locator_scores_one": true,
+    "any_repair_attempted": false
+  },
+  "tamper_control": {
+    "repair_field_bitflip_rejected": true,
+    "reason": "v20_envelope_integrity_failed"
+  },
+  "paired_additive_noise": [
+    {"sigma_over_delta":0.14,"v18_direct_exact_count":20,"v20_exact_count":24,"repairs_attempted":4,"repairs_successful":4,"corrected_shards_median":1.5,"corrected_shards_max":2,"all_locator_scores_one":true,"all_final_hash_exact_when_accepted":true},
+    {"sigma_over_delta":0.15,"v18_direct_exact_count":15,"v20_exact_count":24,"repairs_attempted":9,"repairs_successful":9,"corrected_shards_median":1.0,"corrected_shards_max":2,"all_locator_scores_one":true,"all_final_hash_exact_when_accepted":true},
+    {"sigma_over_delta":0.16,"v18_direct_exact_count":7,"v20_exact_count":24,"repairs_attempted":17,"repairs_successful":17,"corrected_shards_median":1.0,"corrected_shards_max":2,"all_locator_scores_one":true,"all_final_hash_exact_when_accepted":true}
+  ],
+  "requantization": [
+    {"factor":1.06,"v18_direct_exact_count":17,"v20_exact_count":24,"repairs_attempted":7,"repairs_successful":7,"corrected_shards_median":1.0,"corrected_shards_max":1,"all_locator_scores_one":true,"all_final_hash_exact_when_accepted":true},
+    {"factor":1.20,"v18_direct_exact_count":19,"v20_exact_count":24,"repairs_attempted":5,"repairs_successful":5,"corrected_shards_median":1.0,"corrected_shards_max":2,"all_locator_scores_one":true,"all_final_hash_exact_when_accepted":true},
+    {"factor":1.30,"v18_direct_exact_count":17,"v20_exact_count":24,"repairs_attempted":7,"repairs_successful":7,"corrected_shards_median":1.0,"corrected_shards_max":2,"all_locator_scores_one":true,"all_final_hash_exact_when_accepted":true}
+  ],
+  "gate_pass": true,
+  "accepted_claims": [
+    "the frozen 4x128-byte / 8-parity-byte-per-shard RS geometry passed the declared 24-seed six-condition synthetic post-seal matrix",
+    "all 49 repair attempts in the frozen matrix succeeded and every accepted package matched the authenticated final payload SHA-256",
+    "the observed successful repairs touched at most two 128-byte shards",
+    "the V20 envelope rejected an authenticated repair-field bitflip control",
+    "a bounded current V20 outer-reliability implementation now exists under the declared matrix"
+  ],
+  "not_supported": [
+    "universal post-seal robustness",
+    "real-publication robustness",
+    "optimality of 6.25% parity overhead",
+    "raw b byte integrity across publication transforms",
+    "historical V20 numerical summaries",
+    "cryptographic security or undetectability of the numeric carrier"
+  ]
+}
