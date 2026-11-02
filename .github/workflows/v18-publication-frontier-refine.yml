@@ -16,12 +16,12 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Compile refinement harness
-        run: python -m py_compile protocol/v18-publication-frontier-refine.py
+        run: python -m py_compile protocol/v18-publication-frontier-refine.py src/noisy_host_package_v18_deterministic.py
       - name: Run fresh-seed frontier refinement
         run: |
           python protocol/v18-publication-frontier-refine.py \
             --base protocol/v18-publication-damage.py \
-            --engine src/noisy_host_package_v18.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
             --protocol protocol/real-package-v18.py \
             --seeds 401,402,403,404,405,406,407,408 \
             --payload-bytes 512 \
