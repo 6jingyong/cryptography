@@ -1,8 +1,6 @@
 name: paper-v6-deterministic-fit-v1
 
 on:
-  push:
-    branches: [paper-v6-deterministic-fit-v1-20261103]
   workflow_dispatch:
 
 jobs:
