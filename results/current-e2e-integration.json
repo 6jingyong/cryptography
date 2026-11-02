@@ -1,7 +1,71 @@
 {
   "version": "current-e2e-integration-result-v1",
   "scope": "synthetic-only",
-  "status": "PENDING_CI",
-  "gate_pass": null,
-  "note": "No positive integration claim is made until the frozen CI workflow produces and is audited against the bundle artifact."
+  "source_ci": {
+    "workflow_run_id": 41376173270,
+    "artifact_id": 13111715465,
+    "artifact_sha256": "b1fe1167cf43704d394a62b33688e7c2f22b77a391a6c3e0a1915aa3de9a65f1"
+  },
+  "frozen_plan": "results/current-e2e-integration-plan.md",
+  "configuration": {
+    "seeds": [901, 902, 903, 904, 905, 906, 907, 908],
+    "representative_seed": 901,
+    "payload_bytes": 512,
+    "channels": 2,
+    "corpus_size": 2000,
+    "near_decoy_fraction": 0.01,
+    "top_k": 100,
+    "technical_stack": "current V18 carrier + current bounded V20 logical repair envelope",
+    "paper_renderer": "tools/paper_v6.py"
+  },
+  "technical": {
+    "seed_count": 8,
+    "exact_recovery_rate": 1.0,
+    "recall_at_20": 1.0,
+    "recall_at_100": 1.0,
+    "all_payload_hashes_unique": true,
+    "median_target_rank": 1.0,
+    "max_target_rank": 1
+  },
+  "representative": {
+    "payload_sha256": "c9507550ad695236dae78c8a07cdff00ba4c140c331af0104314a81db93dd768",
+    "published_npz_sha256": "6e7c1c1012119674d7030e84fc561bd7b1dbf972c337b8c89a598596d6360fdf",
+    "target_index": 1734,
+    "target_rank": 1,
+    "target_locator_score": 1.0,
+    "near_decoy_count": 20,
+    "decoy_rejected": true,
+    "repair_field_tamper_rejected": true
+  },
+  "paper": {
+    "same_current_v20_package_used": true,
+    "same_current_v20_multiseed_result_used_for_e5": true,
+    "e5_completed": true,
+    "e5_pass": true,
+    "selected_archetype": "materials characterization / physical chemistry",
+    "story_type": "multi_regime_characterization",
+    "synthetic_labels_present": true,
+    "mandatory_non_provenance_limitation_present": true
+  },
+  "bundle": {
+    "file_count_excluding_bundle_manifest": 14,
+    "all_recorded_file_hashes_recomputed_exact": true,
+    "contains_machine_and_paper_artifacts": true
+  },
+  "gate_pass": true,
+  "accepted_claims": [
+    "the current synthetic V18/V20 technical path and current paper_v6 renderer operate on one current package without a historical fixture handoff",
+    "fresh seeds 901-908 produced eight distinct payload hashes, eight exact recoveries, and eight Top-100 locator successes",
+    "paper E5 was completed from the same current-V20 eight-seed machine result",
+    "the representative bundle retains explicit synthetic/mock labeling and the mandatory non-provenance limitation",
+    "the uploaded bundle is covered by a per-file SHA-256 manifest whose entries were independently recomputed without mismatch"
+  ],
+  "not_supported": [
+    "real confidential payload hiding",
+    "real-publication deployment",
+    "undetectability or cryptographic security of the numeric carrier",
+    "optimal bit/value or parity overhead",
+    "universal locator or publication robustness",
+    "real scientific provenance or mechanism"
+  ]
 }
