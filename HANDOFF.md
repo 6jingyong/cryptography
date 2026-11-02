@@ -34,7 +34,15 @@ Priority:
 find c > open/authenticate c > interpret B > exact a > reproducible evidence > traceable presentation > rate/overhead optimization
 ```
 
-## 2. Current engine — deterministic V18 promoted
+## 2. Current promoted path
+
+Current promoted path remains:
+
+```text
+A-v3
++ src/noisy_host_package_v18_deterministic.py
++ bounded V20
+```
 
 Current engine:
 
@@ -51,7 +59,7 @@ src/noisy_host_package_v18.py
 
 The deterministic engine replaces the old QR/eigh free-basis path with fixed-order DCT-II candidates + two-pass modified Gram-Schmidt and fixed-order scalar reductions. The basis version is explicit B state; the decoder rejects a mismatched declared basis version.
 
-Frozen promotion gates all pass:
+Frozen deterministic promotion gates all pass:
 
 ```text
 Gate A — protocol viability
@@ -74,16 +82,6 @@ V20 bounded matrix / fixed-geometry failure envelope = PASS
 q / delta / RS geometry were not retuned
 ```
 
-Gate B compares canonical B, all x/y float64 arrays, all CSVs, current E5, paper-v7 numeric figure plan, morphology selection, and archetype/story.
-
-Evidence:
-
-```text
-results/deterministic-basis-v1-plan.md
-results/deterministic-basis-v1.json
-results/deterministic-basis-v1.md
-```
-
 Boundary: exact semantic reproducibility is established across the declared independent GitHub Actions environment for the frozen configuration. This is not a universal every-CPU/libm/NumPy/Python bit-identity claim.
 
 ## 3. Current integrated technical path
@@ -94,9 +92,7 @@ Current runner:
 tools/current_end_to_end.py
 ```
 
-Current workflows use the deterministic V18 engine + bounded V20 layer.
-
-Frozen seeds `901..908`, representative seed `901`, payload 512 B, channels 2, 2,000-candidate corpus, Top-100:
+Frozen seeds `901..908`, payload 512 B, channels 2, 2,000-candidate corpus, Top-100:
 
 ```text
 8 / 8 distinct payload hashes
@@ -107,16 +103,7 @@ median target rank = 1
 max target rank = 1
 ```
 
-Representative controls:
-
-```text
-target rank = 1
-locator score = 1.0
-explicit decoy rejected
-repair-field bitflip rejected
-```
-
-The same current V20 NPZ/B and same current-V20 8-seed result feed the paper line; paper E5 is `COMPLETED` and passes.
+The same current V20 NPZ/B and current-V20 8-seed result feed the paper line; paper E5 is `COMPLETED` and passes.
 
 Evidence:
 
@@ -140,7 +127,7 @@ q=4 selected for all tested tables; q=2 fallback unexercised
 
 Broad V18 publication robustness remains **REJECTED**.
 
-24-seed paired additive-noise result from the audited bounded evidence:
+24-seed paired additive-noise result:
 
 ```text
 0.08..0.12 delta : 24/24
@@ -152,9 +139,7 @@ Broad V18 publication robustness remains **REJECTED**.
 0.18             :  1/24
 ```
 
-Re-quantization remains alignment-dependent and non-monotonic; no scalar threshold claim. Transition failures remain sparse after inner Hamming correction.
-
-Gate C re-established the bounded V18 conclusions under the deterministic engine without retuning. Do not imply every historical floating-point statistic is byte-for-byte unchanged unless separately checked.
+Re-quantization remains alignment-dependent and non-monotonic; no scalar threshold claim.
 
 ## 5. V20 state
 
@@ -177,100 +162,42 @@ v20_tag = HMAC_A(B_bytes || masked_r)
 
 Raw numeric b is not in the V20 envelope tag. Final acceptance requires exact SHA-256 equality to the authenticated target in B.
 
-Initial frozen gate: clean + six damaged conditions pass 24/24 each after V20, with 49/49 attempted repairs successful.
-
-Stronger fixed-geometry envelope:
+Across the tested stronger numeric-damage grid:
 
 ```text
 V20 failure <=> at least one 128-byte shard has >4 candidate byte errors
 ```
 
-Mismatch count: **0** in the tested stronger grid. Locator remained score 1.0. Gate C revalidated this bounded conclusion with the deterministic engine.
+Mismatch count: **0**.
 
 ## 6. Physical structural damage v1
 
-Status: **FROZEN EXPERIMENT EXECUTED / CLEAN GATE PASS**.
+Status: **BOUNDED_LAYER_MAPPING_PASS**.
 
-This is the first current experiment on the actual NPZ structure rather than descriptor-only structural-v4.
-
-Frozen conditions:
+Frozen seeds `1001..1024`; actual public NPZ mutation; deterministic V18 and V20 geometry unchanged.
 
 ```text
-engine        deterministic current V18
-V20 geometry  unchanged 4x128 B + 8 parity B/shard
-payload       512 B
-channels      2
-seeds         1001..1024
-corpus        2,000 candidates, 1% near-decoys
-target table  minimum payload_bit_offset, then minimum public table_id
-```
-
-Damaged outcomes were not CI pass/fail criteria.
-
-Results:
-
-```text
-clean
-  locator 1.0: 24/24
-  rank 1:      24/24
-  direct exact 24/24
-
 whole x+y table deletion
-  locator 1.0: 0/24
-  R@100:       0
-  median rank: 1749
-  max rank:    1960
-  candidate payload: 0/24
-  first failure: A locator
+  -> A locator first failure
+  -> R@100 = 0
+  -> median rank = 1749
+  -> no candidate payload
 
 one tail y-segment truncation
-  locator 1.0: 24/24
-  rank 1:      24/24
-  candidate payload: 0/24
-  first failure: b/parser/decoder before candidate
+  -> locator remains rank 1
+  -> decoder cannot form candidate
+  -> V20 cannot participate
 
-4-segment localized burst, sigma=4 delta
-  locator/rank preserved: 24/24
-  candidate payload:      24/24
-  candidate byte errors:  median/max 4/4
-  max shard byte errors:  4
-  V20 repair success:     24/24
+4-segment numeric burst, sigma=4 delta
+  -> candidate byte errors = 4
+  -> 24/24 V20 repair
 
-6-segment localized burst, sigma=4 delta
-  locator/rank preserved: 24/24
-  candidate payload:      24/24
-  candidate byte errors:  median/max 6/6
-  max shard byte errors:  6
-  V20 repair success:     0/24
+6-segment numeric burst, sigma=4 delta
+  -> candidate byte errors = 6
+  -> 0/24 V20 repair
 ```
 
-Across every run where a candidate payload existed:
-
-```text
-V20 final failure
-<=>
-at least one 128-byte shard has >4 candidate byte errors
-```
-
-Capacity-rule mismatch count: **0**.
-
-Project-level interpretation:
-
-```text
-whole-table deletion
--> A/public locator failure
-
-tail structural truncation
--> locator survives
--> b/parser/decoder cannot form candidate payload
-
-shape-preserving numeric burst
--> locator survives
--> candidate payload exists
--> V20 succeeds/fails according to fixed per-shard RS capacity
-```
-
-Therefore **adding more V20 parity is not the correct first repair for the observed whole-table deletion or tail-truncation failures**. Those failures occur upstream and should be addressed in A/public structural canonicalization or b/parser erasure handling before outer payload ECC is reconsidered.
+This proved that structural deletion/truncation were upstream failures and that adding more V20 parity was not the correct first response.
 
 Evidence:
 
@@ -278,47 +205,145 @@ Evidence:
 results/physical-structural-damage-v1-plan.md
 results/physical-structural-damage-v1.json
 results/physical-structural-damage-v1.md
-
-workflow run  41423287034
-job           125203729548
-artifact      13130219293
-artifact zip  sha256:925c0596f1fe61c4fb8227620601ac2f925c8d06b8ff4da24977aa677cd0621e
 ```
 
-Boundary: this is a bounded 24-seed synthetic result for the declared deletion/truncation/burst families. It is not universal structural robustness, real-publication robustness, or proof that the current 6.25% V20 geometry is optimal.
+## 7. Structural erasure v2 candidate
 
-## 7. Paper bundle v7
+Status: **EXECUTION GATE FAIL / EVIDENCE VALID / PROMOTION DEFERRED**.
 
-Implementation:
+This experiment tests two candidates without replacing the promoted A-v3/V18/V20 path:
 
 ```text
-tools/paper_v6.py
-tools/paper_bundle_v7.py
-tools/finalize_paper_bundle_v7.py
+A-v4 candidate
+  stable public label = x-grid length
+  missing table = erasure, not renormalization of all survivors
+  B is still not parsed during ranking
+
+decoder-v2 candidate
+  missing table -> zero-fill declared payload bit interval + mark erasure
+  tail truncation -> decode complete prefix + zero-fill missing tail
+
+V20
+  unchanged
 ```
 
-Paper-v7 produces:
+Frozen seeds `1101..1124`.
+
+### Clean
 
 ```text
-4 SVG figures
-12 raw-data CSV files
-figure/data manifests
-claim traceability
-paper_v7.md
-validation result
-complete final bundle manifest
+24/24 exact
+24/24 V20 accepted
+R@100 = 1
+median rank = 1
+max rank = 2
 ```
 
-Frozen figure roles:
+The frozen promotion gate required every clean target to rank 1, so it **fails**.
+
+Seed `1116` diagnosis:
 
 ```text
-F1 -> all visible current response curves
-F2 -> highest-confidence example per non-other morphology
-F3 -> morphology-matched descriptive fit vs same-curve linear baseline
-F4 -> same current-V20 E5 result used by paper E5
+target index          = 1058
+full-score near-decoy = 842
+decoy score           = 1.0
 ```
 
-Selected examples:
+The existing near-decoy generator preserves six positions and shuffles the other six. That shuffle can be the identity, which in this seed created a genuine **12/12 A-visible descriptor duplicate** before the target.
+
+Therefore:
+
+- the rank-1 gate stays failed; it is not relaxed post hoc;
+- the result does not show x-grid length became seed-unstable;
+- an exact A-visible duplicate is inherently indistinguishable to an A-only locator using that descriptor;
+- protocol-level disambiguation remains Top-K retrieval followed by authenticated open.
+
+### Whole-table deletion
+
+A-v4/decoder-v2 move the failure to the correct layer:
+
+```text
+locator score = 11/12 = 0.9167
+R@100 = 1
+median rank = 1
+max rank = 2
+candidate payload = 24/24
+```
+
+But the missing logical-first table contains:
+
+```text
+341 payload bits
+43 payload bytes touched
+median/max candidate byte errors = 43 / 43
+max errors in one 128-byte shard = 43
+```
+
+Unchanged V20 recovery:
+
+```text
+0/24
+```
+
+### One tail segment truncation
+
+Decoder-v2 now forms a candidate in all runs:
+
+```text
+erased payload bits = 5
+bytes touched        = 1
+candidate byte errors median/max = 1 / 1
+```
+
+Outcome:
+
+```text
+3/24 direct exact
+21/21 V20 repair success
+24/24 final acceptance
+```
+
+So the previous tail-truncation failure was a candidate-formation problem, not a parity shortage.
+
+### Information bound from whole-table loss
+
+Current V20 carries:
+
+```text
+32 parity bytes = 256 parity bits
+```
+
+A single logical-first table exposes:
+
+```text
+341 arbitrary payload bits
+```
+
+Therefore:
+
+```text
+256 < 341
+shortfall = 85 bits = 10.625 bytes
+```
+
+Even with perfect erasure location and ideal use of current parity, **interleaving alone cannot guarantee recovery of one arbitrary whole-table loss**. Additional structural redundancy or less data per independently losable table is required.
+
+Evidence:
+
+```text
+results/structural-erasure-v2-plan.md
+results/structural-erasure-v2.json
+results/structural-erasure-v2.md
+workflow run 41453152997
+artifact     13144773631
+artifact zip sha256:3dbd1a245c224f5cb466ec988a5c1f0ee11f1860663b950d08d65e50a581c47c
+```
+
+## 8. Paper bundle v7
+
+Paper-v7 produces 4 SVG figures, 12 raw-data CSV files, figure/data manifests, claim traceability, explicit synthetic/mock labeling, validation, and a complete bundle manifest.
+
+Selected examples remain:
 
 ```text
 bell_peak  -> table 7
@@ -327,11 +352,9 @@ periodic   -> table 9
 saturating -> table 1
 ```
 
-The earlier paper-v7 reproducibility caveat is resolved in the declared CI environment. The last remaining ~1e-16 paper-plan mismatch came from `np.polyfit`; Figure 3 now uses fixed-order analytic one-variable regression plus `math.fsum` R². No carrier parameter changed for that repair.
+The last paper-only ~1e-16 `np.polyfit` drift was replaced with fixed-order analytic linear regression + `math.fsum` R². No carrier parameter changed.
 
-Paper-v7 remains visibly synthetic/mock, and descriptive fits/morphology framing are not provenance or mechanism evidence.
-
-## 8. Current classification
+## 9. Current classification
 
 ```text
 V12 -> CURRENT clean-host carrier
@@ -345,39 +368,34 @@ Current E2E -> PASS
 Paper bundle v7 -> PASS
 Deterministic basis v1 -> PROMOTION_GATES_PASS
 Physical structural damage v1 -> BOUNDED_LAYER_MAPPING_PASS
+A-v4 / decoder-v2 -> CANDIDATE ONLY; EVIDENCE VALID; PROMOTION DEFERRED
 ```
 
-## 9. Known unresolved issues, ordered by project value
+## 10. Known unresolved issues, ordered by project value
 
-1. Public locator-label stability is not proven across all package configurations.
-2. Current A/public locator is not erasure-tolerant: whole-table deletion destroys the useful locator rank in the frozen physical test.
-3. Current b/parser/decoder cannot form a candidate payload after the frozen tail-segment truncation; structural erasure handling is absent.
-4. Broader physical structural families remain unmapped: multi-table loss, insertion/reordering, partial x loss, split/merge, and authenticated B/r structural damage.
+1. A-v4 public x-length profile stability across package configurations is not proven; do not promote it yet.
+2. Locator gate semantics under exact A-visible descriptor duplicates need an explicit protocol decision; the failed rank-1 gate must not be retroactively relaxed.
+3. Guaranteed single-table recovery requires enough structural redundancy for at least 341 arbitrary erased payload bits; current V20 has only 256 parity bits.
+4. Broader structural families remain unmapped: multi-table loss, insertion/reordering, partial x loss, split/merge, authenticated B/r structural damage.
 5. V18 q=2 fallback remains unexercised.
 6. Re-quantization alignment structure is measured but not mechanistically modeled.
-7. V20 has one RS geometry; 6.25% overhead is not shown minimal or optimal.
-8. V19 is not current; a selector remains low value while there is only one primary current carrier path.
+7. V20 6.25% geometry is not shown minimal/optimal for numeric damage.
+8. V19 remains non-current.
 9. Exact semantic identity outside the declared CI environment is not proven.
 10. No universal undetectability/security or real-publication claim is supported.
 
-## 10. Highest-value next work
+## 11. Highest-value next work
 
-Do **not** respond to the new structural failures by increasing RS parity first.
+Do not continue parser work for the already-fixed single-tail-segment case, and do not blindly increase RS parity.
 
-The next high-value experiment/implementation is upstream structural erasure handling:
+The next high-value design problem is:
 
 ```text
-A layer:
-  allow a bounded missing-table/erasure case to remain locatable
-  without reading B during ranking
-
-b/parser layer:
-  detect a missing whole segment cleanly
-  and, if possible, form an explicit candidate/erasure representation
-  rather than crashing before candidate formation
-
-V20:
-  only evaluate outer repair once a candidate payload/erasure representation exists
+one independently losable table carries 341 payload bits
+current total V20 parity carries only 256 bits
+=> whole-table guaranteed recovery is impossible with current redundancy
 ```
 
-Keep the same anti-tuning rule: freeze structural rules before results, preserve counterexamples, and do not change q/delta/RS geometry in the same result set.
+Design a **structural redundancy layout** that can cover one table erasure while preserving A/B responsibilities and keeping overhead explicit. Candidate directions can include table-level systematic erasure coding or a payload layout that reduces data exposed per independently losable table, but the design should be derived from the 341-bit lower bound before any parameter grid is run.
+
+Keep A-v4/decoder-v2 as candidates only until locator collision/gate semantics and profile stability are separately resolved.
