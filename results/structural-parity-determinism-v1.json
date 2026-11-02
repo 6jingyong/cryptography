@@ -1,0 +1,66 @@
+{
+  "version": "structural-parity-determinism-v1-result",
+  "scope": "synthetic-only",
+  "status": "PROMOTION_GATE_FAIL",
+  "semantic_equal": false,
+  "mismatch_count": 2,
+  "upstream_replica_a_pass": true,
+  "upstream_replica_b_pass": true,
+  "diagnostic_raw_container_hash_equal": true,
+  "mismatches": [
+    {
+      "field": "paper_v7_numeric_figure_plan_canonical_sha256",
+      "a": "2322a424761513911eeae0f2211b9bd94fdd99d4df303ebb348ea45b55cbb0ea",
+      "b": "778be78ae9b5d0f3d65590aca82cd6e21704b72d6c8db0068fd60c03cfe38adf"
+    },
+    {
+      "field": "semantic_authority_sha256",
+      "a": "8c054e704031cfde02ec3f6bc51909e807c9f4729fd2dfda2ab627011734138e",
+      "b": "5adb44b04bdea61be3395c77bf2bb92c8363a58c2def798bef7c6e6853bcee93"
+    }
+  ],
+  "post_run_localization": {
+    "all_carrier_and_package_semantics_equal": true,
+    "canonical_B_equal": true,
+    "all_npz_xy_float64_arrays_equal": true,
+    "all_paper_v7_csvs_equal": true,
+    "e5_equal": true,
+    "integration_result_equal": true,
+    "selected_morphology_examples_equal": true,
+    "presentation_archetype_equal": true,
+    "story_type_equal": true,
+    "only_numeric_plan_differences": [
+      {
+        "path": "F3.rows[8].matched_fit_r2",
+        "table_id": 11,
+        "a": 0.9470977484367036,
+        "b": 0.9470977484367035,
+        "absolute_delta": 1.1102230246251565e-16
+      },
+      {
+        "path": "F3.rows[8].delta_r2",
+        "table_id": 11,
+        "a": 0.931185089481065,
+        "b": 0.9311850894810649,
+        "absolute_delta": 1.1102230246251565e-16
+      }
+    ],
+    "diagnosis": "paper-v6 descriptive fitting uses np.polyfit/np.linalg.lstsq and vector reductions; replica fit_results also show tiny coefficient/feature drift across multiple tables, while carrier/package bytes and semantic arrays are exact",
+    "carrier_or_structural_code_change_indicated": false,
+    "next_action": "repair presentation-only paper-v6 fit reductions with fixed-order deterministic small least-squares/R2, then run a new determinism gate; do not reinterpret this v1 failure as pass"
+  },
+  "evidence": {
+    "frozen_plan": "results/structural-parity-determinism-v1-plan.md",
+    "workflow_run": 41498877024,
+    "replica_a_job": 125460893683,
+    "replica_b_job": 125460893961,
+    "compare_job": 125461476614,
+    "replica_a_artifact": 13166414493,
+    "replica_a_artifact_sha256": "f2d1dbe0158ecb965eff92b1e4da7a92f7033f64faf7da445c0b874c17a23140",
+    "replica_b_artifact": 13166439368,
+    "replica_b_artifact_sha256": "289bf06445db2f10ce6af3f9f383c4cb849c3eae68e1ca4a95b1b2d951463796",
+    "comparison_artifact": 13167547469,
+    "comparison_artifact_sha256": "fa52c53e39aa178757650ce39a6dc477e6816af2c5b7ddc0ce264ed18f528fa0"
+  },
+  "boundary": "the failure is confined to presentation numeric planning at approximately 1e-16 scale in the tested runners; it remains a real failed promotion gate until a separately frozen follow-up passes"
+}
