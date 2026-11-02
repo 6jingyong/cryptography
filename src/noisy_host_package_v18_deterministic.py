@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
-"""Deterministic-basis candidate wrapper for the current synthetic V18 engine.
+"""Deterministic current-V18 candidate engine.
 
 This file intentionally does not replace noisy_host_package_v18.py yet.
-It reuses the current carrier/QIM/ECC/publication logic while replacing only
-smooth_free_basis with a fixed-order DCT-II + two-pass modified Gram-Schmidt
-construction whose scalar reductions use math.fsum.
+It reuses the current carrier/QIM/ECC/publication logic while replacing:
+
+1. QR/eigh free-basis construction with fixed-order DCT-II + two-pass MGS;
+2. package-visible coefficient-to-signal matrix products with fixed-order
+   math.fsum reductions;
+3. reconstruction-irrelevant diagnostic floats in B with a declared fixed
+   decimal serialization precision.
+
+No q/delta/host/V20/locator performance parameter is changed.
 
 Synthetic/mock benchmark only.
 """
@@ -28,6 +34,7 @@ for _name, _value in BASE.items():
 
 BASIS_VERSION = "deterministic-dct-mgs-v1"
 ORTHO_TOL = 1e-11
+DIAGNOSTIC_ROUND_DECIMALS = 15
 _CANDIDATE_BENCHMARK_SEED = 0
 
 _BASE_RUN_PACKAGE = BASE["run_package"]
@@ -45,7 +52,6 @@ def _stable_norm(v) -> float:
 
 
 def _subtract_projection_in_place(w: np.ndarray, q: np.ndarray, coeff: float):
-    # Python scalar loop avoids delegating the reduction/update ordering to BLAS.
     for i in range(len(w)):
         w[i] = float(w[i]) - float(coeff) * float(q[i])
 
@@ -64,10 +70,9 @@ def _normalize_and_canonicalize(w: np.ndarray) -> np.ndarray | None:
     if not math.isfinite(nrm) or nrm <= ORTHO_TOL:
         return None
     out = np.asarray([float(x) / nrm for x in w], dtype=float)
-    # A final normalization with the same fixed-order norm keeps the contract
-    # explicit after Python division rounding.
     nrm2 = _stable_norm(out)
     out = np.asarray([float(x) / nrm2 for x in out], dtype=float)
+    # Stable tie rule: largest magnitude, then lowest component index.
     k = max(range(len(out)), key=lambda i: (abs(float(out[i])), -i))
     if float(out[k]) < 0.0:
         out = -out
@@ -75,13 +80,7 @@ def _normalize_and_canonicalize(w: np.ndarray) -> np.ndarray | None:
 
 
 def deterministic_smooth_free_basis(B: np.ndarray) -> np.ndarray:
-    """Deterministic smooth-ish basis for the orthogonal complement of B.
-
-    Protected columns are orthonormalized first. DCT-II cosine candidates are
-    then considered from lowest to highest frequency and projected against both
-    the protected space and previously accepted free vectors. The DCT family is
-    complete; coordinate vectors are a deterministic fallback only.
-    """
+    """Fixed-order smooth-ish basis for the orthogonal complement of B."""
     B = np.asarray(B, dtype=float)
     if B.ndim != 2:
         raise ValueError("B must be a 2-D matrix")
@@ -99,9 +98,6 @@ def deterministic_smooth_free_basis(B: np.ndarray) -> np.ndarray:
 
     target = n - len(protected)
     free = []
-
-    # Fixed-order DCT-II candidate family. k=0 is intentionally included; it
-    # will be skipped automatically when constant content is protected.
     for k in range(n):
         cand = np.asarray([
             math.cos(math.pi * (i + 0.5) * k / n)
@@ -110,8 +106,6 @@ def deterministic_smooth_free_basis(B: np.ndarray) -> np.ndarray:
         w = _orthogonalize(cand, protected + free)
         q = _normalize_and_canonicalize(w)
         if q is not None:
-            # One extra two-pass projection after normalization reduces drift
-            # from near-dependent low-frequency candidates.
             w2 = _orthogonalize(q, protected + free)
             q2 = _normalize_and_canonicalize(w2)
             if q2 is not None:
@@ -119,8 +113,6 @@ def deterministic_smooth_free_basis(B: np.ndarray) -> np.ndarray:
         if len(free) == target:
             break
 
-    # Deterministic fallback; normally unnecessary because the DCT family is
-    # complete, but keeps the reconstruction contract total.
     if len(free) < target:
         for j in range(n):
             cand = np.zeros(n, dtype=float)
@@ -136,8 +128,6 @@ def deterministic_smooth_free_basis(B: np.ndarray) -> np.ndarray:
         raise RuntimeError(f"deterministic basis incomplete: {len(free)} != {target}")
 
     U = np.column_stack(free)
-
-    # Fixed-order validation, avoiding a BLAS matrix multiply as the authority.
     worst_protected = 0.0
     for q in protected:
         for j in range(U.shape[1]):
@@ -154,9 +144,141 @@ def deterministic_smooth_free_basis(B: np.ndarray) -> np.ndarray:
     return U
 
 
+def _stable_matrix_vector(M: np.ndarray, v: np.ndarray) -> np.ndarray:
+    M = np.asarray(M, dtype=float)
+    v = np.asarray(v, dtype=float).reshape(-1)
+    if M.shape[1] != len(v):
+        raise ValueError("matrix/vector dimension mismatch")
+    return np.asarray([
+        math.fsum(float(M[i, j]) * float(v[j]) for j in range(M.shape[1]))
+        for i in range(M.shape[0])
+    ], dtype=float)
+
+
+def _stable_coefficients_to_signal(coeff: np.ndarray, U: np.ndarray) -> np.ndarray:
+    """Compute coeff @ U.T with fixed row/component reduction order."""
+    coeff = np.asarray(coeff, dtype=float)
+    U = np.asarray(U, dtype=float)
+    if coeff.ndim != 2 or U.ndim != 2 or coeff.shape[1] != U.shape[1]:
+        raise ValueError("coefficient/basis dimension mismatch")
+    rows = np.empty((coeff.shape[0], U.shape[0]), dtype=float)
+    for i in range(coeff.shape[0]):
+        ci = coeff[i]
+        for p in range(U.shape[0]):
+            up = U[p]
+            rows[i, p] = math.fsum(
+                float(ci[j]) * float(up[j]) for j in range(coeff.shape[1])
+            )
+    return rows
+
+
+def deterministic_baseline(spec, n: int, channel: int, channels: int):
+    x = local_x(n)
+    B = basis_for(spec, x)
+    beta = channel_beta(spec, channel, channels)
+    z = _stable_matrix_vector(B, beta)
+    return x, B, z, inverse_y(z, spec.transform)
+
+
+def deterministic_encode_table(bit_chunk: np.ndarray, table_id: int, family: str, chosen: dict, channels: int):
+    """Current encode_table semantics with fixed-order package-visible synthesis."""
+    q = int(chosen["q"])
+    m = int(chosen["m"])
+    spec = family_spec(family)
+    n = int(chosen["points_per_block"])
+    x = local_x(n)
+    B = basis_for(spec, x)
+    U = deterministic_smooth_free_basis(B)
+    ppcw = payload_symbols_per_codeword(q)
+
+    syms, bit_length = bits_to_symbols(bit_chunk, m)
+    blocks = math.ceil(len(syms) / ppcw)
+    padded = np.pad(syms, (0, blocks*ppcw-len(syms))).reshape(blocks, ppcw)
+    segments = math.ceil(blocks/channels)
+    slots = segments*channels
+    padded_payload = np.zeros((slots, ppcw), dtype=np.uint16)
+    padded_payload[:blocks] = padded
+
+    rng = table_rng(table_id)
+    host_c = host_coefficients(rng, slots, U.shape[1], float(chosen["host_sigma"]))
+    cw, encoded_first = embed_payload_symbols(
+        padded_payload, host_c[:, :q+1], q, float(chosen["delta"])
+    )
+    encoded_c = host_c.copy()
+    encoded_c[:, :q+1] = encoded_first
+
+    z0 = np.asarray([
+        deterministic_baseline(spec, n, c, channels)[2]
+        for c in range(channels)
+    ])
+    channel_ids = np.arange(slots) % channels
+    zh = z0[channel_ids] + _stable_coefficients_to_signal(host_c, U)
+    ze = z0[channel_ids] + _stable_coefficients_to_signal(encoded_c, U)
+    yh = inverse_y(zh, spec.transform)
+    ye = inverse_y(ze, spec.transform)
+    zp, yp = publish(
+        ze, ye, chosen["publication_model"], float(chosen["publication_step"]), spec.transform
+    )
+
+    pub = np.empty((segments*n, channels), dtype=float)
+    for s in range(segments):
+        pub[s*n:(s+1)*n, :] = yp[s*channels:(s+1)*channels].T
+
+    host_rms = float(np.sqrt(np.mean((yh - inverse_y(z0[channel_ids], spec.transform))**2)))
+    adjustment_rms = float(np.sqrt(np.mean((yp-yh)**2)))
+    manifest = {
+        "table_id": table_id,
+        "family": family,
+        "transform": spec.transform,
+        "carrier_mode": "host-aware-modulo-qim-v18",
+        "q": q,
+        "m": m,
+        "poly": Q_MODES[q]["poly"],
+        "channels": channels,
+        "points_per_block": n,
+        "segments": segments,
+        "valid_codewords": blocks,
+        "payload_symbols_per_codeword": ppcw,
+        "payload_bit_length": bit_length,
+        "publication_step": chosen["publication_step"],
+        "publication_model": chosen["publication_model"],
+        "delta": chosen["delta"],
+        "residual_budget_nrmse": chosen["budget_nrmse"],
+        "calibration_host_adjustment_nrmse": chosen["host_adjustment_nrmse"],
+        "calibration_exact_block_recovery": chosen["exact_block_recovery"],
+        "host_model": {
+            "kind": "smooth-free-subspace-gaussian",
+            "benchmark_seed": _CANDIDATE_BENCHMARK_SEED,
+            "sigma": chosen["host_sigma"],
+            "active_dims": chosen["host_active_dims"],
+        },
+        "observed_host_residual_rms": host_rms,
+        "observed_embedding_adjustment_rms": adjustment_rms,
+        "observed_adjustment_to_host_rms_ratio": float(adjustment_rms/max(host_rms, 1e-15)),
+    }
+    return x, pub, manifest
+
+
+def _canonicalize_diagnostic_floats(manifest: dict):
+    """Canonicalize reconstruction-irrelevant observed/calibration diagnostics."""
+    fields = (
+        "calibration_host_adjustment_nrmse",
+        "observed_host_residual_rms",
+        "observed_embedding_adjustment_rms",
+        "observed_adjustment_to_host_rms_ratio",
+    )
+    for table in manifest.get("tables", []):
+        for field in fields:
+            if field in table:
+                table[field] = round(float(table[field]), DIAGNOSTIC_ROUND_DECIMALS)
+    manifest["diagnostic_round_decimals"] = DIAGNOSTIC_ROUND_DECIMALS
+
+
 def _patch_base_globals():
     g = _BASE_RUN_PACKAGE.__globals__
     g["smooth_free_basis"] = deterministic_smooth_free_basis
+    g["baseline"] = deterministic_baseline
+    g["encode_table"] = deterministic_encode_table
     # real-package-v3 patches the candidate wrapper's synthetic_payload global;
     # forward that exact callable into the base engine before every encode.
     g["synthetic_payload"] = globals()["synthetic_payload"]
@@ -180,9 +302,11 @@ def run_package(payload_bytes: int = 4096, channels: int = 4, out_dir: Path = Pa
     manifest["basis_version"] = BASIS_VERSION
     for table in manifest.get("tables", []):
         table["basis_version"] = BASIS_VERSION
+    _canonicalize_diagnostic_floats(manifest)
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     result = dict(result)
     result["basis_version"] = BASIS_VERSION
+    result["diagnostic_round_decimals"] = DIAGNOSTIC_ROUND_DECIMALS
     return result
 
 
@@ -196,14 +320,10 @@ def decode_table(pub: np.ndarray, manifest: dict):
     return _BASE_DECODE_TABLE(pub, manifest)
 
 
-# Patch helper functions immediately too, because some diagnostic harnesses call
-# calibration/choose_mode helpers before run_package.
 _patch_base_globals()
 
 
 if __name__ == "__main__":
-    # Keep direct CLI behavior intentionally minimal; protocol harnesses are the
-    # authoritative candidate test surface.
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--payload-bytes", type=int, default=512)
