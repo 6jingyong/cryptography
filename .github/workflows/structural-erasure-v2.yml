@@ -32,6 +32,7 @@ jobs:
             --out /tmp/structural-erasure-v2.json \
             --summary-out /tmp/structural-erasure-v2.md
       - name: Upload frozen evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: structural-erasure-v2
