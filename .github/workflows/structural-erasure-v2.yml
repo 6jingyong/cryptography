@@ -1,0 +1,41 @@
+name: structural-erasure-v2
+
+on:
+  push:
+    branches: [structural-erasure-v2-20261102]
+  workflow_dispatch:
+
+jobs:
+  structural-erasure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile frozen experiment
+        run: |
+          python -m py_compile protocol/structural-erasure-v2.py
+          python -m py_compile protocol/real-package-v20.py
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
+      - name: Run frozen structural-erasure candidate experiment
+        run: |
+          python protocol/structural-erasure-v2.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --v20 protocol/real-package-v20.py \
+            --seeds 1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,1115,1116,1117,1118,1119,1120,1121,1122,1123,1124 \
+            --payload-bytes 512 \
+            --channels 2 \
+            --corpus-size 2000 \
+            --out /tmp/structural-erasure-v2.json \
+            --summary-out /tmp/structural-erasure-v2.md
+      - name: Upload frozen evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: structural-erasure-v2
+          path: |
+            /tmp/structural-erasure-v2.json
+            /tmp/structural-erasure-v2.md
+          if-no-files-found: error
