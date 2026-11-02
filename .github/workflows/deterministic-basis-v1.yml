@@ -105,8 +105,9 @@ jobs:
             --b /tmp/replicas/deterministic-basis-replica-b/semantic_fingerprint.json \
             --out /tmp/semantic-comparison.json
       - name: Upload semantic comparison
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: deterministic-basis-comparison
           path: /tmp/semantic-comparison.json
-          if-no-files-found: error
+          if-no-files-found: warn
