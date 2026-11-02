@@ -19,15 +19,16 @@ jobs:
         run: |
           python -m py_compile protocol/real-package-v20.py
           python -m py_compile protocol/v20-bounded-reintegration.py
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
       - name: Clean V20 smoke test
         run: |
           python protocol/real-package-v20.py \
-            --engine src/noisy_host_package_v18.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
             --seed 701 --payload-bytes 512 --channels 2
       - name: Run bounded V20 matrix
         run: |
           python protocol/v20-bounded-reintegration.py \
-            --engine src/noisy_host_package_v18.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
             --v20 protocol/real-package-v20.py \
             --statistics protocol/v18-publication-statistics.py \
             --seeds 701,702,703,704,705,706,707,708,709,710,711,712,713,714,715,716,717,718,719,720,721,722,723,724 \
