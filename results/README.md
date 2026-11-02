@@ -10,54 +10,67 @@ Only milestones still useful under the corrected protocol remain in the current 
 | `protocol-real-package-v3.md` | A fingerprint bound to actual NPZ public structure |
 | `e5-multiseed-final.json` | recorded 8-seed clean-host full re-encode → locator → exact-recovery result |
 | `locator-structural-v4.json/.md` | audited A-layer descriptor stress model and failure boundary |
-| `v18-reintegration-plan.md` | first V18 hypothesis / gates / refusal rule frozen before results |
-| `noisy-host-v18-reintegration.json/.md` | bounded V18 smooth-host calibration + 8-seed current-protocol result |
+| `noisy-host-v18-reintegration.json/.md` | bounded V18 smooth-host calibration + current-protocol result |
 | `v18-residual-matrix.json/.md` | five sender-observed residual families pass the declared matrix |
-| `v18-publication-damage.json/.md` | broad V18 publication robustness rejected; failures begin in inner decode |
-| `v18-publication-frontier-refine.json/.md` | re-quantization non-monotonicity discovered; independent-noise ambiguity exposed |
-| `v18-publication-statistics.json/.md` | 24-seed alignment-dependent re-quantization + monotonic paired-noise curve |
+| `v18-publication-damage.json/.md` | broad V18 publication robustness rejected |
+| `v18-publication-statistics.json/.md` | 24-seed alignment-dependent re-quantization + paired-noise success curve |
 | `v18-error-profile.json/.md` | failed V18 packages have sparse post-Hamming residual errors |
 | `v20-bounded-reintegration-plan.md` | frozen first V20 RS geometry and refusal gate |
-| `v20-bounded-reintegration.json/.md` | fixed 6.25% RS geometry passes the declared 24-seed six-condition post-seal matrix |
-| `paper-v6-experiments.json` | completed machine validation experiments for the paper line |
-| `paper-claim-audit-v7.json/.md` | bounded claim gate C1–C6 and mandatory limitations |
+| `v20-bounded-reintegration.json/.md` | fixed 6.25% RS geometry passes initial 24-seed six-condition post-seal matrix |
+| `v20-failure-envelope-plan.md` | frozen stronger damage grid with V20 geometry held fixed |
+| `v20-failure-envelope.json/.md` | V20 first tested failures align exactly with per-shard RS capacity exceedance |
+| `paper-claim-audit-v7.json/.md` | bounded paper claim gate and mandatory limitations |
 | `current-summary.json` | compact audited current state |
 
 ## Current technical interpretation
 
-V18 is **CURRENT_BOUNDED_REINTEGRATION**, not broadly publication-robust. Known-host feasibility is good in the frozen synthetic matrix, additive-noise degradation is measurable under paired scaling, re-quantization is alignment-dependent rather than monotonic, and failed transition-region packages leave only sparse residual errors after the inner Hamming layer.
+V18 is **CURRENT_BOUNDED_REINTEGRATION**, not broadly publication-robust. Its tested transition-region failures are sparse after the existing inner Hamming layer.
 
-That sparse profile justified one fixed V20 experiment rather than carrier retuning.
-
-V20 first geometry:
+V20 uses one fixed logical outer-reliability geometry:
 
 ```text
 512-byte payload
 4 x 128-byte RS data shards
 8 parity bytes per shard
+<=4 byte-error correction per shard
 32 parity bytes total = 6.25% payload parity overhead
 ```
 
-Frozen fresh seeds 701–724 produced:
+The first frozen 24-seed matrix passed all six damaged conditions, with 49/49 repair attempts successful.
+
+A second fresh-seed run then held the geometry fixed and deliberately crossed its failure boundary.
+
+Paired additive noise:
 
 ```text
-paired noise         V18 direct -> V20 final
-0.14 delta            20/24     -> 24/24
-0.15 delta            15/24     -> 24/24
-0.16 delta             7/24     -> 24/24
-
-re-quantization      V18 direct -> V20 final
-1.06x                 17/24     -> 24/24
-1.20x                 19/24     -> 24/24
-1.30x                 17/24     -> 24/24
+0.16 delta  24/24 V20, 0 packages over RS shard bound
+0.18 delta  24/24 V20, 0 packages over RS shard bound
+0.20 delta  17/24 V20, 7 packages over RS shard bound
+0.22 delta   5/24 V20, 19 packages over RS shard bound
+>=0.25       0/24 V20, 24 packages over RS shard bound
 ```
 
-There were 49 repair attempts and all 49 succeeded. Successful repairs touched at most two 128-byte shards. Every accepted final payload hash was exact, every locator structural score remained 1.0, and an authenticated repair-field bitflip was rejected.
+Re-quantization:
 
-V20 therefore advances to **CURRENT_BOUNDED_REINTEGRATION** for this declared synthetic matrix.
+```text
+1.30x  24/24 V20, 0 packages over RS shard bound
+1.50x  24/24 V20, 0 packages over RS shard bound
+1.75x  20/24 V20, 4 packages over RS shard bound
+>=2.00x 0/24 V20, 24 packages over RS shard bound
+```
 
-Important protocol distinction: V20 does not authenticate raw `b` bytes with the old `HMAC(B+b)` rule. It authenticates `B + masked r`, then requires an exact authenticated final payload hash after decoding or repair. Do not conflate this logical reliability envelope with raw NPZ byte integrity.
+Across every individual run in this stronger frozen grid, the equivalence was exact:
 
-Still unsupported: universal post-seal robustness, optimality of 6.25% overhead, real-publication robustness, cryptographic security/undetectability, or restoration of historical V18/V20 numerical summaries.
+```text
+V20 failure <=> at least one 128-byte shard exceeded 4 candidate byte errors
+```
 
-Next measurement should hold this V20 geometry fixed and map where it fails under stronger or structurally different post-seal damage before considering any different redundancy geometry.
+Mismatch count: **0**. Locator structural score remained 1.0 throughout, so the measured failures are not A-layer retrieval failures.
+
+This makes the current V20 boundary mechanistically interpretable inside the declared synthetic channel: the implementation continues to work until the fixed Reed-Solomon shard capacity is exceeded.
+
+Important protocol distinction: V20 authenticates `B + masked r`, not raw numeric `b`, and requires exact final payload SHA-256 after decode/repair. Both manifest and repair-field bitflip controls are rejected by the authenticated envelope.
+
+Still unsupported: universal/continuous thresholds, optimality of 6.25% overhead, real-publication robustness, cryptographic security/undetectability, or restoration of historical V18/V20 numerical summaries.
+
+Further points on the same numeric-noise grids have diminishing value. The next useful fork is either structurally different damage under the same V20 geometry, or V19 reintegration using only modes with audited evidence envelopes.
