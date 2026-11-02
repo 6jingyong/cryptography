@@ -1,8 +1,6 @@
 name: structural-erasure-v2
 
 on:
-  push:
-    branches: [structural-erasure-v2-20261102]
   workflow_dispatch:
 
 jobs:
