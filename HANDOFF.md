@@ -187,7 +187,107 @@ V20 failure <=> at least one 128-byte shard has >4 candidate byte errors
 
 Mismatch count: **0** in the tested stronger grid. Locator remained score 1.0. Gate C revalidated this bounded conclusion with the deterministic engine.
 
-## 6. Paper bundle v7
+## 6. Physical structural damage v1
+
+Status: **FROZEN EXPERIMENT EXECUTED / CLEAN GATE PASS**.
+
+This is the first current experiment on the actual NPZ structure rather than descriptor-only structural-v4.
+
+Frozen conditions:
+
+```text
+engine        deterministic current V18
+V20 geometry  unchanged 4x128 B + 8 parity B/shard
+payload       512 B
+channels      2
+seeds         1001..1024
+corpus        2,000 candidates, 1% near-decoys
+target table  minimum payload_bit_offset, then minimum public table_id
+```
+
+Damaged outcomes were not CI pass/fail criteria.
+
+Results:
+
+```text
+clean
+  locator 1.0: 24/24
+  rank 1:      24/24
+  direct exact 24/24
+
+whole x+y table deletion
+  locator 1.0: 0/24
+  R@100:       0
+  median rank: 1749
+  max rank:    1960
+  candidate payload: 0/24
+  first failure: A locator
+
+one tail y-segment truncation
+  locator 1.0: 24/24
+  rank 1:      24/24
+  candidate payload: 0/24
+  first failure: b/parser/decoder before candidate
+
+4-segment localized burst, sigma=4 delta
+  locator/rank preserved: 24/24
+  candidate payload:      24/24
+  candidate byte errors:  median/max 4/4
+  max shard byte errors:  4
+  V20 repair success:     24/24
+
+6-segment localized burst, sigma=4 delta
+  locator/rank preserved: 24/24
+  candidate payload:      24/24
+  candidate byte errors:  median/max 6/6
+  max shard byte errors:  6
+  V20 repair success:     0/24
+```
+
+Across every run where a candidate payload existed:
+
+```text
+V20 final failure
+<=>
+at least one 128-byte shard has >4 candidate byte errors
+```
+
+Capacity-rule mismatch count: **0**.
+
+Project-level interpretation:
+
+```text
+whole-table deletion
+-> A/public locator failure
+
+tail structural truncation
+-> locator survives
+-> b/parser/decoder cannot form candidate payload
+
+shape-preserving numeric burst
+-> locator survives
+-> candidate payload exists
+-> V20 succeeds/fails according to fixed per-shard RS capacity
+```
+
+Therefore **adding more V20 parity is not the correct first repair for the observed whole-table deletion or tail-truncation failures**. Those failures occur upstream and should be addressed in A/public structural canonicalization or b/parser erasure handling before outer payload ECC is reconsidered.
+
+Evidence:
+
+```text
+results/physical-structural-damage-v1-plan.md
+results/physical-structural-damage-v1.json
+results/physical-structural-damage-v1.md
+
+workflow run  41423287034
+job           125203729548
+artifact      13130219293
+artifact zip  sha256:925c0596f1fe61c4fb8227620601ac2f925c8d06b8ff4da24977aa677cd0621e
+```
+
+Boundary: this is a bounded 24-seed synthetic result for the declared deletion/truncation/burst families. It is not universal structural robustness, real-publication robustness, or proof that the current 6.25% V20 geometry is optimal.
+
+## 7. Paper bundle v7
 
 Implementation:
 
@@ -231,7 +331,7 @@ The earlier paper-v7 reproducibility caveat is resolved in the declared CI envir
 
 Paper-v7 remains visibly synthetic/mock, and descriptive fits/morphology framing are not provenance or mechanism evidence.
 
-## 7. Current classification
+## 8. Current classification
 
 ```text
 V12 -> CURRENT clean-host carrier
@@ -244,36 +344,40 @@ V21 -> retain "protocol constraints before rate" only
 Current E2E -> PASS
 Paper bundle v7 -> PASS
 Deterministic basis v1 -> PROMOTION_GATES_PASS
+Physical structural damage v1 -> BOUNDED_LAYER_MAPPING_PASS
 ```
 
-## 8. Known unresolved issues, ordered by project value
+## 9. Known unresolved issues, ordered by project value
 
 1. Public locator-label stability is not proven across all package configurations.
-2. Structural-v4 is descriptor-level only; the current NPZ path is not proven robust to **actual physical table deletion / changed table count / truncation**.
-3. V18 q=2 fallback remains unexercised.
-4. Re-quantization alignment structure is measured but not mechanistically modeled.
-5. V20 has one RS geometry; 6.25% overhead is not shown minimal or optimal.
-6. Physical structural-damage behavior is not comprehensively characterized.
-7. V19 is not current; a selector remains low value while there is only one primary current carrier path.
-8. Exact semantic identity outside the declared CI environment is not proven.
-9. No universal undetectability/security or real-publication claim is supported.
+2. Current A/public locator is not erasure-tolerant: whole-table deletion destroys the useful locator rank in the frozen physical test.
+3. Current b/parser/decoder cannot form a candidate payload after the frozen tail-segment truncation; structural erasure handling is absent.
+4. Broader physical structural families remain unmapped: multi-table loss, insertion/reordering, partial x loss, split/merge, and authenticated B/r structural damage.
+5. V18 q=2 fallback remains unexercised.
+6. Re-quantization alignment structure is measured but not mechanistically modeled.
+7. V20 has one RS geometry; 6.25% overhead is not shown minimal or optimal.
+8. V19 is not current; a selector remains low value while there is only one primary current carrier path.
+9. Exact semantic identity outside the declared CI environment is not proven.
+10. No universal undetectability/security or real-publication claim is supported.
 
-## 9. Next work — return to the whole system
+## 10. Highest-value next work
 
-Do **not** keep optimizing deterministic floating-point details now that the declared-CI reproducibility gate is solved. Do not immediately tune q/delta/RS or add dense noise-grid points either.
+Do **not** respond to the new structural failures by increasing RS parity first.
 
-The next technical question with the highest whole-system value is whether **real package structure damage** breaks A/locator, NPZ parsing, inner decoding, or V20 repair first. A small frozen experiment using actual table deletion/truncation/shape-preserving local burst would close a gap that descriptor-level Structural-v4 cannot answer.
-
-That work should remain layer-aware:
+The next high-value experiment/implementation is upstream structural erasure handling:
 
 ```text
-A/locator failure
-vs b/NPZ parse failure
-vs candidate payload error
-vs V20 repair capacity
-vs authenticated B/r rejection
+A layer:
+  allow a bounded missing-table/erasure case to remain locatable
+  without reading B during ranking
+
+b/parser layer:
+  detect a missing whole segment cleanly
+  and, if possible, form an explicit candidate/erasure representation
+  rather than crashing before candidate formation
+
+V20:
+  only evaluate outer repair once a candidate payload/erasure representation exists
 ```
 
-If structural testing shows the dominant failure is A or parser structure, fix that layer rather than adding more RS parity. If the complete system does not need this immediately, prioritize integrated package usability instead. V19 should wait until multiple genuinely current carrier modes exist.
-
-AUDIT GATE: PASS — the current technical-to-paper path is integrated and semantically deterministic across the declared independent CI environment; next priority returns to whole-system structural/package gaps, not floating-point micro-optimization.
+Keep the same anti-tuning rule: freeze structural rules before results, preserve counterexamples, and do not change q/delta/RS geometry in the same result set.

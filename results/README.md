@@ -16,6 +16,8 @@ Only milestones still useful under the corrected protocol remain in the current 
 | `v18-error-profile.json/.md` | sparse post-Hamming residual errors in failed packages |
 | `v20-bounded-reintegration.json/.md` | fixed 6.25% RS geometry initial bounded gate |
 | `v20-failure-envelope.json/.md` | tested V20 failures align with declared shard capacity |
+| `physical-structural-damage-v1-plan.md` | pre-result frozen contract for actual NPZ structural damage |
+| `physical-structural-damage-v1.json/.md` | actual NPZ layer mapping: locator vs parser/decoder vs V20 |
 | `current-e2e-integration.json/.md` | one current technical package feeds recovery and paper analysis |
 | `paper-bundle-v7.json/.md` | multi-figure/raw-data/traceability synthetic paper bundle |
 | `deterministic-basis-v1.json/.md` | A/B/C promotion evidence for the current deterministic V18 engine |
@@ -88,6 +90,43 @@ median target rank = 1
 max target rank = 1
 ```
 
+## Physical structural damage v1
+
+Fresh seeds `1001..1024`, actual public NPZ mutation, unchanged deterministic V18 and unchanged V20 geometry:
+
+```text
+whole x+y table deletion
+  -> locator first failure
+  -> R@100 = 0
+  -> median rank = 1749
+  -> no candidate payload
+
+one tail y-segment truncation
+  -> locator stays rank 1
+  -> decoder cannot form candidate payload
+  -> V20 not applicable
+
+4-segment localized burst, sigma=4 delta
+  -> locator stays rank 1
+  -> 4 candidate byte errors
+  -> 24/24 V20 repair success
+
+6-segment localized burst, sigma=4 delta
+  -> locator stays rank 1
+  -> 6 candidate byte errors
+  -> 0/24 V20 repair success
+```
+
+Across every run where a candidate payload existed:
+
+```text
+V20 failure <=> any 128-byte shard has >4 candidate byte errors
+```
+
+Mismatch count: **0**.
+
+This matters more than adding another numeric-noise grid: it identifies which failures belong to A/public structure, which belong to b/parser/decoder, and which actually belong to V20.
+
 ## Paper bundle v7
 
 Paper-v7 generates:
@@ -116,17 +155,20 @@ The last paper-only cross-run drift was a ~1e-16 difference in two `np.polyfit` 
 
 Do not continue floating-point micro-optimization, dense numeric-noise grids, parity tuning, or bit/value optimization merely because they are available.
 
-The highest-value unresolved technical gap is now **real package structural damage**: Structural-v4 is only a descriptor model and does not establish what happens when the actual NPZ loses a table, changes row count, or suffers a localized shape-preserving burst.
-
-A future frozen structural experiment should distinguish:
+The highest-value unresolved technical gap is now **upstream structural erasure handling**:
 
 ```text
-A/locator failure
-b/NPZ parse failure
-candidate payload corruption
-V20 repair success/failure
-authenticated B/r rejection
+A/public locator:
+  current whole-table deletion loses useful rank
+
+b/parser/decoder:
+  current tail truncation cannot produce a candidate payload
+
+V20:
+  should remain unchanged until a candidate payload/erasure representation exists
 ```
+
+So the next useful work is to make a bounded missing-table/missing-segment case locatable/decodable at the correct layer, then re-run the same frozen structural test. Increasing V20 parity first would be a wrong-layer response.
 
 V19 should remain deferred until multiple genuinely current carrier modes make selector policy useful.
 

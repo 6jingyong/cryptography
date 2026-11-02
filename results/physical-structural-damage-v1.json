@@ -1,0 +1,156 @@
+{
+  "version": "physical-structural-damage-v1",
+  "scope": "synthetic-only",
+  "status": "FROZEN_EXPERIMENT_EXECUTED",
+  "execution_gate_pass": true,
+  "frozen_contract": {
+    "engine": "src/noisy_host_package_v18_deterministic.py",
+    "v20": "protocol/real-package-v20.py",
+    "seeds": [
+      1001,
+      1002,
+      1003,
+      1004,
+      1005,
+      1006,
+      1007,
+      1008,
+      1009,
+      1010,
+      1011,
+      1012,
+      1013,
+      1014,
+      1015,
+      1016,
+      1017,
+      1018,
+      1019,
+      1020,
+      1021,
+      1022,
+      1023,
+      1024
+    ],
+    "payload_bytes": 512,
+    "channels": 2,
+    "locator_corpus_size": 2000,
+    "near_decoy_fraction": 0.01,
+    "target_table_rule": "minimum payload_bit_offset, then minimum public table_id",
+    "damages": {
+      "drop_logical_first_table": "remove both x and y arrays",
+      "truncate_tail_segment_logical_first_table": "remove one final points_per_block segment from y only",
+      "localized_burst_4_segments_sigma4delta": "four contiguous interior segments; transform-domain Gaussian sigma=4*delta",
+      "localized_burst_6_segments_sigma4delta": "six contiguous interior segments; transform-domain Gaussian sigma=4*delta"
+    },
+    "v20_geometry": {
+      "data_shards": 4,
+      "data_shard_bytes": 128,
+      "parity_bytes_per_shard": 8,
+      "rs_byte_error_capacity_per_shard": 4,
+      "payload_parity_overhead": 0.0625
+    },
+    "damaged_outcomes_gate_pass_fail": false
+  },
+  "summary": {
+    "clean": {
+      "runs": 24,
+      "locator_score_1_runs": 24,
+      "recall_at_100": 1.0,
+      "median_target_rank": 1.0,
+      "max_target_rank": 1,
+      "candidate_produced_runs": 24,
+      "direct_exact_runs": 24,
+      "v20_accepted_runs": 24,
+      "repair_attempts": 0,
+      "repair_successes": 0,
+      "first_failure_layer": {
+        "DIRECT_EXACT": 24
+      }
+    },
+    "drop_logical_first_table": {
+      "runs": 24,
+      "locator_score_1_runs": 0,
+      "recall_at_20": 0.0,
+      "recall_at_100": 0.0,
+      "median_target_rank": 1749.0,
+      "max_target_rank": 1960,
+      "candidate_produced_runs": 0,
+      "v20_accepted_runs": 0,
+      "first_failure_layer": {
+        "A_LOCATOR_DEGRADED": 24
+      }
+    },
+    "truncate_tail_segment_logical_first_table": {
+      "runs": 24,
+      "locator_score_1_runs": 24,
+      "recall_at_100": 1.0,
+      "median_target_rank": 1.0,
+      "max_target_rank": 1,
+      "candidate_produced_runs": 0,
+      "v20_accepted_runs": 0,
+      "first_failure_layer": {
+        "B_OR_b_DECODE_FAILED_BEFORE_CANDIDATE": 24
+      }
+    },
+    "localized_burst_4_segments_sigma4delta": {
+      "runs": 24,
+      "locator_score_1_runs": 24,
+      "recall_at_100": 1.0,
+      "candidate_produced_runs": 24,
+      "direct_exact_runs": 0,
+      "candidate_byte_errors_median": 4.0,
+      "candidate_byte_errors_max": 4,
+      "max_shard_byte_errors_max": 4,
+      "v20_accepted_runs": 24,
+      "repair_attempts": 24,
+      "repair_successes": 24,
+      "capacity_rule_comparable_runs": 24,
+      "capacity_rule_mismatches": 0,
+      "first_failure_layer": {
+        "V20_REPAIR_SUCCESS": 24
+      }
+    },
+    "localized_burst_6_segments_sigma4delta": {
+      "runs": 24,
+      "locator_score_1_runs": 24,
+      "recall_at_100": 1.0,
+      "candidate_produced_runs": 24,
+      "direct_exact_runs": 0,
+      "candidate_byte_errors_median": 6.0,
+      "candidate_byte_errors_max": 6,
+      "max_shard_byte_errors_max": 6,
+      "v20_accepted_runs": 0,
+      "repair_attempts": 24,
+      "repair_successes": 0,
+      "capacity_rule_comparable_runs": 24,
+      "capacity_rule_mismatches": 0,
+      "first_failure_layer": {
+        "V20_OR_FINAL_VERIFY_FAILURE": 24
+      }
+    }
+  },
+  "mechanistic_conclusions": [
+    "Whole-table deletion is first an A/public-locator failure under the current exact-table-count locator contract.",
+    "One-tail-segment y truncation can leave the locator at rank 1 while preventing deterministic V18 from producing any candidate payload; V20 is therefore not the responsible repair layer.",
+    "When localized shape-preserving numeric damage still produces a candidate payload, the tested V20 outcome continues to match the declared per-shard RS byte-error capacity with zero mismatches.",
+    "Adding RS parity cannot fix the observed whole-table-deletion or tail-truncation failures without first changing the upstream structural locator/parser behavior."
+  ],
+  "evidence": {
+    "workflow_run": 41423287034,
+    "job_id": 125203729548,
+    "artifact_id": 13130219293,
+    "artifact_zip_sha256": "925c0596f1fe61c4fb8227620601ac2f925c8d06b8ff4da24977aa677cd0621e",
+    "frozen_commit": "fbbb3e23f8eaf288931cd6a6feacf521100ae598",
+    "raw_artifact_contains": [
+      "physical-structural-damage-v1.json",
+      "physical-structural-damage-v1.md"
+    ]
+  },
+  "boundaries": [
+    "This is a bounded 24-seed synthetic experiment, not a universal physical-publication robustness claim.",
+    "Only one deterministic target-table rule and the declared deletion/truncation/burst families were tested.",
+    "The 4-vs-6 segment burst result is evidence for the existing fixed V20 geometry, not proof that 6.25% parity is optimal.",
+    "B/r structural corruption and broader table insertion/reordering/multi-table loss are not characterized here."
+  ]
+}
