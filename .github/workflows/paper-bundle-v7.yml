@@ -1,0 +1,51 @@
+name: paper-bundle-v7
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile current integration and paper-v7 renderers
+        run: |
+          python -m py_compile tools/current_end_to_end.py
+          python -m py_compile tools/paper_bundle_v7.py
+          python -m py_compile tools/finalize_paper_bundle_v7.py
+      - name: Build fresh current end-to-end base bundle
+        run: |
+          python tools/current_end_to_end.py \
+            --v20 protocol/real-package-v20.py \
+            --engine src/noisy_host_package_v18.py \
+            --paper-tool tools/paper_v6.py \
+            --seeds 901,902,903,904,905,906,907,908 \
+            --representative-seed 901 \
+            --payload-bytes 512 \
+            --channels 2 \
+            --corpus-size 2000 \
+            --near-decoy-fraction 0.01 \
+            --top-k 100 \
+            --out-dir /tmp/current-e2e-base
+      - name: Render traceable multi-figure synthetic paper bundle v7
+        run: |
+          python tools/paper_bundle_v7.py \
+            --base-bundle /tmp/current-e2e-base \
+            --out-dir /tmp/current-e2e-base/paper_v7_output
+      - name: Finalize complete paper-v7 bundle manifest
+        run: |
+          python tools/finalize_paper_bundle_v7.py \
+            --paper-dir /tmp/current-e2e-base/paper_v7_output
+      - name: Upload integrated paper-v7 evidence bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-bundle-v7
+          path: /tmp/current-e2e-base
+          if-no-files-found: error
