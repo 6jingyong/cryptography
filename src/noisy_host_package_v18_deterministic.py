@@ -5,10 +5,11 @@ This file intentionally does not replace noisy_host_package_v18.py yet.
 It reuses the current carrier/QIM/ECC/publication logic while replacing:
 
 1. QR/eigh free-basis construction with fixed-order DCT-II + two-pass MGS;
-2. package-visible coefficient-to-signal matrix products with fixed-order
-   math.fsum reductions;
-3. reconstruction-irrelevant diagnostic floats in B with a declared fixed
-   decimal serialization precision.
+2. package-visible coefficient-to-signal products with fixed-order math.fsum;
+3. package-visible trigonometric/exponential model evaluation with scalar
+   ``math`` calls and canonical snapping for exact 0/+1/-1 trig values;
+4. reconstruction-irrelevant diagnostic floats in B/results with a declared
+   fixed decimal serialization precision.
 
 No q/delta/host/V20/locator performance parameter is changed.
 
@@ -34,21 +35,109 @@ for _name, _value in BASE.items():
 
 BASIS_VERSION = "deterministic-dct-mgs-v1"
 ORTHO_TOL = 1e-11
-DIAGNOSTIC_ROUND_DECIMALS = 15
+TRIG_SNAP_TOL = 1e-15
+DIAGNOSTIC_ROUND_DECIMALS = 14
 _CANDIDATE_BENCHMARK_SEED = 0
 
 _BASE_RUN_PACKAGE = BASE["run_package"]
 _BASE_DECODE_TABLE = BASE["decode_table"]
 _BASE_SET_BENCHMARK_SEED = BASE.get("set_benchmark_seed")
+_BASE_CALIBRATION = BASE["calibration"]
+
+
+def _snap_trig(value: float) -> float:
+    value = float(value)
+    if abs(value) <= TRIG_SNAP_TOL:
+        return 0.0
+    if abs(value - 1.0) <= TRIG_SNAP_TOL:
+        return 1.0
+    if abs(value + 1.0) <= TRIG_SNAP_TOL:
+        return -1.0
+    return value
+
+
+def deterministic_local_x(n: int) -> np.ndarray:
+    if n < 2:
+        raise ValueError("n must be >= 2")
+    den = float(n - 1)
+    return np.asarray([-1.0 + 2.0 * float(i) / den for i in range(n)], dtype=float)
+
+
+def deterministic_basis_for(spec, x: np.ndarray) -> np.ndarray:
+    x = np.asarray(x, dtype=float).reshape(-1)
+    if spec.family == "affine":
+        return np.column_stack([np.ones_like(x), x])
+    if spec.family == "periodic":
+        w = 2.0 * math.pi * float(spec.params["cycles"]) / (float(x[-1]) - float(x[0]))
+        c1s = [_snap_trig(math.sin(w * float(v))) for v in x]
+        c1c = [_snap_trig(math.cos(w * float(v))) for v in x]
+        c2s = [_snap_trig(math.sin(2.0 * w * float(v))) for v in x]
+        c2c = [_snap_trig(math.cos(2.0 * w * float(v))) for v in x]
+        return np.column_stack([
+            np.ones_like(x),
+            np.asarray(c1s, dtype=float),
+            np.asarray(c1c, dtype=float),
+            np.asarray(c2s, dtype=float),
+            np.asarray(c2c, dtype=float),
+        ])
+    if spec.family == "saturation":
+        tau = float(spec.params["tau"])
+        decay = [math.exp(-(2.0 * (float(v) + 1.0)) / tau) for v in x]
+        return np.column_stack([np.ones_like(x), np.asarray(decay, dtype=float)])
+    if spec.family == "gaussian":
+        return np.column_stack([np.ones_like(x), x, x * x])
+    raise ValueError(spec.family)
+
+
+def deterministic_channel_beta(spec, channel: int, channels: int) -> np.ndarray:
+    phase = 2.0 * math.pi * int(channel) / max(int(channels), 1)
+    sp = _snap_trig(math.sin(phase))
+    cp = _snap_trig(math.cos(phase))
+    c03 = _snap_trig(math.cos(0.3 * phase))
+    if spec.family == "affine":
+        return np.asarray([50.0 + 0.25 * channel, 8.0 + 0.7 * sp], dtype=float)
+    if spec.family == "periodic":
+        return np.asarray([
+            55.0 + 0.20 * channel,
+            7.0 + 0.6 * sp,
+            1.6 * c03,
+            1.4 + 0.3 * cp,
+            0.5 * sp,
+        ], dtype=float)
+    if spec.family == "saturation":
+        return np.asarray([58.0 + 0.2 * channel, -(24.0 + 1.2 * sp)], dtype=float)
+    if spec.family == "gaussian":
+        mu = 0.10 * sp
+        sigma = 0.55 + 0.03 * cp
+        amp = 45.0 + 1.5 * sp
+        c = -1.0 / (2.0 * sigma * sigma)
+        b = mu / (sigma * sigma)
+        a = math.log(amp) - mu * mu / (2.0 * sigma * sigma)
+        return np.asarray([a, b, c], dtype=float)
+    raise ValueError(spec.family)
+
+
+def deterministic_inverse_y(z: np.ndarray, transform: str) -> np.ndarray:
+    arr = np.asarray(z, dtype=float)
+    if transform != "log":
+        return arr
+    flat = [math.exp(float(v)) for v in arr.reshape(-1)]
+    return np.asarray(flat, dtype=float).reshape(arr.shape)
 
 
 def _stable_dot(a, b) -> float:
-    """Fixed-order double-precision dot product using Python/math.fsum."""
     return math.fsum(float(x) * float(y) for x, y in zip(a, b))
 
 
 def _stable_norm(v) -> float:
     return math.sqrt(max(0.0, _stable_dot(v, v)))
+
+
+def _stable_rms(values: np.ndarray) -> float:
+    flat = np.asarray(values, dtype=float).reshape(-1)
+    if len(flat) == 0:
+        return 0.0
+    return math.sqrt(math.fsum(float(v) * float(v) for v in flat) / float(len(flat)))
 
 
 def _subtract_projection_in_place(w: np.ndarray, q: np.ndarray, coeff: float):
@@ -72,7 +161,6 @@ def _normalize_and_canonicalize(w: np.ndarray) -> np.ndarray | None:
     out = np.asarray([float(x) / nrm for x in w], dtype=float)
     nrm2 = _stable_norm(out)
     out = np.asarray([float(x) / nrm2 for x in out], dtype=float)
-    # Stable tie rule: largest magnitude, then lowest component index.
     k = max(range(len(out)), key=lambda i: (abs(float(out[i])), -i))
     if float(out[k]) < 0.0:
         out = -out
@@ -173,11 +261,11 @@ def _stable_coefficients_to_signal(coeff: np.ndarray, U: np.ndarray) -> np.ndarr
 
 
 def deterministic_baseline(spec, n: int, channel: int, channels: int):
-    x = local_x(n)
-    B = basis_for(spec, x)
-    beta = channel_beta(spec, channel, channels)
+    x = deterministic_local_x(n)
+    B = deterministic_basis_for(spec, x)
+    beta = deterministic_channel_beta(spec, channel, channels)
     z = _stable_matrix_vector(B, beta)
-    return x, B, z, inverse_y(z, spec.transform)
+    return x, B, z, deterministic_inverse_y(z, spec.transform)
 
 
 def deterministic_encode_table(bit_chunk: np.ndarray, table_id: int, family: str, chosen: dict, channels: int):
@@ -186,22 +274,22 @@ def deterministic_encode_table(bit_chunk: np.ndarray, table_id: int, family: str
     m = int(chosen["m"])
     spec = family_spec(family)
     n = int(chosen["points_per_block"])
-    x = local_x(n)
-    B = basis_for(spec, x)
+    x = deterministic_local_x(n)
+    B = deterministic_basis_for(spec, x)
     U = deterministic_smooth_free_basis(B)
     ppcw = payload_symbols_per_codeword(q)
 
     syms, bit_length = bits_to_symbols(bit_chunk, m)
     blocks = math.ceil(len(syms) / ppcw)
-    padded = np.pad(syms, (0, blocks*ppcw-len(syms))).reshape(blocks, ppcw)
-    segments = math.ceil(blocks/channels)
-    slots = segments*channels
+    padded = np.pad(syms, (0, blocks * ppcw - len(syms))).reshape(blocks, ppcw)
+    segments = math.ceil(blocks / channels)
+    slots = segments * channels
     padded_payload = np.zeros((slots, ppcw), dtype=np.uint16)
     padded_payload[:blocks] = padded
 
     rng = table_rng(table_id)
     host_c = host_coefficients(rng, slots, U.shape[1], float(chosen["host_sigma"]))
-    cw, encoded_first = embed_payload_symbols(
+    _cw, encoded_first = embed_payload_symbols(
         padded_payload, host_c[:, :q+1], q, float(chosen["delta"])
     )
     encoded_c = host_c.copy()
@@ -214,18 +302,19 @@ def deterministic_encode_table(bit_chunk: np.ndarray, table_id: int, family: str
     channel_ids = np.arange(slots) % channels
     zh = z0[channel_ids] + _stable_coefficients_to_signal(host_c, U)
     ze = z0[channel_ids] + _stable_coefficients_to_signal(encoded_c, U)
-    yh = inverse_y(zh, spec.transform)
-    ye = inverse_y(ze, spec.transform)
+    yh = deterministic_inverse_y(zh, spec.transform)
+    ye = deterministic_inverse_y(ze, spec.transform)
     zp, yp = publish(
         ze, ye, chosen["publication_model"], float(chosen["publication_step"]), spec.transform
     )
 
-    pub = np.empty((segments*n, channels), dtype=float)
+    pub = np.empty((segments * n, channels), dtype=float)
     for s in range(segments):
         pub[s*n:(s+1)*n, :] = yp[s*channels:(s+1)*channels].T
 
-    host_rms = float(np.sqrt(np.mean((yh - inverse_y(z0[channel_ids], spec.transform))**2)))
-    adjustment_rms = float(np.sqrt(np.mean((yp-yh)**2)))
+    baseline_y = deterministic_inverse_y(z0[channel_ids], spec.transform)
+    host_rms = _stable_rms(yh - baseline_y)
+    adjustment_rms = _stable_rms(yp - yh)
     manifest = {
         "table_id": table_id,
         "family": family,
@@ -254,13 +343,16 @@ def deterministic_encode_table(bit_chunk: np.ndarray, table_id: int, family: str
         },
         "observed_host_residual_rms": host_rms,
         "observed_embedding_adjustment_rms": adjustment_rms,
-        "observed_adjustment_to_host_rms_ratio": float(adjustment_rms/max(host_rms, 1e-15)),
+        "observed_adjustment_to_host_rms_ratio": float(adjustment_rms / max(host_rms, 1e-15)),
     }
     return x, pub, manifest
 
 
+def _round_diag(value):
+    return round(float(value), DIAGNOSTIC_ROUND_DECIMALS)
+
+
 def _canonicalize_diagnostic_floats(manifest: dict):
-    """Canonicalize reconstruction-irrelevant observed/calibration diagnostics."""
     fields = (
         "calibration_host_adjustment_nrmse",
         "observed_host_residual_rms",
@@ -270,12 +362,40 @@ def _canonicalize_diagnostic_floats(manifest: dict):
     for table in manifest.get("tables", []):
         for field in fields:
             if field in table:
-                table[field] = round(float(table[field]), DIAGNOSTIC_ROUND_DECIMALS)
+                table[field] = _round_diag(table[field])
     manifest["diagnostic_round_decimals"] = DIAGNOSTIC_ROUND_DECIMALS
+
+
+def _canonicalize_result_diagnostics(result: dict):
+    out = dict(result)
+    for field in (
+        "median_adjustment_to_host_rms_ratio",
+        "max_adjustment_to_host_rms_ratio",
+    ):
+        if field in out and out[field] is not None:
+            out[field] = _round_diag(out[field])
+    selected = []
+    for row in out.get("selected_tables", []) or []:
+        r = dict(row)
+        for field in (
+            "calibration_host_adjustment_nrmse",
+            "calibration_adjustment_to_host_rms_ratio",
+        ):
+            if field in r and r[field] is not None:
+                r[field] = _round_diag(r[field])
+        selected.append(r)
+    if "selected_tables" in out:
+        out["selected_tables"] = selected
+    out["diagnostic_round_decimals"] = DIAGNOSTIC_ROUND_DECIMALS
+    return out
 
 
 def _patch_base_globals():
     g = _BASE_RUN_PACKAGE.__globals__
+    g["local_x"] = deterministic_local_x
+    g["basis_for"] = deterministic_basis_for
+    g["channel_beta"] = deterministic_channel_beta
+    g["inverse_y"] = deterministic_inverse_y
     g["smooth_free_basis"] = deterministic_smooth_free_basis
     g["baseline"] = deterministic_baseline
     g["encode_table"] = deterministic_encode_table
@@ -304,9 +424,8 @@ def run_package(payload_bytes: int = 4096, channels: int = 4, out_dir: Path = Pa
         table["basis_version"] = BASIS_VERSION
     _canonicalize_diagnostic_floats(manifest)
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-    result = dict(result)
+    result = _canonicalize_result_diagnostics(result)
     result["basis_version"] = BASIS_VERSION
-    result["diagnostic_round_decimals"] = DIAGNOSTIC_ROUND_DECIMALS
     return result
 
 
