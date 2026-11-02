@@ -1,8 +1,6 @@
 name: structural-parity-determinism-v1
 
 on:
-  push:
-    branches: [structural-parity-determinism-v1-20261103]
   workflow_dispatch:
 
 jobs:
