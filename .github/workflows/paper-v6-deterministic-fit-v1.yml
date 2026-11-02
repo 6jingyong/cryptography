@@ -1,0 +1,94 @@
+name: paper-v6-deterministic-fit-v1
+
+on:
+  push:
+    branches: [paper-v6-deterministic-fit-v1-20261103]
+  workflow_dispatch:
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile deterministic paper candidate and both E2E runners
+        run: |
+          python -m py_compile tools/paper_v6_deterministic.py
+          python -m py_compile tools/current_end_to_end.py
+          python -m py_compile tools/structural_parity_current_end_to_end.py
+          python -m py_compile protocol/structural-parity-v3.py
+          python -m py_compile tools/paper_bundle_v7.py
+          python -m py_compile tools/finalize_paper_bundle_v7.py
+      - name: Old promoted current path with deterministic paper candidate
+        run: |
+          python tools/current_end_to_end.py \
+            --v20 protocol/real-package-v20.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --paper-tool tools/paper_v6_deterministic.py \
+            --seeds 901,902,903,904,905,906,907,908 \
+            --representative-seed 901 \
+            --payload-bytes 512 --channels 2 \
+            --corpus-size 2000 --near-decoy-fraction 0.01 --top-k 100 \
+            --out-dir /tmp/current-regression
+          python tools/paper_bundle_v7.py \
+            --base-bundle /tmp/current-regression \
+            --out-dir /tmp/current-regression/paper_v7_output
+          python tools/finalize_paper_bundle_v7.py \
+            --paper-dir /tmp/current-regression/paper_v7_output
+      - name: Structural candidate with deterministic paper candidate
+        run: |
+          python tools/structural_parity_current_end_to_end.py \
+            --structural protocol/structural-parity-v3.py \
+            --v20 protocol/real-package-v20.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --paper-tool tools/paper_v6_deterministic.py \
+            --seeds 1301,1302,1303,1304,1305,1306,1307,1308 \
+            --representative-seed 1301 \
+            --payload-bytes 512 --channels 2 \
+            --corpus-size 2000 --near-decoy-fraction 0.01 --top-k 100 \
+            --out-dir /tmp/structural-regression
+          python tools/paper_bundle_v7.py \
+            --base-bundle /tmp/structural-regression \
+            --out-dir /tmp/structural-regression/paper_v7_output
+          python tools/finalize_paper_bundle_v7.py \
+            --paper-dir /tmp/structural-regression/paper_v7_output
+      - name: Assert presentation contracts on both paths
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          expected = {
+              'current-regression': ('materials characterization / physical chemistry', 'multi_regime_characterization'),
+              'structural-regression': ('materials characterization / physical chemistry', 'multi_regime_characterization'),
+          }
+          for name, (arch, story) in expected.items():
+              root = pathlib.Path('/tmp')/name/'paper_v7_output'
+              v = json.loads((root/'validation_result.json').read_text())
+              f = json.loads((root/'paper_v7_bundle_manifest.json').read_text())
+              assert v['gate_pass'] is True
+              assert v['figure_count'] == 4
+              assert v['raw_data_table_count'] == 12
+              assert v['paper_v6_e5_matches_current_e5'] is True
+              assert v['required_claims_traced'] == ['C1','C2','C4','C5']
+              assert v['synthetic_labels_present'] is True
+              assert v['mandatory_limitation_present'] is True
+              assert v['presentation_archetype'] == arch
+              assert v['story_type'] == story
+              assert f['gate_pass'] is True
+              assert f['nested_manifest_mismatch_count'] == 0
+              assert f['covers_validation_result'] is True
+              assert f['covers_paper_v7_manifest'] is True
+          print('paper-v6 deterministic fit regression gates PASS')
+          PY
+      - name: Upload regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-v6-deterministic-fit-v1
+          path: |
+            /tmp/current-regression
+            /tmp/structural-regression
+          if-no-files-found: warn
