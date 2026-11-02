@@ -1,83 +1,37 @@
 {
-  "version": "current-audited-summary-v6",
+  "version": "current-audited-summary-v7",
   "scope": "synthetic-only",
   "protocol": {
     "chain": "A -> c -> B -> b -> a",
     "A": "pre-shared root locator/canonicalization/bootstrap codebook",
     "B": "per-package reconstruction codebook",
     "real_package_v3": {
-      "fingerprint_source": "actual published NPZ public structure: morphology + x-grid length, A-keyed table ordering",
       "locator_does_not_parse_B_before_ranking": true,
-      "clean_host_e5": {"seeds":8,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"all_payload_hashes_unique":true,"median_target_rank":1.0,"max_target_rank":1}
+      "clean_host_e5": {"seeds": 8, "exact_recovery_rate": 1.0, "recall_at_20": 1.0, "recall_at_100": 1.0, "all_payload_hashes_unique": true, "median_target_rank": 1.0, "max_target_rank": 1}
     },
     "real_package_v18": {
       "status": "CURRENT_BOUNDED_REINTEGRATION",
       "carrier": "host-aware modulo-QIM on sender-observed non-zero synthetic residual hosts",
-      "locator_does_not_parse_B_before_ranking": true,
       "v18_specific_state_in_B": true,
-      "smooth_reference": {
-        "seeds":8,"all_payload_hashes_unique":true,"exact_recovery_rate":1.0,"recall_at_100":1.0,"median_target_rank":1.0,"max_target_rank":2,
-        "q4_selected":12,"q2_selected":0,
-        "host_adjustment_nrmse_range":[0.0007201639903283434,0.0010926954532566903],
-        "strictest_budget_nrmse":0.0045,
-        "median_adjustment_to_host_rms_ratio":0.4459463314354794,
-        "max_adjustment_to_host_rms_ratio":0.4852376607415115,
-        "fixed_512B_gross_bits_per_numeric_value":0.11339977851605759
+      "smooth_reference": {"seeds": 8, "exact_recovery_rate": 1.0, "recall_at_100": 1.0, "q4_selected": 12, "q2_selected": 0, "host_adjustment_nrmse_range": [0.0007201639903283434, 0.0010926954532566903], "strictest_budget_nrmse": 0.0045, "median_adjustment_to_host_rms_ratio": 0.4459463314354794, "max_adjustment_to_host_rms_ratio": 0.4852376607415115},
+      "known_host_residual_matrix": {"models": ["iid_gaussian", "heteroscedastic_gaussian", "ar1_rho_0p85", "low_frequency_drift", "gaussian_sparse_outliers"], "passing_models": 5, "failing_models": 0, "all_models_exact_recovery_rate": 1.0, "evidence": "results/v18-residual-matrix.json"},
+      "publication_statistics": {
+        "seeds": 24,
+        "requantization": {"factors": [1.0, 1.02, 1.04, 1.06, 1.08, 1.1, 1.12, 1.14, 1.16, 1.18, 1.2, 1.22, 1.24, 1.26, 1.28, 1.3], "exact_counts": [24, 24, 22, 19, 21, 22, 21, 19, 20, 22, 17, 22, 21, 19, 17, 16], "monotonic_nonincreasing": false, "interpretation": "alignment-dependent; scalar monotonic threshold rejected"},
+        "paired_additive_noise": {"sigma_over_delta": [0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18], "exact_counts": [24, 24, 24, 24, 24, 23, 20, 16, 9, 4, 1], "all_seed_patterns_monotone": true, "all_seed_exact_through": 0.12, "interpretation": "valid monotonic strength axis under paired scaling; stochastic transition begins at 0.13"},
+        "all_locator_scores_one": true,
+        "failure_layer": "inner_decode",
+        "evidence": "results/v18-publication-statistics.json"
       },
-      "known_host_residual_matrix": {
-        "classification":"GENERAL_V18_SUPPORTED_WITHIN_DECLARED_SYNTHETIC_MATRIX",
-        "models":["iid_gaussian","heteroscedastic_gaussian","ar1_rho_0p85","low_frequency_drift","gaussian_sparse_outliers"],
-        "passing_models":5,"failing_models":0,"q4_selected_per_model":12,"q2_selected_per_model":0,"seeds_per_model":4,
-        "all_models_exact_recovery_rate":1.0,"all_models_recall_at_100":1.0,
-        "largest_calibration_host_adjustment_nrmse":0.001104584449195157,
-        "largest_protocol_adjustment_to_host_rms_ratio":0.49143277680614084,
-        "evidence":"results/v18-residual-matrix.json"
-      },
-      "coarse_publication_damage": {
-        "lifecycle_position":"post-embedding and post-A-assignment, pre-c-seal",
-        "seeds":[301,302,303,304],
-        "requant_1p00_exact":"4/4","requant_1p25_exact":"3/4","requant_1p50_exact":"2/4","requant_1p75_and_above_exact":"0/4",
-        "noise_0p10_exact":"4/4","noise_0p15_exact":"2/4","noise_0p20_and_above_exact":"0/4",
-        "all_tested_combined_conditions_pass":false,
-        "all_conditions_recall_at_100":1.0,"all_conditions_target_rank":1,"first_failure_layer":"inner_decode",
-        "evidence":"results/v18-publication-damage.json"
-      },
-      "fresh_seed_publication_refinement": {
-        "seeds":[401,402,403,404,405,406,407,408],
-        "controls_reproduced": {"requant_1p00":"8/8","noise_0p10":"8/8"},
-        "requantization": {"1.00":"8/8","1.05":"7/8","1.10":"8/8","1.15":"7/8","1.20":"7/8","1.25":"6/8"},
-        "additive_noise_sigma_over_delta": {"0.10":"8/8","0.11":"8/8","0.12":"7/8","0.13":"3/8","0.14":"6/8","0.15":"6/8"},
-        "all_conditions_recall_at_100":1.0,
-        "failure_layer":"inner_decode",
-        "requant_all_seed_pass_pattern_monotonic":false,
-        "requant_exact_count_monotonic_nonincreasing":false,
-        "noise_all_seed_pass_pattern_monotonic":true,
-        "noise_exact_count_monotonic_nonincreasing":false,
-        "requant_scalar_threshold_model_supported":false,
-        "noise_deterministic_threshold_model_supported":false,
-        "evidence":"results/v18-publication-frontier-refine.json"
-      },
-      "boundary": "known-host distribution breadth is good in the declared synthetic matrix, but broad publication robustness is rejected. Re-quantization response is grid/coset-alignment dependent and non-monotonic on the tested factors. Fresh seeds reproduce 0.10 delta and also pass 0.11 delta 8/8, but independent noise realizations mean no deterministic additive-noise threshold has been located."
+      "boundary": "known-host feasibility is supported; broad publication robustness is rejected. Re-quantization factor is not a monotonic damage axis. Paired additive noise is monotonic per seed, with 24/24 exact through 0.12 delta and declining success from 0.13 onward."
     }
   },
-  "locator_structural_v4": {
-    "status":"AUDITED_DESCRIPTOR_MODEL",
-    "baseline_recall_at_100":1.0,"deletion_25pct_recall_at_100":1.0,"deletion_50pct_recall_at_1000":0.0,"deletion_50pct_median_rank":10589.0,
-    "substitution_20pct_recall_at_20":0.9283,"substitution_20pct_recall_at_100":0.9793,"substitution_20pct_recall_at_1000":0.9812,"combined_recall_at_1000":0.0
-  },
+  "locator_structural_v4": {"status": "AUDITED_DESCRIPTOR_MODEL", "deletion_50pct_recall_at_1000": 0.0, "substitution_20pct_recall_at_100": 0.9793, "boundary": "descriptor-level only; not proof of physical NPZ deletion/split-merge survival"},
   "technical_history": {
-    "v18": {
-      "classification":"CURRENT_BOUNDED_REINTEGRATION",
-      "legacy_summary_status":"RETIRED_NOT_RESTORED",
-      "current_evidence":["results/noisy-host-v18-reintegration.json","results/v18-residual-matrix.json","results/v18-publication-damage.json","results/v18-publication-frontier-refine.json"],
-      "rejected_upgrades":["broad post-embedding publication robustness","scalar monotonic re-quantization threshold","deterministic additive-noise threshold from the current grid"],
-      "next_measurement":"success-probability characterization: dense re-quantization factor map; paired/scaled or replicated noise sampling with many fresh seeds"
-    },
-    "v19": {"classification":"NEEDS-REINTEGRATION","role":"sender-side policy for choosing (b,B); do not start before V18 damage characterization is statistically adequate"},
-    "v20": {"classification":"NEEDS-REINTEGRATION","role":"outer package reliability in b/c; post-seal corruption belongs here"},
-    "v21": {"classification":"HISTORICAL-BUT-VALID-PRINCIPLE_ONLY","retained_principle":"protocol constraints before rate","quantitative_results":"STALE"}
+    "v18": {"classification": "CURRENT_BOUNDED_REINTEGRATION", "legacy_summary_status": "RETIRED_NOT_RESTORED", "rejected_upgrades": ["broad post-embedding publication robustness", "scalar monotonic re-quantization threshold", "universal deterministic additive-noise threshold"], "next_measurement": "profile error multiplicity/location under paired noise and alignment-sensitive re-quantization before deciding whether V20-style reliability is justified"},
+    "v19": {"classification": "NEEDS-REINTEGRATION"},
+    "v20": {"classification": "NEEDS-REINTEGRATION", "role": "outer package reliability/post-seal repair; do not size redundancy before inner error profile is measured"},
+    "v21": {"classification": "HISTORICAL-BUT-VALID-PRINCIPLE_ONLY", "retained_principle": "protocol constraints before rate"}
   },
-  "paper": {
-    "v7_claim_gate":{"gate_pass":true,"claims_pass":["C1","C2","C3","C4","C5","C6"],"C5_mandatory":true}
-  }
+  "paper": {"v7_claim_gate": {"gate_pass": true, "claims_pass": ["C1", "C2", "C3", "C4", "C5", "C6"], "C5_mandatory": true}}
 }

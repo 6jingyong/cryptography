@@ -1,0 +1,34 @@
+name: v18-publication-statistics
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  statistics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile statistics harness
+        run: python -m py_compile protocol/v18-publication-statistics.py
+      - name: Run publication-damage statistics
+        run: |
+          python protocol/v18-publication-statistics.py \
+            --engine src/noisy_host_package_v18.py \
+            --protocol protocol/real-package-v18.py \
+            --seeds 501,502,503,504,505,506,507,508,509,510,511,512,513,514,515,516,517,518,519,520,521,522,523,524 \
+            --payload-bytes 512 \
+            --channels 2 \
+            --out /tmp/v18-publication-statistics.json
+      - name: Upload statistics evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: v18-publication-statistics
+          path: /tmp/v18-publication-statistics.json
+          if-no-files-found: error
