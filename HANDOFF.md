@@ -9,18 +9,16 @@ Current code, checked-in machine results, and reproducible CI are authoritative.
 
 Do not treat this project as a sequence of carrier-parameter competitions.
 
-The intended system is:
-
 ```text
 synthetic payload a
 -> numeric b
 -> per-package B (+ optional repair r)
--> candidate package c mixed among unrelated synthetic d
+-> candidate c mixed among unrelated synthetic d
 -> long-lived A locates / bootstraps c without parsing B during ranking
 -> authenticated open
 -> B explains b; optional V20 repair
 -> exact a
--> the same current machine package/results feed a clearly labeled mock-paper bundle
+-> same current machine package/results feed a clearly labeled mock-paper bundle
 ```
 
 ```text
@@ -28,17 +26,67 @@ A = long-lived locator / canonicalization / bootstrap root
 B = per-package reconstruction + reliability manifest
 ```
 
-Package-specific q, transform, geometry, ECC, host model, publication parameters, shard size, parity geometry, etc. belong in B, not A.
+Package-specific q, transform, geometry, ECC, host model, publication parameters, **basis version**, shard size, parity geometry, etc. belong in B, not A.
 
 Priority:
 
 ```text
-find c > open/authenticate c > interpret B > exact a > traceable presentation > rate/overhead optimization
+find c > open/authenticate c > interpret B > exact a > reproducible evidence > traceable presentation > rate/overhead optimization
 ```
 
-A locally better q, parity count, damage threshold, or prettier figure is not automatically project progress if it does not improve the complete system.
+## 2. Current engine — deterministic V18 promoted
 
-## 2. Current integrated technical path
+Current engine:
+
+```text
+src/noisy_host_package_v18_deterministic.py
+basis_version = deterministic-dct-mgs-v1
+```
+
+Legacy baseline retained:
+
+```text
+src/noisy_host_package_v18.py
+```
+
+The deterministic engine replaces the old QR/eigh free-basis path with fixed-order DCT-II candidates + two-pass modified Gram-Schmidt and fixed-order scalar reductions. The basis version is explicit B state; the decoder rejects a mismatched declared basis version.
+
+Frozen promotion gates all pass:
+
+```text
+Gate A — protocol viability
+8 / 8 unique payload hashes
+8 / 8 exact recovery
+Recall@20  = 1.0
+Recall@100 = 1.0
+median/max target rank = 1 / 1
+paper-v7 = PASS
+
+Gate B — independent-run semantic determinism
+two independent GitHub Actions runners
+semantic_equal = true
+mismatch_count = 0
+raw NPZ container hash equal = true
+
+Gate C — bounded evidence regression
+V18 core / residual matrix / publication statistics / error profile = PASS
+V20 bounded matrix / fixed-geometry failure envelope = PASS
+q / delta / RS geometry were not retuned
+```
+
+Gate B compares canonical B, all x/y float64 arrays, all CSVs, current E5, paper-v7 numeric figure plan, morphology selection, and archetype/story.
+
+Evidence:
+
+```text
+results/deterministic-basis-v1-plan.md
+results/deterministic-basis-v1.json
+results/deterministic-basis-v1.md
+```
+
+Boundary: exact semantic reproducibility is established across the declared independent GitHub Actions environment for the frozen configuration. This is not a universal every-CPU/libm/NumPy/Python bit-identity claim.
+
+## 3. Current integrated technical path
 
 Current runner:
 
@@ -46,9 +94,9 @@ Current runner:
 tools/current_end_to_end.py
 ```
 
-Frozen seeds `901..908`, representative seed `901`, payload 512 B, channels 2, 2,000-candidate corpus, Top-100.
+Current workflows use the deterministic V18 engine + bounded V20 layer.
 
-Technical result:
+Frozen seeds `901..908`, representative seed `901`, payload 512 B, channels 2, 2,000-candidate corpus, Top-100:
 
 ```text
 8 / 8 distinct payload hashes
@@ -78,13 +126,11 @@ results/current-e2e-integration.json
 results/current-e2e-integration.md
 ```
 
-Important refinement after paper-v7 audit: this is an integrated and per-artifact traceable path, but fixed-seed visible carrier values are not yet numerically identical across independent fresh CI runs. Do not overstate byte/numeric reproducibility until the basis issue is fixed.
+## 4. V18 state
 
-## 3. V18 state
+Status: **CURRENT_BOUNDED_REINTEGRATION + DECLARED-CI DETERMINISM PASS**.
 
-Status: **CURRENT_BOUNDED_REINTEGRATION**.
-
-Current evidence:
+Current evidence supports:
 
 ```text
 smooth reference: 8/8 exact
@@ -92,9 +138,9 @@ five frozen sender-observed residual families: pass
 q=4 selected for all tested tables; q=2 fallback unexercised
 ```
 
-Broad V18 publication robustness is **REJECTED**.
+Broad V18 publication robustness remains **REJECTED**.
 
-24-seed paired additive-noise result:
+24-seed paired additive-noise result from the audited bounded evidence:
 
 ```text
 0.08..0.12 delta : 24/24
@@ -106,15 +152,13 @@ Broad V18 publication robustness is **REJECTED**.
 0.18             :  1/24
 ```
 
-Re-quantization is alignment-dependent and non-monotonic; no scalar threshold claim.
+Re-quantization remains alignment-dependent and non-monotonic; no scalar threshold claim. Transition failures remain sparse after inner Hamming correction.
 
-Transition failures are sparse after inner Hamming correction, motivating V20 rather than more V18 retuning.
+Gate C re-established the bounded V18 conclusions under the deterministic engine without retuning. Do not imply every historical floating-point statistic is byte-for-byte unchanged unless separately checked.
 
-## 4. V20 state
+## 5. V20 state
 
 Status: **CURRENT_BOUNDED_REINTEGRATION**.
-
-Fixed geometry:
 
 ```text
 payload                  512 bytes
@@ -125,32 +169,25 @@ parity total              32 bytes
 payload parity overhead   6.25%
 ```
 
-Integrity semantics:
+Integrity:
 
 ```text
 v20_tag = HMAC_A(B_bytes || masked_r)
 ```
 
-Raw numeric b is not in the V20 envelope tag. Final acceptance always requires exact SHA-256 equality to the authenticated target in B.
+Raw numeric b is not in the V20 envelope tag. Final acceptance requires exact SHA-256 equality to the authenticated target in B.
 
-Initial frozen gate:
+Initial frozen gate: clean + six damaged conditions pass 24/24 each after V20, with 49/49 attempted repairs successful.
 
-```text
-clean + six damaged conditions: 24/24 each after V20
-49 / 49 attempted repairs successful
-```
-
-Stronger fixed-geometry envelope found:
+Stronger fixed-geometry envelope:
 
 ```text
 V20 failure <=> at least one 128-byte shard has >4 candidate byte errors
 ```
 
-Mismatch count: **0** across the tested stronger grid. Locator remained score 1.0.
+Mismatch count: **0** in the tested stronger grid. Locator remained score 1.0. Gate C revalidated this bounded conclusion with the deterministic engine.
 
-This is a bounded, mechanically interpretable synthetic reliability result, not universal robustness or proof that 6.25% is optimal.
-
-## 5. Paper bundle v7 — current paper milestone
+## 6. Paper bundle v7
 
 Implementation:
 
@@ -160,7 +197,7 @@ tools/paper_bundle_v7.py
 tools/finalize_paper_bundle_v7.py
 ```
 
-Paper-v7 consumes one fresh current V20 package plus current paper-v6 machine analysis and produces:
+Paper-v7 produces:
 
 ```text
 4 SVG figures
@@ -169,7 +206,6 @@ figure/data manifests
 claim traceability
 paper_v7.md
 validation result
-nested paper manifest
 complete final bundle manifest
 ```
 
@@ -182,7 +218,7 @@ F3 -> morphology-matched descriptive fit vs same-curve linear baseline
 F4 -> same current-V20 E5 result used by paper E5
 ```
 
-Automatically selected morphology examples:
+Selected examples:
 
 ```text
 bell_peak  -> table 7
@@ -191,108 +227,53 @@ periodic   -> table 9
 saturating -> table 1
 ```
 
-Claims traced:
+The earlier paper-v7 reproducibility caveat is resolved in the declared CI environment. The last remaining ~1e-16 paper-plan mismatch came from `np.polyfit`; Figure 3 now uses fixed-order analytic one-variable regression plus `math.fsum` R². No carrier parameter changed for that repair.
 
-```text
-C1 -> F1/F2 + raw data
-C2 -> F3 + fit machine output + current curves
-C4 -> F4 + current-V20 E5
-C5 -> mandatory non-provenance/non-mechanism limitation
-```
+Paper-v7 remains visibly synthetic/mock, and descriptive fits/morphology framing are not provenance or mechanism evidence.
 
-Final complete manifest covers 23 files excluding itself. Nested-manifest and independent final-manifest mismatch counts are both 0.
-
-Visual audit confirms all four figures contain meaningful output; F4 is intentionally flat/simple because all eight seeds are rank 1 and exact 1.
-
-Evidence:
-
-```text
-results/paper-bundle-v7-plan.md
-results/paper-bundle-v7.json
-results/paper-bundle-v7.md
-```
-
-### Paper-v7 cross-run reproducibility boundary
-
-Two independent successful fresh CI runs used the same frozen seeds/configuration.
-
-Stable:
-
-```text
-representative payload SHA-256
-current-V20 E5 hash/result
-morphology representative selection
-presentation archetype
-story type
-```
-
-Not stable:
-
-```text
-current NPZ byte hash
-current B manifest byte hash
-visible response values in 8 / 12 tables
-```
-
-Differing visible table IDs:
-
-```text
-0, 2, 3, 5, 6, 7, 10, 11
-```
-
-Therefore paper-v7 status is:
-
-```text
-PASS_WITH_REPRODUCIBILITY_BOUNDARY
-```
-
-It proves complete traceability **within each generated artifact**, not fixed-seed numerical identity across independent runs.
-
-## 6. Current classification
+## 7. Current classification
 
 ```text
 V12 -> CURRENT clean-host carrier
 V16 -> HISTORICAL-BUT-VALID A-layer benchmark
 V17 -> HISTORICAL-BUT-VALID observations; responsibilities remapped
-V18 -> CURRENT_BOUNDED_REINTEGRATION
+V18 deterministic -> CURRENT_BOUNDED_REINTEGRATION + declared-CI determinism PASS
 V19 -> NEEDS-REINTEGRATION, not immediate priority
 V20 -> CURRENT_BOUNDED_REINTEGRATION with mapped RS-capacity boundary
 V21 -> retain "protocol constraints before rate" only
-Current E2E -> PASS, with visible-data determinism caveat
-Paper bundle v7 -> PASS_WITH_REPRODUCIBILITY_BOUNDARY
+Current E2E -> PASS
+Paper bundle v7 -> PASS
+Deterministic basis v1 -> PROMOTION_GATES_PASS
 ```
 
-Historical V18/V20 precise summaries remain retired unless recreated by current executable evidence.
+## 8. Known unresolved issues, ordered by project value
 
-## 7. Known unresolved issues, ordered by project value
-
-1. **Fixed-seed visible carrier numerical determinism across independent runs is not achieved.** This is now directly relevant because paper figures/raw tables consume those values.
-2. Cross-platform QR/eigh/sign basis determinism is the leading suspected technical locus and was already a known unresolved issue before paper-v7 exposed its artifact-level consequence.
-3. Public locator-label stability is not proven across all package configurations.
-4. Current NPZ locator is not proven robust to actual physical table deletion / changed table count.
-5. V18 q=2 fallback remains unexercised.
-6. Re-quantization alignment structure is not mechanistically modeled.
-7. V20 has one RS geometry; 6.25% overhead is not shown minimal/optimal.
-8. V19 is not current.
+1. Public locator-label stability is not proven across all package configurations.
+2. Structural-v4 is descriptor-level only; the current NPZ path is not proven robust to **actual physical table deletion / changed table count / truncation**.
+3. V18 q=2 fallback remains unexercised.
+4. Re-quantization alignment structure is measured but not mechanistically modeled.
+5. V20 has one RS geometry; 6.25% overhead is not shown minimal or optimal.
+6. Physical structural-damage behavior is not comprehensively characterized.
+7. V19 is not current; a selector remains low value while there is only one primary current carrier path.
+8. Exact semantic identity outside the declared CI environment is not proven.
 9. No universal undetectability/security or real-publication claim is supported.
 
-## 8. Next work — system-level reproducibility, not another feature
+## 9. Next work — return to the whole system
 
-Do **not** add more paper figures, another damage grid, a V19 selector, or a rate optimization pass yet.
+Do **not** keep optimizing deterministic floating-point details now that the declared-CI reproducibility gate is solved. Do not immediately tune q/delta/RS or add dense noise-grid points either.
 
-The next high-value task is to make the current **visible carrier deterministic for the same seed across independent runs**, without changing A/B responsibilities or tuning q/delta/RS for performance.
+The next technical question with the highest whole-system value is whether **real package structure damage** breaks A/locator, NPZ parsing, inner decoding, or V20 repair first. A small frozen experiment using actual table deletion/truncation/shape-preserving local burst would close a gap that descriptor-level Structural-v4 cannot answer.
 
-Target:
+That work should remain layer-aware:
 
 ```text
-same seed + same current protocol
--> same semantic B
--> same numeric table arrays
--> same exported CSV values
--> stable figure inputs
--> exact recovery / locator / V20 gates remain intact
+A/locator failure
+vs b/NPZ parse failure
+vs candidate payload error
+vs V20 repair capacity
+vs authenticated B/r rejection
 ```
 
-The first hypothesis to test is the numerical basis construction (`QR/eigh/sign`) rather than the paper renderer or payload RNG. Any fix must be validated by rerunning the existing V18/V20/current-E2E/paper-v7 gates; do not accept determinism at the cost of silently changing the audited protocol behavior.
+If structural testing shows the dominant failure is A or parser structure, fix that layer rather than adding more RS parity. If the complete system does not need this immediately, prioritize integrated package usability instead. V19 should wait until multiple genuinely current carrier modes exist.
 
-AUDIT GATE: PASS — the whole technical-to-paper artifact exists and is traceable; cross-run visible-carrier determinism is now the highest-value system gap
+AUDIT GATE: PASS — the current technical-to-paper path is integrated and semantically deterministic across the declared independent CI environment; next priority returns to whole-system structural/package gaps, not floating-point micro-optimization.
