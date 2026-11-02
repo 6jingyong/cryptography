@@ -1,0 +1,57 @@
+name: structural-parity-current-integration
+
+on:
+  push:
+    branches: [structural-parity-current-integration-20261103]
+  workflow_dispatch:
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile frozen integration
+        run: |
+          python -m py_compile tools/structural_parity_current_end_to_end.py
+          python -m py_compile protocol/structural-parity-v3.py
+          python -m py_compile protocol/real-package-v20.py
+          python -m py_compile tools/paper_v6.py
+          python -m py_compile tools/paper_bundle_v7.py
+          python -m py_compile tools/finalize_paper_bundle_v7.py
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
+      - name: Build structural candidate current E2E base bundle
+        run: |
+          python tools/structural_parity_current_end_to_end.py \
+            --structural protocol/structural-parity-v3.py \
+            --v20 protocol/real-package-v20.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --paper-tool tools/paper_v6.py \
+            --seeds 1301,1302,1303,1304,1305,1306,1307,1308 \
+            --representative-seed 1301 \
+            --payload-bytes 512 \
+            --channels 2 \
+            --corpus-size 2000 \
+            --near-decoy-fraction 0.01 \
+            --top-k 100 \
+            --out-dir /tmp/structural-parity-current-e2e
+      - name: Render unchanged paper-v7
+        run: |
+          python tools/paper_bundle_v7.py \
+            --base-bundle /tmp/structural-parity-current-e2e \
+            --out-dir /tmp/structural-parity-current-e2e/paper_v7_output
+      - name: Finalize unchanged paper-v7
+        run: |
+          python tools/finalize_paper_bundle_v7.py \
+            --paper-dir /tmp/structural-parity-current-e2e/paper_v7_output
+      - name: Upload frozen integration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: structural-parity-current-integration
+          path: /tmp/structural-parity-current-e2e
+          if-no-files-found: warn
