@@ -1,45 +1,45 @@
 {
-  "version": "current-audited-summary-v8",
+  "version": "current-audited-summary-v9",
   "scope": "synthetic-only",
   "protocol": {
-    "chain": "A -> c -> B -> b -> a",
+    "chain": "A -> c -> B + b + optional r -> exact a",
     "A": "pre-shared root locator/canonicalization/bootstrap codebook",
-    "B": "per-package reconstruction codebook",
+    "B": "per-package reconstruction and reliability manifest",
     "real_package_v3": {
       "locator_does_not_parse_B_before_ranking": true,
       "clean_host_e5": {"seeds":8,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"all_payload_hashes_unique":true,"median_target_rank":1.0,"max_target_rank":1}
     },
     "real_package_v18": {
-      "status": "CURRENT_BOUNDED_REINTEGRATION",
-      "carrier": "host-aware modulo-QIM on sender-observed non-zero synthetic residual hosts",
-      "v18_specific_state_in_B": true,
-      "smooth_reference": {"seeds":8,"exact_recovery_rate":1.0,"recall_at_100":1.0,"q4_selected":12,"q2_selected":0,"host_adjustment_nrmse_range":[0.0007201639903283434,0.0010926954532566903],"strictest_budget_nrmse":0.0045,"median_adjustment_to_host_rms_ratio":0.4459463314354794,"max_adjustment_to_host_rms_ratio":0.4852376607415115},
-      "known_host_residual_matrix": {"models":["iid_gaussian","heteroscedastic_gaussian","ar1_rho_0p85","low_frequency_drift","gaussian_sparse_outliers"],"passing_models":5,"failing_models":0,"all_models_exact_recovery_rate":1.0,"evidence":"results/v18-residual-matrix.json"},
-      "publication_statistics": {
-        "seeds":24,
-        "requantization":{"factors":[1.0,1.02,1.04,1.06,1.08,1.1,1.12,1.14,1.16,1.18,1.2,1.22,1.24,1.26,1.28,1.3],"exact_counts":[24,24,22,19,21,22,21,19,20,22,17,22,21,19,17,16],"monotonic_nonincreasing":false,"interpretation":"alignment-dependent; scalar monotonic threshold rejected"},
-        "paired_additive_noise":{"sigma_over_delta":[0.08,0.09,0.1,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18],"exact_counts":[24,24,24,24,24,23,20,16,9,4,1],"all_seed_patterns_monotone":true,"all_seed_exact_through":0.12,"interpretation":"valid monotonic strength axis under paired scaling; stochastic transition begins at 0.13"},
-        "all_locator_scores_one":true,
-        "failure_layer":"inner_decode",
-        "evidence":"results/v18-publication-statistics.json"
-      },
-      "error_profile": {
-        "seeds":[601,602,603,604,605,606,607,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,624],
-        "paired_noise_failed_packages":37,
-        "paired_noise":{"bit_errors_median":2.0,"bit_errors_p90":4.0,"bit_errors_max":4,"bad_tables_median":1.0,"bad_tables_p90":2.0,"bad_tables_max":3,"bad_codewords_median":1.0,"bad_codewords_p90":2.0,"bad_codewords_max":3,"raw_payload_symbol_errors_median":18.0,"corrected_payload_symbol_errors_median":2.0},
-        "requant_failed_packages":23,
-        "requantization":{"bit_errors_median":2.0,"bit_errors_p90":3.0,"bit_errors_max":5,"bad_tables_median":1.0,"bad_tables_p90":1.0,"bad_tables_max":2,"bad_codewords_median":1.0,"bad_codewords_p90":1.0,"bad_codewords_max":2,"raw_payload_symbol_errors_median":15.0,"corrected_payload_symbol_errors_median":1.0,"one_bad_table_fraction":0.9565217391304348},
-        "interpretation":"transition-region failures are sparse after the existing inner Hamming code; bounded V20 outer-reliability prototyping is justified",
-        "evidence":"results/v18-error-profile.json"
-      },
-      "boundary":"known-host feasibility is supported; broad publication robustness is rejected. Re-quantization is alignment-dependent. Paired additive-noise success declines monotonically per seed. Residual transition-region failures are sparse after Hamming correction, which supports a bounded V20 reliability experiment without validating any V20 geometry yet."
+      "status":"CURRENT_BOUNDED_REINTEGRATION",
+      "carrier":"host-aware modulo-QIM on sender-observed non-zero synthetic residual hosts",
+      "v18_specific_state_in_B":true,
+      "smooth_reference":{"seeds":8,"exact_recovery_rate":1.0,"recall_at_100":1.0,"q4_selected":12,"q2_selected":0,"host_adjustment_nrmse_range":[0.0007201639903283434,0.0010926954532566903],"strictest_budget_nrmse":0.0045,"median_adjustment_to_host_rms_ratio":0.4459463314354794,"max_adjustment_to_host_rms_ratio":0.4852376607415115},
+      "known_host_residual_matrix":{"models":["iid_gaussian","heteroscedastic_gaussian","ar1_rho_0p85","low_frequency_drift","gaussian_sparse_outliers"],"passing_models":5,"failing_models":0,"all_models_exact_recovery_rate":1.0,"evidence":"results/v18-residual-matrix.json"},
+      "publication_statistics":{"seeds":24,"paired_additive_noise":{"sigma_over_delta":[0.08,0.09,0.1,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18],"exact_counts":[24,24,24,24,24,23,20,16,9,4,1],"all_seed_patterns_monotone":true},"requantization":{"monotonic_nonincreasing":false,"interpretation":"alignment-dependent; scalar monotonic threshold rejected"},"all_locator_scores_one":true,"failure_layer":"inner_decode","evidence":"results/v18-publication-statistics.json"},
+      "error_profile":{"paired_noise_failed_packages":37,"paired_noise":{"bit_errors_median":2.0,"bit_errors_p90":4.0,"bit_errors_max":4,"bad_tables_median":1.0,"bad_tables_p90":2.0,"bad_tables_max":3,"bad_codewords_median":1.0,"bad_codewords_p90":2.0,"bad_codewords_max":3},"requant_failed_packages":23,"requantization":{"bit_errors_median":2.0,"bit_errors_p90":3.0,"bit_errors_max":5,"bad_tables_median":1.0,"bad_tables_p90":1.0,"bad_tables_max":2,"bad_codewords_median":1.0,"bad_codewords_p90":1.0,"bad_codewords_max":2,"one_bad_table_fraction":0.9565217391304348},"interpretation":"transition-region failures are sparse after inner Hamming correction","evidence":"results/v18-error-profile.json"},
+      "boundary":"known-host feasibility is supported; broad publication robustness is rejected; re-quantization is alignment-dependent; transition-region residual errors are sparse"
+    },
+    "real_package_v20": {
+      "status":"CURRENT_BOUNDED_REINTEGRATION",
+      "role":"logical outer reliability for post-seal numeric-b publication damage",
+      "geometry":{"scheme":"Reed-Solomon GF(256)","payload_bytes":512,"data_shards":4,"data_shard_bytes":128,"parity_bytes_per_shard":8,"total_parity_bytes":32,"payload_parity_overhead":0.0625},
+      "integrity":{"tag_covers":"B_bytes + masked repair bytes r","raw_b_in_tag":false,"final_acceptance":"exact SHA-256 match to authenticated target in B","repair_field_tamper_rejected":true},
+      "clean_control":{"exact_count":24,"seed_count":24},
+      "paired_additive_noise":[{"sigma_over_delta":0.14,"v18_direct_exact":20,"v20_exact":24},{"sigma_over_delta":0.15,"v18_direct_exact":15,"v20_exact":24},{"sigma_over_delta":0.16,"v18_direct_exact":7,"v20_exact":24}],
+      "requantization":[{"factor":1.06,"v18_direct_exact":17,"v20_exact":24},{"factor":1.20,"v18_direct_exact":19,"v20_exact":24},{"factor":1.30,"v18_direct_exact":17,"v20_exact":24}],
+      "repairs":{"attempted":49,"successful":49,"corrected_shards_max":2},
+      "all_locator_scores_one":true,
+      "all_accepted_final_hashes_exact":true,
+      "gate_pass":true,
+      "evidence":"results/v20-bounded-reintegration.json",
+      "boundary":"passes only the frozen 24-seed six-condition synthetic matrix; universal post-seal robustness and optimal redundancy are not established"
     }
   },
-  "locator_structural_v4": {"status":"AUDITED_DESCRIPTOR_MODEL","deletion_50pct_recall_at_1000":0.0,"substitution_20pct_recall_at_100":0.9793,"boundary":"descriptor-level only; not proof of physical NPZ deletion/split-merge survival"},
+  "locator_structural_v4":{"status":"AUDITED_DESCRIPTOR_MODEL","deletion_50pct_recall_at_1000":0.0,"substitution_20pct_recall_at_100":0.9793,"boundary":"descriptor-level only; not proof of physical NPZ deletion/split-merge survival"},
   "technical_history": {
-    "v18":{"classification":"CURRENT_BOUNDED_REINTEGRATION","legacy_summary_status":"RETIRED_NOT_RESTORED","rejected_upgrades":["broad post-embedding publication robustness","scalar monotonic re-quantization threshold","universal deterministic additive-noise threshold"],"current_evidence":["results/noisy-host-v18-reintegration.json","results/v18-residual-matrix.json","results/v18-publication-statistics.json","results/v18-error-profile.json"]},
+    "v18":{"classification":"CURRENT_BOUNDED_REINTEGRATION","legacy_summary_status":"RETIRED_NOT_RESTORED","rejected_upgrades":["broad post-embedding publication robustness","scalar monotonic re-quantization threshold","universal deterministic additive-noise threshold"]},
     "v19":{"classification":"NEEDS-REINTEGRATION"},
-    "v20":{"classification":"JUSTIFIED_FOR_BOUNDED_REINTEGRATION_EXPERIMENT","role":"outer package reliability/post-seal repair","current_effectiveness_claim":false,"next_step":"freeze a minimal outer-code geometry before results; inject post-seal damage; repair before final integrity acceptance; require exact final payload hash"},
+    "v20":{"classification":"CURRENT_BOUNDED_REINTEGRATION","legacy_summary_status":"RETIRED_NOT_RESTORED","current_evidence":["results/v18-error-profile.json","results/v20-bounded-reintegration.json"],"next_measurement":"hold the fixed 4x128B + 8 parity bytes/shard geometry and map its stronger/structured post-seal failure envelope before changing redundancy"},
     "v21":{"classification":"HISTORICAL-BUT-VALID-PRINCIPLE_ONLY","retained_principle":"protocol constraints before rate"}
   },
   "paper":{"v7_claim_gate":{"gate_pass":true,"claims_pass":["C1","C2","C3","C4","C5","C6"],"C5_mandatory":true}}
