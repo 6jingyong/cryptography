@@ -1,8 +1,6 @@
 name: structural-parity-current-integration
 
 on:
-  push:
-    branches: [structural-parity-current-integration-20261103]
   workflow_dispatch:
 
 jobs:
