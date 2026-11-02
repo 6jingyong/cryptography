@@ -1,0 +1,64 @@
+{
+  "version": "v20-fixed-geometry-failure-envelope-summary-v1",
+  "scope": "synthetic-only",
+  "source_ci": {
+    "workflow_run_id": 41375218480,
+    "artifact_id": 13110887337,
+    "artifact_sha256": "07ec4b1536fd3b9adbbab19bb26b5a86f98661283d9161b1e45f7ae126b5df9c"
+  },
+  "frozen_plan": "results/v20-failure-envelope-plan.md",
+  "configuration": {
+    "seeds": [801,802,803,804,805,806,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824],
+    "payload_bytes": 512,
+    "data_shard_bytes": 128,
+    "parity_bytes_per_shard": 8,
+    "rs_byte_error_bound_per_shard": 4,
+    "geometry_changes": "none"
+  },
+  "clean_control": {"exact_count":24,"seed_count":24,"all_locator_scores_one":true},
+  "tamper_controls": {
+    "repair_field_bitflip_rejected": true,
+    "repair_reason": "v20_envelope_integrity_failed",
+    "manifest_bitflip_rejected": true,
+    "manifest_reason": "v20_envelope_integrity_failed"
+  },
+  "paired_additive_noise": [
+    {"sigma_over_delta":0.16,"v18_direct_exact_count":9,"v20_exact_count":24,"v20_failed_count":0,"packages_with_shard_over_rs_bound":0,"total_byte_errors_median":1.0,"total_byte_errors_max":3,"max_byte_errors_in_shard_max":2},
+    {"sigma_over_delta":0.18,"v18_direct_exact_count":2,"v20_exact_count":24,"v20_failed_count":0,"packages_with_shard_over_rs_bound":0,"total_byte_errors_median":3.0,"total_byte_errors_max":7,"max_byte_errors_in_shard_max":4},
+    {"sigma_over_delta":0.20,"v18_direct_exact_count":0,"v20_exact_count":17,"v20_failed_count":7,"packages_with_shard_over_rs_bound":7,"failure_reasons":{"v20_repair_failed":7},"total_byte_errors_median":8.0,"total_byte_errors_max":15,"max_byte_errors_in_shard_median":3.0,"max_byte_errors_in_shard_max":7},
+    {"sigma_over_delta":0.22,"v18_direct_exact_count":0,"v20_exact_count":5,"v20_failed_count":19,"packages_with_shard_over_rs_bound":19,"failure_reasons":{"v20_repair_failed":19},"total_byte_errors_median":17.5,"total_byte_errors_max":31,"max_byte_errors_in_shard_median":6.0,"max_byte_errors_in_shard_max":12},
+    {"sigma_over_delta":0.25,"v18_direct_exact_count":0,"v20_exact_count":0,"v20_failed_count":24,"packages_with_shard_over_rs_bound":24,"failure_reasons":{"v20_repair_failed":24},"total_byte_errors_median":42.5,"total_byte_errors_max":62,"max_byte_errors_in_shard_median":14.0,"max_byte_errors_in_shard_max":19},
+    {"sigma_over_delta":0.30,"v18_direct_exact_count":0,"v20_exact_count":0,"v20_failed_count":24,"packages_with_shard_over_rs_bound":24,"failure_reasons":{"v20_repair_failed":24},"total_byte_errors_median":103.0,"total_byte_errors_max":125,"max_byte_errors_in_shard_median":31.0,"max_byte_errors_in_shard_max":38},
+    {"sigma_over_delta":0.35,"v18_direct_exact_count":0,"v20_exact_count":0,"v20_failed_count":24,"packages_with_shard_over_rs_bound":24,"failure_reasons":{"v20_repair_failed":24},"total_byte_errors_median":188.5,"total_byte_errors_max":216,"max_byte_errors_in_shard_median":53.0,"max_byte_errors_in_shard_max":65}
+  ],
+  "requantization": [
+    {"factor":1.30,"v18_direct_exact_count":15,"v20_exact_count":24,"v20_failed_count":0,"packages_with_shard_over_rs_bound":0,"total_byte_errors_median":0.0,"total_byte_errors_max":2,"max_byte_errors_in_shard_max":2},
+    {"factor":1.50,"v18_direct_exact_count":9,"v20_exact_count":24,"v20_failed_count":0,"packages_with_shard_over_rs_bound":0,"total_byte_errors_median":1.0,"total_byte_errors_max":4,"max_byte_errors_in_shard_max":3},
+    {"factor":1.75,"v18_direct_exact_count":0,"v20_exact_count":20,"v20_failed_count":4,"packages_with_shard_over_rs_bound":4,"failure_reasons":{"v20_repair_failed":4},"total_byte_errors_median":6.5,"total_byte_errors_max":15,"max_byte_errors_in_shard_median":3.0,"max_byte_errors_in_shard_max":6},
+    {"factor":2.00,"v18_direct_exact_count":0,"v20_exact_count":0,"v20_failed_count":24,"packages_with_shard_over_rs_bound":24,"failure_reasons":{"v20_repair_failed":24},"total_byte_errors_median":80.5,"total_byte_errors_max":98,"max_byte_errors_in_shard_median":24.5,"max_byte_errors_in_shard_max":33},
+    {"factor":2.50,"v18_direct_exact_count":0,"v20_exact_count":0,"v20_failed_count":24,"packages_with_shard_over_rs_bound":24,"failure_reasons":{"v20_repair_failed":24},"total_byte_errors_median":75.0,"total_byte_errors_max":88,"max_byte_errors_in_shard_median":24.0,"max_byte_errors_in_shard_max":27},
+    {"factor":3.00,"v18_direct_exact_count":0,"v20_exact_count":0,"v20_failed_count":24,"packages_with_shard_over_rs_bound":24,"failure_reasons":{"v20_repair_failed":24},"total_byte_errors_median":141.0,"total_byte_errors_max":180,"max_byte_errors_in_shard_median":41.0,"max_byte_errors_in_shard_max":55}
+  ],
+  "first_tested_v20_failure": {
+    "paired_noise_sigma_over_delta": 0.20,
+    "requantization_factor": 1.75
+  },
+  "capacity_alignment": {
+    "tested_runs_with_mismatch_between_v20_failure_and_any_shard_over_4_byte_errors": 0,
+    "interpretation": "within every tested damage run, V20 failure occurred iff at least one 128-byte shard exceeded the fixed RS 4-byte correction bound"
+  },
+  "all_locator_scores_one": true,
+  "accepted_claims": [
+    "the fixed V20 geometry remains 24/24 exact through paired noise 0.18 delta and re-quantization 1.50x on the fresh set",
+    "the first tested V20 failures occur at paired noise 0.20 delta and re-quantization 1.75x",
+    "across the entire frozen stronger grid, V20 failure exactly coincides with at least one shard exceeding four candidate byte errors",
+    "locator retrieval remains intact across the stronger tested damage grid",
+    "B and repair-field tamper controls remain rejected"
+  ],
+  "not_supported": [
+    "a continuous universal threshold between the tested grid points",
+    "robustness beyond the measured synthetic channel families",
+    "optimality of the current shard/parity geometry",
+    "real-publication robustness or cryptographic security"
+  ]
+}
