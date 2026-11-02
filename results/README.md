@@ -17,38 +17,48 @@ Only milestones still useful under the corrected protocol remain in the current 
 | `v18-publication-damage-plan.md` | frozen post-embedding / pre-seal damage matrix |
 | `v18-publication-damage.json/.md` | coarse result: broad publication robustness rejected; failures begin in inner decode |
 | `v18-publication-frontier-refine-plan.md` | fresh 8-seed measurement-only refinement plan |
-| `v18-publication-frontier-refine.json/.md` | refinement: re-quantization is non-monotonic; additive-noise threshold not deterministic |
+| `v18-publication-frontier-refine.json/.md` | re-quantization non-monotonicity discovered; independent-noise ambiguity exposed |
+| `v18-publication-statistics-plan.md` | 24-seed dense re-quantization + paired-noise statistical plan |
+| `v18-publication-statistics.json/.md` | current best V18 damage evidence: alignment-dependent re-quantization and monotonic paired-noise success curve |
 | `paper-v6-experiments.json` | completed machine validation experiments for the paper line |
 | `paper-claim-audit-v7.json/.md` | bounded claim gate C1–C6 and mandatory limitations |
 | `current-summary.json` | compact audited current state |
 
 ## V18 evidence hierarchy
 
-V18 evidence must be read as four distinct layers:
+V18 evidence now has five distinct layers:
 
 1. **Smooth-host feasibility** — rebuilt host-aware modulo-QIM recovers exactly under the current lifecycle.
-2. **Known-host distribution breadth** — five equal-energy sender-observed synthetic residual families all pass without carrier retuning.
-3. **Coarse post-embedding publication damage** — narrow margin; `1.25x` re-quantization already fails one of four seeds and `0.15 delta` noise recovers only two of four; locator remains intact.
-4. **Fresh-seed refinement** — the simple scalar-threshold picture is itself partly wrong.
+2. **Known-host distribution breadth** — five equal-energy sender-observed residual families pass without carrier retuning.
+3. **Coarse post-embedding publication damage** — broad publication robustness is rejected; failures begin in inner decode while locator retrieval remains intact.
+4. **Fresh-seed refinement** — re-quantization is demonstrably non-monotonic and the original independent-noise sweep cannot define a deterministic threshold.
+5. **24-seed statistics** — paired noise resolves that ambiguity, while dense re-quantization confirms alignment dependence.
 
-Fresh seeds 401–408 produce:
+Current 24-seed paired-noise result:
 
 ```text
-re-quantization:
-1.00x 8/8, 1.05x 7/8, 1.10x 8/8, 1.15x 7/8, 1.20x 7/8, 1.25x 6/8
-
-additive noise:
-0.10 delta 8/8, 0.11 8/8, 0.12 7/8, 0.13 3/8, 0.14 6/8, 0.15 6/8
+sigma/delta : exact/24
+0.08        : 24
+0.09        : 24
+0.10        : 24
+0.11        : 24
+0.12        : 24
+0.13        : 23
+0.14        : 20
+0.15        : 16
+0.16        :  9
+0.17        :  4
+0.18        :  1
 ```
 
-The re-quantization result is non-monotonic: a coarser `1.10x` condition passes all eight seeds after `1.05x` failed one. Treat re-quantization factor as a grid/coset-alignment parameter, not a monotonic damage axis.
+All 24 per-seed PASS→FAIL patterns are monotonic when the same base noise field is scaled across alpha. Thus additive-noise strength is a valid monotonic axis under this paired construction, although no universal deterministic threshold is claimed.
 
-For additive noise, `0.10 delta` independently reproduces and `0.11 delta` also passes 8/8, but exact counts are not monotonic because each alpha uses a different noise realization. The experiment therefore does not establish a deterministic threshold between `0.11` and `0.12 delta`.
+Dense re-quantization remains non-monotonic. For example `1.06x` recovers 19/24, `1.10x` 22/24; `1.20x` 17/24, `1.22x` 22/24. Treat factor as an alignment variable, not a scalar damage severity.
 
-Every refined condition retains Recall@100=1; failures remain inner `B + damaged b` reconstruction rather than A-layer retrieval.
+All tested locator structural scores remain 1.0; observed failure is inside `B + damaged b` reconstruction.
 
-Therefore **broad V18 publication robustness remains rejected**, and the next measurement should estimate success probability/alignment structure rather than add still finer points to one supposed threshold.
+Therefore **broad V18 publication robustness remains rejected**. The next useful measurement is error multiplicity/location in failed packages; only then is it sensible to decide whether V20-style redundancy would help or merely mask a structurally poor inner channel.
 
-The historical V18 `59/60`, `57 q4 / 2 q2 / 1 unresolved` summary remains retired and was not restored. V19–V20 historical precise metrics remain non-current; V21 retains only the principle **protocol constraints before rate**.
+The historical V18 `59/60`, `57 q4 / 2 q2 / 1 unresolved` summary remains retired. V19–V20 historical precise metrics remain non-current; V21 retains only **protocol constraints before rate**.
 
 The authoritative chain is current code + checked-in machine results + reproducible CI. Historical prose does not override them.
