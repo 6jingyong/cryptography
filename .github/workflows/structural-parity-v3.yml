@@ -1,8 +1,6 @@
 name: structural-parity-v3
 
 on:
-  push:
-    branches: [structural-parity-v3-20261103]
   workflow_dispatch:
 
 jobs:
