@@ -1,0 +1,10 @@
+{
+  "version": "deterministic-basis-v1-result-v1",
+  "scope": "synthetic-only",
+  "status": "PENDING_CI",
+  "gate_a_single_run": null,
+  "gate_b_independent_semantic_determinism": null,
+  "gate_c_bounded_evidence_regression": null,
+  "promote_candidate": null,
+  "note": "No deterministic-basis claim is made until the frozen candidate passes the declared gates."
+}
