@@ -26,32 +26,29 @@ Package-specific q, transform, geometry, ECC, host model, payload length, paddin
 
 - Protocol-v3 locator uses `A + public NPZ structure` and does not parse B before ranking: **PASS**.
 - Clean-host V12 E5: 8/8 unique payload hashes, 8/8 exact recovery, Recall@20=1, Recall@100=1, median target rank=1.
-- Structural-v4 remains a descriptor-level A-layer stress model. Important failures remain visible: 50% deletion has Recall@1000=0 and median rank 10589; 20% substitution has R@20=.9283/R@100=.9793/R@1000=.9812.
+- Structural-v4 remains descriptor-level A-layer evidence only; it does not prove the physical NPZ parser survives arbitrary deletion/split/merge.
 - Paper claim gate v7 remains PASS only for bounded C1–C6 claims; C5 remains mandatory.
 
 ## 3. V18 rebuilt carrier
 
-Implementation:
+Current implementation:
 
 ```text
 src/noisy_host_package_v18.py
 protocol/real-package-v18.py
 ```
 
-The sender observes a non-zero residual host before embedding. Host-aware modulo-QIM moves free-subspace coefficients to the nearest payload cosets. All concrete host/QIM/q/geometry state remains in B.
+The sender observes a non-zero residual host before embedding. Host-aware modulo-QIM moves free-subspace coefficients to payload cosets. Concrete q/host/geometry/decoder state remains in B.
 
 Smooth-reference first pass:
 
 ```text
 12/12 tables selected q=4
 q=2 fallback not exercised
-all calibration exact block recovery = 1.0
 host-adjustment NRMSE ~= 0.000720 .. 0.001093
 strictest table budget = 0.0045
 8/8 full-protocol seeds exact
 Recall@100 = 1.0
-median target rank = 1
-max target rank = 2
 ```
 
 Embedding adjustment is material: median adjustment RMS is about `0.446 ×` host-residual RMS; maximum observed about `0.485`.
@@ -60,17 +57,17 @@ The historical V18 `59/60`, `57 q4 / 2 q2 / 1 unresolved` summary remains **reti
 
 ## 4. Known-host residual breadth
 
-Frozen equal-energy matrix:
+The frozen equal-energy matrix passed all five declared sender-observed host families:
 
 ```text
-iid Gaussian                 PASS
-heteroscedastic Gaussian     PASS
-AR(1), rho=.85               PASS
-low-frequency drift          PASS
-Gaussian + sparse outliers   PASS
+iid Gaussian
+heteroscedastic Gaussian
+AR(1), rho=.85
+low-frequency drift
+Gaussian + sparse outliers
 ```
 
-Every model passed all 12 calibration tables, selected q=4 for all 12, and recovered 4/4 fresh protocol seeds with Recall@100=1.
+Each model passed all 12 calibration tables and 4/4 current-protocol seeds with Recall@100=1.
 
 Interpretation: **distribution-broad within the declared sender-observed synthetic host matrix**, not universal noisy-host robustness.
 
@@ -82,93 +79,102 @@ results/v18-residual-matrix.json
 results/v18-residual-matrix.md
 ```
 
-## 5. Post-embedding / pre-seal publication damage — coarse result
+## 5. Post-embedding / pre-seal damage
 
-Damage is applied after V18 embedding and A-keyed public assignment but before c is sealed, so outer integrity does not trivially mask V18 reconstruction failure.
+Damage is applied after V18 embedding and A-keyed public assignment but before c is sealed. This isolates the inner carrier rather than letting outer integrity reject the sample first.
 
-Seeds 301–304:
+The coarse and 8-seed refinement experiments established two facts:
 
-```text
-1.00x re-quantization   4/4 exact
-1.25x                   3/4
-1.50x                   2/4
->=1.75x                 0/4
+1. broad publication robustness is **REJECTED**;
+2. failures begin in `B + damaged b` inner decode while locator retrieval stays intact.
 
-noise 0.05 delta        4/4
-noise 0.10 delta        4/4
-noise 0.15 delta        2/4
-noise >=0.20 delta      0/4
-```
+The 8-seed refinement also showed that re-quantization factor is not a simple monotonic damage axis.
 
-All tested combined 1.50x/2.00x + 0.05–0.15 delta conditions failed the all-seed gate.
+## 6. 24-seed publication statistics — current best evidence
 
-Every target remained locator rank 1 / score 1.0 / Recall@100=1. Failure begins in direct `B + damaged b` decoding.
-
-Therefore **broad V18 publication robustness is REJECTED**.
-
-Evidence:
-
-```text
-results/v18-publication-damage-plan.md
-results/v18-publication-damage.json
-results/v18-publication-damage.md
-```
-
-## 6. Fresh-seed refinement — important methodological correction
-
-The transition intervals were retested with fresh seeds 401–408 and no carrier changes.
+Fresh seeds `501..524`; no carrier changes.
 
 ### Re-quantization
 
-```text
-1.00x  8/8
-1.05x  7/8
-1.10x  8/8
-1.15x  7/8
-1.20x  7/8
-1.25x  6/8
-```
-
-The key result is **non-monotonicity**: `1.05x` fails the 8/8 gate while `1.10x` passes. Therefore a scalar monotonic “re-quantization threshold” is not supported by this grid. Grid/coset/basis alignment matters.
-
-Do not state:
+Exact package recovery:
 
 ```text
-threshold lies between 1.10x and 1.15x
-all factors below 1.10x are safe
-largest passing factor = universal frontier
+factor : exact/24
+1.00   : 24
+1.02   : 24
+1.04   : 22
+1.06   : 19
+1.08   : 21
+1.10   : 22
+1.12   : 21
+1.14   : 19
+1.16   : 20
+1.18   : 22
+1.20   : 17
+1.22   : 22
+1.24   : 21
+1.26   : 19
+1.28   : 17
+1.30   : 16
 ```
 
-### Additive noise
+This response is **non-monotonic**. For example, `1.06x -> 19/24`, `1.10x -> 22/24`; `1.20x -> 17/24`, `1.22x -> 22/24`.
+
+Therefore the following claim is rejected:
 
 ```text
-0.10 delta  8/8
-0.11 delta  8/8
-0.12 delta  7/8
-0.13 delta  3/8
-0.14 delta  6/8
-0.15 delta  6/8
+larger re-quantization factor = monotonically worse V18 robustness
 ```
 
-The all-seed PASS/FAIL pattern is PASS, PASS, FAIL, FAIL, FAIL, FAIL, but exact pass counts are not monotonic because each alpha uses a different deterministic random-noise realization.
+The data are consistent with grid/coset/basis alignment effects. No periodic law is claimed yet.
 
-Therefore `0.10 delta` is independently reproduced and `0.11 delta` also passes this fresh 8-seed set, but a deterministic threshold between `0.11` and `0.12 delta` is **not** established.
+### Paired additive noise
 
-Every refined condition still has Recall@100=1; failure remains inner decode.
+For each seed/table, one base Gaussian field is drawn and the same field is scaled across alpha. Thus alpha is a genuine nested strength axis.
+
+```text
+sigma/delta : exact/24
+0.08        : 24
+0.09        : 24
+0.10        : 24
+0.11        : 24
+0.12        : 24
+0.13        : 23
+0.14        : 20
+0.15        : 16
+0.16        :  9
+0.17        :  4
+0.18        :  1
+```
+
+All 24 per-seed PASS→FAIL sequences are monotonic under paired scaling.
+
+This corrects the earlier independent-noise ambiguity. Additive-noise strength is a valid monotonic axis under the paired construction, but the result is still stochastic rather than a universal deterministic threshold.
+
+Supported statement:
+
+```text
+24/24 exact package recovery was observed through 0.12 delta;
+success probability declines sharply from 0.13 delta onward.
+```
+
+All locator structural scores remain `1.0`; failures remain inner decode.
 
 Evidence:
 
 ```text
-results/v18-publication-frontier-refine-plan.md
-results/v18-publication-frontier-refine.json
-results/v18-publication-frontier-refine.md
+results/v18-publication-statistics-plan.md
+results/v18-publication-statistics.json
+results/v18-publication-statistics.md
 ```
 
 ## 7. V18 / V20 boundary
 
-Pre-seal publication damage is a V18 inner-carrier question.
+Pre-seal numeric damage is a V18 inner-carrier question.
 
-Numeric corruption **after c is sealed** should fail strict outer integrity before inner decoding. Repair/survival of post-seal corruption belongs to **V20 outer reliability**, not V18.
+Numeric corruption **after c is sealed** should fail strict outer integrity before inner decoding. Repair/survival of post-seal corruption belongs to **V20 outer reliability**.
+
+The current statistics are not enough to size V20 redundancy. Before V20 is rebuilt, measure the multiplicity and location of inner decode errors under the paired-noise transition and representative re-quantization factors.
 
 ## 8. Current classification
 
@@ -177,12 +183,13 @@ V12 -> CURRENT clean-host b carrier
 V16 -> HISTORICAL-BUT-VALID A-layer benchmark; old terminology stale
 V17 -> HISTORICAL-BUT-VALID observations; responsibilities remapped
 V18 -> CURRENT_BOUNDED_REINTEGRATION
-       - broad across tested known-host distributions
+       - known-host feasibility supported
+       - tested host-distribution breadth supported
        - broad publication robustness REJECTED
-       - re-quantization response non-monotonic on tested grid
-       - additive-noise result is stochastic, not a deterministic threshold
+       - scalar monotonic re-quantization threshold REJECTED
+       - paired additive-noise transition measured statistically
 V19 -> NEEDS-REINTEGRATION
-V20 -> NEEDS-REINTEGRATION; post-seal repair belongs here
+V20 -> NEEDS-REINTEGRATION; do not size redundancy before error-profile measurement
 V21 -> retain "protocol constraints before rate" only; old quantitative results STALE
 ```
 
@@ -190,11 +197,11 @@ V21 -> retain "protocol constraints before rate" only; old quantitative results 
 
 1. Public locator-label stability is not proven across all package configurations.
 2. Current NPZ locator is not proven robust to actual physical table deletion / changed table count.
-3. Structural-v4 has a sharp near-decoy boundary at six or fewer correct pairs.
-4. Cross-platform QR/eigh/sign basis determinism remains unresolved.
-5. V18 q=2 fallback remains unexercised.
-6. V18 re-quantization needs a dense success map, not another scalar-threshold search.
-7. V18 additive-noise behavior needs a success-probability experiment with paired/scaled noise or multiple replicates per alpha.
+3. Cross-platform QR/eigh/sign basis determinism remains unresolved.
+4. V18 q=2 fallback remains unexercised.
+5. Re-quantization alignment structure is measured but not mechanistically modeled.
+6. Additive-noise package success probability has only 24 payload/host seeds; confidence intervals remain wide near the transition.
+7. Inner error multiplicity/location is not yet characterized.
 8. V19 and V20 are not current implementations.
 9. No universal undetectability/security or real-publication claim is supported.
 
@@ -202,18 +209,19 @@ V21 -> retain "protocol constraints before rate" only; old quantitative results 
 
 Do **not** widen delta, add redundancy, move to V19, or optimize bit/value yet.
 
-The next experiment should change the **measurement model**, not the carrier:
+Next experiment should be measurement-only:
 
 ```text
-re-quantization:
-  dense factor map -> identify safe/unsafe alignment bands or periodic structure
+paired additive noise:
+  inspect failed packages at 0.13..0.18 delta
+  count symbol/byte/block/table errors
+  determine whether failures are sparse or catastrophic
 
-additive noise:
-  many fresh payload/host seeds
-  paired base-noise fields scaled across alpha, and/or multiple independent replicates per alpha
-  estimate package-exact success probability with uncertainty
+representative re-quantization:
+  inspect error multiplicity at safe/unsafe alignment points
+  compare error structure, not only package-exact rate
 ```
 
-This follows directly from the non-monotonic refinement result. If a later guard mode or V20 redundancy is justified, it should be designed only after this probability/alignment map exists.
+Only after that should V20 outer reliability be designed. If failures are dense/catastrophic, V20-style redundancy may be a poor response and the current V18 carrier should remain explicitly bounded rather than “rescued”.
 
-AUDIT GATE: PASS — evidence chain remains auditable; broad V18 publication robustness and a scalar re-quantization threshold are rejected
+AUDIT GATE: PASS — V18 feasibility is current, broad publication robustness is rejected, and the next decision depends on measured error structure
