@@ -1,0 +1,95 @@
+{
+  "version": "structural-parity-v3-result-v1",
+  "scope": "synthetic-only",
+  "status": "PROMOTION_GATE_PASS",
+  "promotion_gate_pass": true,
+  "configuration": {
+    "seeds": [1201, 1202, 1203, 1204, 1205, 1206, 1207, 1208, 1209, 1210, 1211, 1212, 1213, 1214, 1215, 1216, 1217, 1218, 1219, 1220, 1221, 1222, 1223, 1224],
+    "payload_bytes": 512,
+    "channels": 2,
+    "corpus_size": 2000,
+    "top_k": 20,
+    "A_candidate": "A-v4-erasure-xlen",
+    "carrier": "src/noisy_host_package_v18_deterministic.py",
+    "outer_reliability": "unchanged protocol/real-package-v20.py",
+    "physical_table_count": 12,
+    "data_table_count": 11,
+    "structural_parity_table_count": 1,
+    "data_chunk_bit_lengths": [372, 373, 372, 372, 373, 372, 373, 372, 372, 373, 372],
+    "structural_parity_bits": 373,
+    "structural_parity_bytes_equivalent": 46.625,
+    "structural_overhead_fraction_of_payload": 0.091064453125,
+    "q_delta_unchanged": true,
+    "v20_geometry_unchanged": true
+  },
+  "matrix": {
+    "clean_runs": 24,
+    "single_table_deletion_runs": 288,
+    "single_tail_segment_truncation_runs": 288,
+    "total_observations": 600,
+    "every_public_table_tested_per_seed": true
+  },
+  "summary": {
+    "clean": {
+      "runs": 24,
+      "locator_score_median": 1.0,
+      "recall_at_20": 1.0,
+      "median_target_rank": 1.0,
+      "max_target_rank": 1,
+      "candidate_produced_runs": 24,
+      "direct_exact_runs": 24,
+      "v20_accepted_runs": 24,
+      "v20_repair_attempts": 0,
+      "unresolved_structural_bits_max": 0
+    },
+    "drop_one_table": {
+      "runs": 288,
+      "locator_score_median": 0.9166666666666666,
+      "recall_at_20": 1.0,
+      "median_target_rank": 1.0,
+      "max_target_rank": 1,
+      "candidate_produced_runs": 288,
+      "direct_exact_runs": 288,
+      "v20_accepted_runs": 288,
+      "v20_repair_attempts": 0,
+      "unresolved_structural_bits_max": 0,
+      "data_table_deletions": {"runs": 264, "direct_exact_runs": 264},
+      "parity_table_deletions": {"runs": 24, "direct_exact_runs": 24}
+    },
+    "truncate_one_tail_segment": {
+      "runs": 288,
+      "locator_score_median": 1.0,
+      "recall_at_20": 1.0,
+      "median_target_rank": 1.0,
+      "max_target_rank": 1,
+      "candidate_produced_runs": 288,
+      "direct_exact_runs": 288,
+      "v20_accepted_runs": 288,
+      "v20_repair_attempts": 0,
+      "unresolved_structural_bits_max": 0,
+      "data_table_truncations": {"runs": 264, "direct_exact_runs": 264},
+      "parity_table_truncations": {"runs": 24, "direct_exact_runs": 24}
+    }
+  },
+  "interpretation": {
+    "accepted": [
+      "A-v4 stable x-grid labels keep every tested single-table deletion inside the locator Top-20 set",
+      "11+1 XOR structural parity reconstructs every tested single data-table deletion exactly before V20",
+      "parity-table deletion requires no reconstruction when all 11 data tables remain",
+      "one complete tail-segment truncation on any tested table is recovered exactly at the structural layer",
+      "all 600 observations end with zero unresolved structural payload bits",
+      "current V20 repair is not invoked in any of the 600 observations"
+    ],
+    "not_yet_promoted": "the current production path remains A-v3 + deterministic V18 + V20 until the candidate is integrated into current E2E/paper workflows and re-audited",
+    "boundary": "bounded single-table/single-tail-segment synthetic erasure result only; not multi-table loss, arbitrary insertion/reordering, optimal redundancy, real-publication robustness, or security"
+  },
+  "evidence": {
+    "plan": "results/structural-parity-v3-plan.md",
+    "candidate": "protocol/structural-parity-v3.py",
+    "workflow_run": 41495970007,
+    "job_id": 125450880152,
+    "artifact_id": 13166113925,
+    "artifact_zip_sha256": "f4b8d67f75552991a18674a6405642eca507f5db9e275a59e5418af4e84f5be9",
+    "full_artifact_contains": "600-run JSON plus generated summary Markdown"
+  }
+}
