@@ -16,12 +16,12 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Compile integration runner
-        run: python -m py_compile tools/current_end_to_end.py
+        run: python -m py_compile tools/current_end_to_end.py src/noisy_host_package_v18_deterministic.py
       - name: Run current end-to-end synthetic bundle
         run: |
           python tools/current_end_to_end.py \
             --v20 protocol/real-package-v20.py \
-            --engine src/noisy_host_package_v18.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
             --paper-tool tools/paper_v6.py \
             --seeds 901,902,903,904,905,906,907,908 \
             --representative-seed 901 \

@@ -1,0 +1,113 @@
+name: deterministic-basis-v1
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  replica:
+    strategy:
+      fail-fast: false
+      matrix:
+        replica: [a, b]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile deterministic candidate and semantic tools
+        run: |
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
+          python -m py_compile tools/current_end_to_end.py
+          python -m py_compile tools/paper_bundle_v7.py
+          python -m py_compile tools/finalize_paper_bundle_v7.py
+          python -m py_compile tools/current_bundle_semantic_fingerprint.py
+      - name: Build fresh current E2E with deterministic basis candidate
+        run: |
+          python tools/current_end_to_end.py \
+            --v20 protocol/real-package-v20.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --paper-tool tools/paper_v6.py \
+            --seeds 901,902,903,904,905,906,907,908 \
+            --representative-seed 901 \
+            --payload-bytes 512 \
+            --channels 2 \
+            --corpus-size 2000 \
+            --near-decoy-fraction 0.01 \
+            --top-k 100 \
+            --out-dir /tmp/candidate-base
+      - name: Render fresh paper-v7 from candidate bundle
+        run: |
+          python tools/paper_bundle_v7.py \
+            --base-bundle /tmp/candidate-base \
+            --out-dir /tmp/candidate-base/paper_v7_output
+          python tools/finalize_paper_bundle_v7.py \
+            --paper-dir /tmp/candidate-base/paper_v7_output
+      - name: Fingerprint semantic current bundle
+        run: |
+          python tools/current_bundle_semantic_fingerprint.py \
+            --bundle /tmp/candidate-base \
+            --out /tmp/candidate-base/semantic_fingerprint.json
+      - name: Verify basis version is declared in B and wrong version is rejected
+        run: |
+          python - <<'PY'
+          import json, runpy, pathlib
+          root = pathlib.Path('/tmp/candidate-base')
+          B = json.loads((root/'manifest_v20.json').read_text())
+          expected = 'deterministic-dct-mgs-v1'
+          assert B.get('basis_version') == expected
+          assert all(t.get('basis_version') == expected for t in B['tables'])
+          eng = runpy.run_path('src/noisy_host_package_v18_deterministic.py')
+          import numpy as np
+          z = np.load(root/'published_v20.npz')
+          table = dict(B['tables'][0])
+          table['basis_version'] = 'wrong-basis-version'
+          tid = int(table['table_id'])
+          try:
+              eng['decode_table'](z[f'table_{tid}_y'], table)
+          except RuntimeError as exc:
+              assert 'basis version mismatch' in str(exc)
+          else:
+              raise AssertionError('candidate decoder accepted wrong basis version')
+          print('basis manifest/refusal control PASS')
+          PY
+      - name: Upload candidate replica
+        uses: actions/upload-artifact@v4
+        with:
+          name: deterministic-basis-replica-${{ matrix.replica }}
+          path: /tmp/candidate-base
+          if-no-files-found: error
+
+  compare:
+    needs: replica
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download independent candidate replicas
+        uses: actions/download-artifact@v4
+        with:
+          pattern: deterministic-basis-replica-*
+          path: /tmp/replicas
+          merge-multiple: false
+      - name: Compile comparison tool
+        run: python -m py_compile tools/compare_semantic_fingerprints.py
+      - name: Require exact semantic equality across independent runners
+        run: |
+          python tools/compare_semantic_fingerprints.py \
+            --a /tmp/replicas/deterministic-basis-replica-a/semantic_fingerprint.json \
+            --b /tmp/replicas/deterministic-basis-replica-b/semantic_fingerprint.json \
+            --out /tmp/semantic-comparison.json
+      - name: Upload semantic comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deterministic-basis-comparison
+          path: /tmp/semantic-comparison.json
+          if-no-files-found: warn

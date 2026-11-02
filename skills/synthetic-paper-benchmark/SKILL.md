@@ -1,6 +1,6 @@
 ---
 name: synthetic-paper-benchmark
-description: Run and render clearly labeled synthetic/mock structured-numeric carrier benchmarks using the corrected A -> c -> B/b/r -> a protocol. Keep machine results authoritative and paper presentation downstream.
+description: Run and render clearly labeled synthetic/mock structured-numeric carrier benchmarks using the corrected A -> c -> B/b/r -> a protocol. Keep reproducible machine results authoritative and paper presentation downstream.
 ---
 
 # Synthetic Paper Benchmark
@@ -9,7 +9,7 @@ description: Run and render clearly labeled synthetic/mock structured-numeric ca
 
 Use this skill only for synthetic/mock research artifacts.
 
-Every generated scientific-looking artifact must remain visibly labeled with language such as:
+Every scientific-looking artifact must remain visibly labeled, for example:
 
 ```text
 SYNTHETIC BENCHMARK
@@ -17,7 +17,7 @@ SIMULATED DATA
 MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS
 ```
 
-Do not use the workflow to hide real confidential material in real publications, fabricate real evidence, impersonate real institutions/authors, or claim a synthetic result came from a real experiment.
+Do not use this workflow to hide real confidential material in real publications, fabricate real evidence, impersonate real institutions/authors, or claim synthetic results came from real experiments.
 
 # Project objective
 
@@ -28,7 +28,7 @@ synthetic payload a
 -> numeric carrier b
 -> per-package reconstruction/reliability manifest B
 -> optional authenticated repair data r
--> candidate package c mixed among synthetic background d
+-> candidate c mixed among synthetic background d
 -> pre-shared A locates / bootstraps c
 -> authenticated open
 -> B decodes b; optional V20 repair
@@ -41,36 +41,67 @@ A = long-lived root locator / canonicalization / bootstrap protocol
 B = per-package reconstruction + reliability manifest
 ```
 
-Package-specific q, delta, transform, geometry, ECC, payload length, shard size, parity count, etc. belong in B, not A.
+Package-specific q, delta, transform, geometry, ECC, payload length, **basis version**, shard size, parity count, etc. belong in B, not A.
 
 # Priority
-
-Use this ordering:
 
 ```text
 1. A can find/bootstrap c
 2. c can be opened/authenticated
 3. B completely explains b/r
 4. exact a is recovered
-5. machine evidence feeds the paper layer without hand substitution
-6. paper figures/data/claims remain traceable to the same current artifact
-7. fixed-seed paper inputs should be numerically reproducible
+5. machine evidence is reproducible under its declared environment
+6. the paper layer consumes that same evidence without hand substitution
+7. figures/data/claims remain traceable
 8. only then optimize capacity/rate/overhead
 ```
 
-Do not trade locator recall, reconstruction metadata, strict verification, evidence traceability, or determinism for a prettier bit/value number.
+Do not trade locator recall, reconstruction metadata, strict verification, reproducibility, or traceability for a prettier bit/value number.
 
-# Current technical modes
+# Current V18 engine
 
-## V18 noisy-host carrier
+Current engine:
 
-Current bounded host-aware modulo-QIM carrier for explicit sender-observed synthetic residual hosts.
+```text
+src/noisy_host_package_v18_deterministic.py
+basis_version = deterministic-dct-mgs-v1
+```
 
-Evidence covers frozen residual families and publication-damage statistics. Broad publication robustness is explicitly rejected.
+Legacy baseline:
 
-## V20 logical outer reliability
+```text
+src/noisy_host_package_v18.py
+```
 
-Current bounded V20 uses fixed RS shard geometry around the decoded payload and logical integrity over `B + masked r`, with exact final payload SHA-256 required for acceptance.
+The current deterministic basis uses fixed-order DCT-II candidates plus two-pass modified Gram-Schmidt and fixed scalar reductions. Basis version is B state. A decoder must reject a mismatched declared basis version.
+
+Frozen promotion evidence:
+
+```text
+Gate A: current E2E/paper viability PASS
+Gate B: two independent CI runners, exact semantic equality, mismatch_count=0
+Gate C: bounded V18/V20 evidence PASS without q/delta/RS retuning
+```
+
+Evidence:
+
+```text
+results/deterministic-basis-v1-plan.md
+results/deterministic-basis-v1.json
+results/deterministic-basis-v1.md
+```
+
+This establishes exact semantic reproducibility for the frozen configuration across the declared independent GitHub Actions environment. Do not generalize it into universal every-platform bit identity.
+
+# V18 bounded interpretation
+
+V18 remains a bounded host-aware modulo-QIM carrier for explicit sender-observed synthetic residual hosts.
+
+Broad publication robustness is explicitly rejected. Re-quantization remains alignment-dependent/non-monotonic, and q=2 fallback remains unexercised.
+
+# V20 logical outer reliability
+
+Current fixed geometry:
 
 ```text
 512-byte payload
@@ -80,11 +111,11 @@ Current bounded V20 uses fixed RS shard geometry around the decoded payload and 
 32 parity bytes total = 6.25% payload parity overhead
 ```
 
-Its tested stronger failure envelope aligns with the declared per-shard RS correction capacity.
+Final acceptance requires exact authenticated payload SHA-256. In the tested stronger grid, V20 failure aligns with at least one shard exceeding the declared four-byte correction capacity.
 
-## V19 selector
+# V19 selector
 
-V19 remains sender-side policy for choosing among package modes. It is not the immediate priority while one integrated current mode is primary.
+V19 remains sender-side mode-selection policy. It is not the immediate priority while one integrated current carrier mode is primary.
 
 # Current end-to-end test
 
@@ -94,20 +125,13 @@ Use:
 tools/current_end_to_end.py
 ```
 
-Current integrated path:
+Preferred engine argument:
 
 ```text
-current V18/V20 encode
--> c mixed among synthetic d
--> A rank candidate c without parsing B
--> authenticated V20 open
--> exact a
--> explicit decoy/tamper rejection
--> same current V20 NPZ + B -> paper analysis
--> same current multiseed result -> paper E5
+--engine src/noisy_host_package_v18_deterministic.py
 ```
 
-Frozen seeds `901..908` currently pass:
+Frozen seeds `901..908` pass:
 
 ```text
 8 / 8 unique payload hashes
@@ -127,7 +151,7 @@ tools/paper_bundle_v7.py
 tools/finalize_paper_bundle_v7.py
 ```
 
-Paper-v7 is now the preferred paper-shaped artifact. From one fresh current V20 bundle it generates:
+Paper-v7 generates from one fresh current V20 bundle:
 
 ```text
 4 SVG figures
@@ -151,7 +175,7 @@ F3 -> morphology-matched descriptive fit vs same-curve linear baseline
 F4 -> same current-V20 E5 used by paper E5
 ```
 
-Current selected examples:
+Selected examples:
 
 ```text
 bell_peak  -> table 7
@@ -160,7 +184,7 @@ periodic   -> table 9
 saturating -> table 1
 ```
 
-Current claim traceability:
+Claim traceability:
 
 ```text
 C1 -> F1/F2 + raw data
@@ -169,63 +193,13 @@ C4 -> F4 + current-V20 E5
 C5 -> mandatory non-provenance/non-mechanism limitation
 ```
 
-The final complete manifest covers all pre-existing paper-v7 outputs and independently verifies with zero mismatches.
-
-Evidence:
-
-```text
-results/paper-bundle-v7-plan.md
-results/paper-bundle-v7.json
-results/paper-bundle-v7.md
-```
-
-# Current reproducibility boundary
-
-Paper-v7 passes traceability **within each artifact**, but a fixed seed does not yet guarantee numerically identical visible carrier data across independent fresh runs.
-
-Two audited runs keep stable:
-
-```text
-payload SHA-256
-current-V20 E5 hash/result
-morphology representative selection
-presentation archetype
-story type
-```
-
-but differ in:
-
-```text
-current NPZ hash
-current B manifest hash
-visible values in 8 / 12 tables
-```
-
-Do not call the visible current carrier numerically deterministic until this is fixed.
-
-The leading suspected locus is numerical basis construction (`QR/eigh/sign`), which was already a known unresolved technical issue before paper-v7 exposed its artifact-level consequence.
+The earlier paper-v7 reproducibility caveat is resolved in the declared CI environment. The last paper-only drift came from `np.polyfit` at ~1e-16 scale and is now replaced with fixed-order analytic linear regression and `math.fsum` R².
 
 # Paper interpretation discipline
 
-The paper layer is downstream of authoritative machine evidence.
+Morphology-based archetypes are presentation choices, not provenance inference. A good generic fit is descriptive, not mechanistic proof.
 
-```text
-current machine package/results
--> morphology analysis
--> narrative archetype
--> descriptive fits
--> figure planning
--> claim map
--> traceable synthetic paper bundle
-```
-
-Morphology-based archetypes are presentation choices, not provenance inference.
-
-A peak-shaped synthetic curve may justify “peak-profile analysis”; it does not justify inventing a real Raman experiment, material, instrument, patient cohort, institution, or mechanism.
-
-A good generic fit is descriptive, not mechanistic proof.
-
-# Claim-driven experiment states
+Only completed machine evidence may be rendered as evidence. Keep experiment states explicit:
 
 ```text
 READY_LOCAL
@@ -234,26 +208,30 @@ COMPLETED
 FAILED
 ```
 
-Only `COMPLETED` machine results may be rendered as evidence.
-
 # Next system-level milestone
 
-Do not add another carrier version, more paper figures, or another dense damage grid next.
+Do not keep optimizing determinism now that the declared-CI gate passes. Do not add another dense numeric-noise grid, more figures, or rate tuning by default.
 
-The next high-value milestone is deterministic visible-carrier generation:
+The next high-value technical gap is actual package structural damage, because Structural-v4 is descriptor-level only:
 
 ```text
-same seed + same current protocol
--> same semantic B
--> same numeric table arrays
--> same exported CSV values
--> stable paper inputs
--> existing locator / exact recovery / V20 gates remain intact
+whole table deletion
+row truncation / changed table shape
+shape-preserving localized value burst
 ```
 
-The first hypothesis to test is basis construction rather than paper selection or payload RNG.
+Any such experiment should identify which layer fails first:
 
-Any deterministic-basis change must rerun the current V18/V20/E2E/paper-v7 gates. Do not accept numerical determinism if it silently changes A/B responsibilities or invalidates the existing bounded reliability semantics.
+```text
+A/locator
+NPZ/b parsing
+inner decode
+candidate payload
+V20 repair
+authenticated B/r
+```
+
+If the dominant failure is structural A/parser behavior, fix that layer rather than adding RS parity. If structural handling is not currently blocking the complete system, prioritize integrated package usability instead.
 
 # Claim discipline
 
@@ -269,7 +247,7 @@ mechanism proven by fit
 
 unless a machine benchmark genuinely establishes that exact statement—which the current project does not.
 
-Prefer:
+Prefer bounded language such as:
 
 ```text
 exact in this synthetic run
@@ -277,6 +255,5 @@ all tested seeds passed
 empirical operating point
 descriptive fit
 morphology-based presentation archetype
-unresolved / pending under the current gate
 not a universal guarantee
 ```

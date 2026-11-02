@@ -1,0 +1,62 @@
+{
+  "version": "deterministic-basis-v1-result-v1",
+  "scope": "synthetic-only",
+  "status": "PROMOTION_GATES_PASS",
+  "basis_version": "deterministic-dct-mgs-v1",
+  "gate_a_single_run": {
+    "pass": true,
+    "seeds": [901, 902, 903, 904, 905, 906, 907, 908],
+    "exact_recovery_rate": 1.0,
+    "recall_at_20": 1.0,
+    "recall_at_100": 1.0,
+    "all_payload_hashes_unique": true,
+    "median_target_rank": 1.0,
+    "max_target_rank": 1,
+    "paper_v7_gate_pass": true,
+    "basis_version_declared_in_B": true,
+    "wrong_basis_version_rejected": true
+  },
+  "gate_b_independent_semantic_determinism": {
+    "pass": true,
+    "independent_replicas": 2,
+    "semantic_equal": true,
+    "mismatch_count": 0,
+    "semantic_authority_sha256": "243b05fd32624e931379ea471c2d209700fb3491c33a911f9071084e8f57bc04",
+    "raw_container_hash_equal": true,
+    "workflow_run": 41393344543,
+    "comparison_artifact": 13118720466,
+    "comparison_artifact_digest": "sha256:5ef4da7eefbea48227553bdc89069e1db6e400fe40a65268cb7c9f1a8142185b"
+  },
+  "gate_c_bounded_evidence_regression": {
+    "pass": true,
+    "no_q_delta_rs_retuning": true,
+    "v18_core": true,
+    "v18_residual_matrix": true,
+    "v18_publication_statistics": true,
+    "v18_error_profile": true,
+    "v20_bounded_reintegration": true,
+    "v20_failure_envelope": true,
+    "workflow_run": 41393344478,
+    "artifacts": [
+      {
+        "id": 13118044396,
+        "name": "deterministic-basis-gate-c-v18-core",
+        "digest": "sha256:d2917fba390189b45886f548ae25170329c622d529b211f010e7e5b3fee10d05"
+      },
+      {
+        "id": 13118637081,
+        "name": "deterministic-basis-gate-c-v18-damage",
+        "digest": "sha256:117d73b6721dde1dda0806f226fed53320a1ab9c0e05cade7f48a68f6f4b4a3c"
+      },
+      {
+        "id": 13117789652,
+        "name": "deterministic-basis-gate-c-v20",
+        "digest": "sha256:000802f2987cae7da5db9e765486b33eba1fbb9c8a9177986d99fa58a2108445"
+      }
+    ]
+  },
+  "promote_candidate": true,
+  "current_engine": "src/noisy_host_package_v18_deterministic.py",
+  "legacy_engine": "src/noisy_host_package_v18.py",
+  "boundary": "Exact semantic reproducibility is established for the frozen configuration across the declared independent GitHub Actions environment. This is not a universal cross-platform bit-identity claim."
+}

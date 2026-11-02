@@ -16,11 +16,11 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Compile statistics harness
-        run: python -m py_compile protocol/v18-publication-statistics.py
+        run: python -m py_compile protocol/v18-publication-statistics.py src/noisy_host_package_v18_deterministic.py
       - name: Run publication-damage statistics
         run: |
           python protocol/v18-publication-statistics.py \
-            --engine src/noisy_host_package_v18.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
             --protocol protocol/real-package-v18.py \
             --seeds 501,502,503,504,505,506,507,508,509,510,511,512,513,514,515,516,517,518,519,520,521,522,523,524 \
             --payload-bytes 512 \

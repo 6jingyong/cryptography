@@ -1,0 +1,141 @@
+name: deterministic-basis-gate-c
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  v18-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile candidate V18 core harnesses
+        run: |
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
+          python -m py_compile protocol/real-package-v18.py
+          python -m py_compile protocol/v18-residual-matrix.py
+      - name: Candidate single-seed V18 gate
+        run: |
+          rm -rf /tmp/det-v18-single
+          python src/noisy_host_package_v18_deterministic.py \
+            --seed 101 --payload-bytes 512 --channels 2 --out-dir /tmp/det-v18-single
+      - name: Candidate eight-seed current-protocol gate
+        run: |
+          python protocol/real-package-v18.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --seeds 101,102,103,104,105,106,107,108 \
+            --payload-bytes 512 --channels 2 \
+            --corpus-size 2000 --top-k 100 \
+            --out /tmp/det-v18-protocol.json
+      - name: Candidate frozen residual-model matrix
+        run: |
+          python protocol/v18-residual-matrix.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --protocol protocol/real-package-v18.py \
+            --seeds 201,202,203,204 \
+            --payload-bytes 512 --channels 2 \
+            --corpus-size 2000 --top-k 100 \
+            --out /tmp/det-v18-residual-matrix.json
+      - name: Upload candidate V18 core evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: deterministic-basis-gate-c-v18-core
+          path: |
+            /tmp/det-v18-single/noisy_host_v18_results.json
+            /tmp/det-v18-single/manifest_noisy_host_v18.json
+            /tmp/det-v18-protocol.json
+            /tmp/det-v18-residual-matrix.json
+          if-no-files-found: error
+
+  v18-damage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile candidate V18 damage harnesses
+        run: |
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
+          python -m py_compile protocol/v18-publication-statistics.py
+          python -m py_compile protocol/v18-error-profile.py
+      - name: Candidate 24-seed publication statistics
+        run: |
+          python protocol/v18-publication-statistics.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --protocol protocol/real-package-v18.py \
+            --seeds 501,502,503,504,505,506,507,508,509,510,511,512,513,514,515,516,517,518,519,520,521,522,523,524 \
+            --payload-bytes 512 --channels 2 \
+            --out /tmp/det-v18-publication-statistics.json
+      - name: Candidate V18 transition error profile
+        run: |
+          python protocol/v18-error-profile.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --protocol protocol/real-package-v18.py \
+            --statistics protocol/v18-publication-statistics.py \
+            --seeds 601,602,603,604,605,606,607,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,624 \
+            --payload-bytes 512 --channels 2 \
+            --out /tmp/det-v18-error-profile.json
+      - name: Upload candidate V18 damage evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: deterministic-basis-gate-c-v18-damage
+          path: |
+            /tmp/det-v18-publication-statistics.json
+            /tmp/det-v18-error-profile.json
+          if-no-files-found: error
+
+  v20:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile candidate V20 harnesses
+        run: |
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
+          python -m py_compile protocol/real-package-v20.py
+          python -m py_compile protocol/v20-bounded-reintegration.py
+          python -m py_compile protocol/v20-failure-envelope.py
+      - name: Candidate clean V20 smoke test
+        run: |
+          python protocol/real-package-v20.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --seed 701 --payload-bytes 512 --channels 2
+      - name: Candidate bounded V20 matrix
+        run: |
+          python protocol/v20-bounded-reintegration.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --v20 protocol/real-package-v20.py \
+            --statistics protocol/v18-publication-statistics.py \
+            --seeds 701,702,703,704,705,706,707,708,709,710,711,712,713,714,715,716,717,718,719,720,721,722,723,724 \
+            --payload-bytes 512 --channels 2 \
+            --out /tmp/det-v20-bounded.json
+      - name: Candidate fixed-geometry V20 failure envelope
+        run: |
+          python protocol/v20-failure-envelope.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --v20 protocol/real-package-v20.py \
+            --statistics protocol/v18-publication-statistics.py \
+            --seeds 801,802,803,804,805,806,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824 \
+            --payload-bytes 512 --channels 2 \
+            --out /tmp/det-v20-failure-envelope.json
+      - name: Upload candidate V20 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: deterministic-basis-gate-c-v20
+          path: |
+            /tmp/det-v20-bounded.json
+            /tmp/det-v20-failure-envelope.json
+          if-no-files-found: error

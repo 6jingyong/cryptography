@@ -42,11 +42,39 @@ def load_json(path: Path):
 
 
 def r2(y, pred) -> float:
-    y = np.asarray(y, float)
-    pred = np.asarray(pred, float)
-    ss = float(np.sum((y - pred) ** 2))
-    den = float(np.sum((y - np.mean(y)) ** 2)) + 1e-12
+    """Fixed-order R² for paper-plan numbers.
+
+    The inputs are already float64 arrays from the current package. Convert to
+    Python floats and use math.fsum so the paper-side comparison does not depend
+    on BLAS/vector-reduction order across independent CI runners.
+    """
+    ys = [float(v) for v in np.asarray(y, float).reshape(-1)]
+    ps = [float(v) for v in np.asarray(pred, float).reshape(-1)]
+    if len(ys) != len(ps) or not ys:
+        raise ValueError("r2 requires non-empty equal-length inputs")
+    mean_y = math.fsum(ys) / len(ys)
+    ss = math.fsum((a - b) * (a - b) for a, b in zip(ys, ps))
+    den = math.fsum((a - mean_y) * (a - mean_y) for a in ys) + 1e-12
     return 1.0 - ss / den
+
+
+def deterministic_linear_r2(x, y) -> float:
+    """Analytic one-variable linear-regression R² with fixed scalar reductions."""
+    xs = [float(v) for v in np.asarray(x, float).reshape(-1)]
+    ys = [float(v) for v in np.asarray(y, float).reshape(-1)]
+    if len(xs) != len(ys) or not xs:
+        raise ValueError("linear fit requires non-empty equal-length inputs")
+    mean_x = math.fsum(xs) / len(xs)
+    mean_y = math.fsum(ys) / len(ys)
+    sxx = math.fsum((v - mean_x) * (v - mean_x) for v in xs)
+    if sxx <= 0.0:
+        pred = [mean_y] * len(xs)
+    else:
+        sxy = math.fsum((a - mean_x) * (b - mean_y) for a, b in zip(xs, ys))
+        slope = sxy / sxx
+        intercept = mean_y - slope * mean_x
+        pred = [intercept + slope * v for v in xs]
+    return r2(ys, pred)
 
 
 def visible_curves(package_path: Path, manifest_path: Path):
@@ -136,8 +164,7 @@ def fit_ablation(curves, fit_rows):
         tid = int(row["table_id"])
         x = curves[tid]["x"]
         y = curves[tid]["y"][:, 0]
-        p = np.polyfit(x, y, 1)
-        linear = r2(y, np.polyval(p, x))
+        linear = deterministic_linear_r2(x, y)
         rows.append({
             "table_id": tid,
             "morphology": row["morphology"],
