@@ -26,12 +26,12 @@ Package-specific q, transform, geometry, ECC, host model, payload length, paddin
 
 - Protocol-v3 locator uses `A + public NPZ structure` and does not parse B before ranking: **PASS**.
 - Clean-host V12 E5: 8/8 unique payload hashes, 8/8 exact recovery, Recall@20=1, Recall@100=1, median target rank=1.
-- Structural-v4 remains descriptor-level A-layer evidence only; it does not prove the physical NPZ parser survives arbitrary deletion/split/merge.
+- Structural-v4 remains descriptor-level A-layer evidence only; it does not prove arbitrary physical NPZ deletion/split/merge survival.
 - Paper claim gate v7 remains PASS only for bounded C1–C6 claims; C5 remains mandatory.
 
 ## 3. V18 rebuilt carrier
 
-Current implementation:
+Implementation:
 
 ```text
 src/noisy_host_package_v18.py
@@ -57,80 +57,17 @@ The historical V18 `59/60`, `57 q4 / 2 q2 / 1 unresolved` summary remains **reti
 
 ## 4. Known-host residual breadth
 
-The frozen equal-energy matrix passed all five declared sender-observed host families:
-
-```text
-iid Gaussian
-heteroscedastic Gaussian
-AR(1), rho=.85
-low-frequency drift
-Gaussian + sparse outliers
-```
-
-Each model passed all 12 calibration tables and 4/4 current-protocol seeds with Recall@100=1.
+The frozen equal-energy matrix passed all five declared sender-observed host families: iid Gaussian, heteroscedastic Gaussian, AR(1) rho=.85, low-frequency drift, and Gaussian+sparse outliers. Each passed all 12 calibration tables and 4/4 current-protocol seeds.
 
 Interpretation: **distribution-broad within the declared sender-observed synthetic host matrix**, not universal noisy-host robustness.
 
-Evidence:
+## 5. Publication-damage statistics
 
-```text
-results/v18-residual-matrix-plan.md
-results/v18-residual-matrix.json
-results/v18-residual-matrix.md
-```
+Damage is applied after V18 embedding and A-keyed public assignment but before c is sealed to isolate the inner carrier.
 
-## 5. Post-embedding / pre-seal damage
+Broad publication robustness is **REJECTED**. Failures begin inside `B + damaged b`; locator retrieval remains intact.
 
-Damage is applied after V18 embedding and A-keyed public assignment but before c is sealed. This isolates the inner carrier rather than letting outer integrity reject the sample first.
-
-The coarse and 8-seed refinement experiments established two facts:
-
-1. broad publication robustness is **REJECTED**;
-2. failures begin in `B + damaged b` inner decode while locator retrieval stays intact.
-
-The 8-seed refinement also showed that re-quantization factor is not a simple monotonic damage axis.
-
-## 6. 24-seed publication statistics — current best evidence
-
-Fresh seeds `501..524`; no carrier changes.
-
-### Re-quantization
-
-Exact package recovery:
-
-```text
-factor : exact/24
-1.00   : 24
-1.02   : 24
-1.04   : 22
-1.06   : 19
-1.08   : 21
-1.10   : 22
-1.12   : 21
-1.14   : 19
-1.16   : 20
-1.18   : 22
-1.20   : 17
-1.22   : 22
-1.24   : 21
-1.26   : 19
-1.28   : 17
-1.30   : 16
-```
-
-This response is **non-monotonic**. For example, `1.06x -> 19/24`, `1.10x -> 22/24`; `1.20x -> 17/24`, `1.22x -> 22/24`.
-
-Therefore the following claim is rejected:
-
-```text
-larger re-quantization factor = monotonically worse V18 robustness
-```
-
-The data are consistent with grid/coset/basis alignment effects. No periodic law is claimed yet.
-
-### Paired additive noise
-
-For each seed/table, one base Gaussian field is drawn and the same field is scaled across alpha. Thus alpha is a genuine nested strength axis.
+24-seed paired additive noise (`501..524`) is monotonic per seed when one base noise field is scaled across alpha:
 
 ```text
 sigma/delta : exact/24
@@ -147,18 +84,7 @@ sigma/delta : exact/24
 0.18        :  1
 ```
 
-All 24 per-seed PASS→FAIL sequences are monotonic under paired scaling.
-
-This corrects the earlier independent-noise ambiguity. Additive-noise strength is a valid monotonic axis under the paired construction, but the result is still stochastic rather than a universal deterministic threshold.
-
-Supported statement:
-
-```text
-24/24 exact package recovery was observed through 0.12 delta;
-success probability declines sharply from 0.13 delta onward.
-```
-
-All locator structural scores remain `1.0`; failures remain inner decode.
+Dense re-quantization remains non-monotonic: e.g. `1.06x -> 19/24`, `1.10x -> 22/24`; `1.20x -> 17/24`, `1.22x -> 22/24`. Treat factor as an alignment variable, not scalar damage severity.
 
 Evidence:
 
@@ -168,13 +94,52 @@ results/v18-publication-statistics.json
 results/v18-publication-statistics.md
 ```
 
+## 6. Residual error profile — current decision evidence
+
+Fresh seeds `601..624`; no carrier changes. The experiment decomposes failed packages into payload bit errors, bad codewords, and bad tables after the existing per-codeword Hamming correction.
+
+Across 37 failed paired-noise packages (`0.12..0.16 delta`):
+
+```text
+payload bit errors:        median 2, p90 4, max 4
+bad tables:                median 1, p90 2, max 3
+bad corrected codewords:   median 1, p90 2, max 3
+raw payload-symbol errors: median 18, p90 26, max 29
+post-Hamming symbol errors: median 2, p90 3, max 3
+```
+
+Across 23 failed representative re-quantization packages:
+
+```text
+payload bit errors:        median 2, p90 3, max 5
+bad tables:                median 1, p90 1, max 2
+bad corrected codewords:   median 1, p90 1, max 2
+raw payload-symbol errors: median 15, p90 17.8, max 22
+post-Hamming symbol errors: median 1, p90 2, max 3
+```
+
+Every failed package in this profile had at most four bad corrected codewords. About 95.7% of failed re-quantized packages concentrated all final bit errors in one table.
+
+Interpretation: current V18 failures near the measured transition are **sparse residual failures after a strong inner-code reduction**, not package-wide collapse. This is sufficient evidence to justify a **bounded V20 outer-reliability prototype**.
+
+Evidence:
+
+```text
+results/v18-error-profile-plan.md
+results/v18-error-profile.json
+results/v18-error-profile.md
+protocol/v18-error-profile.py
+```
+
+This does not prove any V20 code/geometry yet, and it does not prove real post-seal corruption has exactly the same error distribution as the pre-seal diagnostic.
+
 ## 7. V18 / V20 boundary
 
 Pre-seal numeric damage is a V18 inner-carrier question.
 
 Numeric corruption **after c is sealed** should fail strict outer integrity before inner decoding. Repair/survival of post-seal corruption belongs to **V20 outer reliability**.
 
-The current statistics are not enough to size V20 redundancy. Before V20 is rebuilt, measure the multiplicity and location of inner decode errors under the paired-noise transition and representative re-quantization factors.
+The error profile now gives a reason to test V20: residual errors are sparse enough that a small outer code may be efficient. V20 must still be evaluated under an explicit post-seal lifecycle with strict final integrity verification.
 
 ## 8. Current classification
 
@@ -188,8 +153,10 @@ V18 -> CURRENT_BOUNDED_REINTEGRATION
        - broad publication robustness REJECTED
        - scalar monotonic re-quantization threshold REJECTED
        - paired additive-noise transition measured statistically
+       - transition-region residual errors measured as sparse
 V19 -> NEEDS-REINTEGRATION
-V20 -> NEEDS-REINTEGRATION; do not size redundancy before error-profile measurement
+V20 -> JUSTIFIED_FOR_BOUNDED_REINTEGRATION_EXPERIMENT
+       - no current V20 implementation/effectiveness claim yet
 V21 -> retain "protocol constraints before rate" only; old quantitative results STALE
 ```
 
@@ -200,28 +167,19 @@ V21 -> retain "protocol constraints before rate" only; old quantitative results 
 3. Cross-platform QR/eigh/sign basis determinism remains unresolved.
 4. V18 q=2 fallback remains unexercised.
 5. Re-quantization alignment structure is measured but not mechanistically modeled.
-6. Additive-noise package success probability has only 24 payload/host seeds; confidence intervals remain wide near the transition.
-7. Inner error multiplicity/location is not yet characterized.
-8. V19 and V20 are not current implementations.
+6. V20 code family, redundancy geometry, overhead, and post-seal lifecycle are not yet validated.
+7. Pre-seal V18 error geometry may not equal real post-seal package corruption geometry.
+8. V19 is not current.
 9. No universal undetectability/security or real-publication claim is supported.
 
 ## 10. Next work
 
-Do **not** widen delta, add redundancy, move to V19, or optimize bit/value yet.
+Do **not** optimize bit/value and do not restore historical V20 numbers.
 
-Next experiment should be measurement-only:
+Next step: rebuild a **minimal V20 outer-reliability prototype** against the current `A -> c -> B -> b -> a` lifecycle. Freeze redundancy before results, keep concrete parity/shard geometry in B/c rather than A, inject post-seal damage, attempt repair before final integrity acceptance, and require exact final payload hash.
 
-```text
-paired additive noise:
-  inspect failed packages at 0.13..0.18 delta
-  count symbol/byte/block/table errors
-  determine whether failures are sparse or catastrophic
+The first V20 experiment should be deliberately small: enough redundancy to target the measured few-bit/few-codeword residual regime, not a large code designed to force success.
 
-representative re-quantization:
-  inspect error multiplicity at safe/unsafe alignment points
-  compare error structure, not only package-exact rate
-```
+If that bounded prototype fails despite sparse errors, reject the proposed V20 geometry rather than increasing redundancy until it passes.
 
-Only after that should V20 outer reliability be designed. If failures are dense/catastrophic, V20-style redundancy may be a poor response and the current V18 carrier should remain explicitly bounded rather than “rescued”.
-
-AUDIT GATE: PASS — V18 feasibility is current, broad publication robustness is rejected, and the next decision depends on measured error structure
+AUDIT GATE: PASS — V18 remains bounded; sparse residual-error evidence now justifies a minimal V20 reintegration experiment
