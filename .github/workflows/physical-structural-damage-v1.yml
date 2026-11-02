@@ -1,0 +1,46 @@
+name: physical-structural-damage-v1
+
+on:
+  push:
+    branches:
+      - physical-structural-damage-v1-20261102
+    paths:
+      - protocol/physical-structural-damage-v1.py
+      - results/physical-structural-damage-v1-plan.md
+      - .github/workflows/physical-structural-damage-v1.yml
+  workflow_dispatch:
+
+jobs:
+  structural-damage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile frozen experiment
+        run: |
+          python -m py_compile protocol/physical-structural-damage-v1.py
+          python -m py_compile protocol/real-package-v20.py
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
+      - name: Run frozen physical structural-damage experiment
+        run: |
+          python protocol/physical-structural-damage-v1.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --v20 protocol/real-package-v20.py \
+            --seeds 1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024 \
+            --payload-bytes 512 \
+            --channels 2 \
+            --corpus-size 2000 \
+            --out /tmp/physical-structural-damage-v1.json \
+            --summary-out /tmp/physical-structural-damage-v1.md
+      - name: Upload frozen evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: physical-structural-damage-v1
+          path: |
+            /tmp/physical-structural-damage-v1.json
+            /tmp/physical-structural-damage-v1.md
+          if-no-files-found: error
