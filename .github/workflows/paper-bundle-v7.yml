@@ -19,6 +19,7 @@ jobs:
         run: |
           python -m py_compile tools/current_end_to_end.py
           python -m py_compile tools/paper_bundle_v7.py
+          python -m py_compile tools/finalize_paper_bundle_v7.py
       - name: Build fresh current end-to-end base bundle
         run: |
           python tools/current_end_to_end.py \
@@ -38,6 +39,10 @@ jobs:
           python tools/paper_bundle_v7.py \
             --base-bundle /tmp/current-e2e-base \
             --out-dir /tmp/current-e2e-base/paper_v7_output
+      - name: Finalize complete paper-v7 bundle manifest
+        run: |
+          python tools/finalize_paper_bundle_v7.py \
+            --paper-dir /tmp/current-e2e-base/paper_v7_output
       - name: Upload integrated paper-v7 evidence bundle
         uses: actions/upload-artifact@v4
         with:
