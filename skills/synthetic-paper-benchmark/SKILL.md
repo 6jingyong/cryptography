@@ -1,6 +1,6 @@
 ---
 name: synthetic-paper-benchmark
-description: Run and render clearly labeled synthetic/mock structured-numeric carrier benchmarks using the corrected A → c → B → b → a protocol. Keep machine results authoritative and paper presentation downstream.
+description: Run and render clearly labeled synthetic/mock structured-numeric carrier benchmarks using the corrected A -> c -> B/b/r -> a protocol. Keep machine results authoritative and paper presentation downstream.
 ---
 
 # Synthetic Paper Benchmark
@@ -19,32 +19,34 @@ MOCK PAPER — NOT REAL EXPERIMENTAL RESULTS
 
 Do not use the workflow to hide real confidential material in real publications, fabricate real evidence, impersonate real institutions/authors, or claim a synthetic result came from a real experiment.
 
-# Current protocol
+# Project objective
 
-Use the corrected object model:
+Treat the repository as one system, not as a collection of carrier micro-benchmarks.
 
-```text
-A -> c -> B -> b -> a
-```
-
-with background records `d`.
-
-Definitions:
+Preferred project chain:
 
 ```text
-A = pre-shared root locator/bootstrap codebook
-c = candidate package mixed among background records
-B = per-package reconstruction codebook
-b = processed payload representation
-a = final synthetic payload
-d = unrelated background record
+synthetic payload a
+-> numeric carrier b
+-> per-package reconstruction/reliability manifest B
+-> optional authenticated repair data r
+-> candidate package c
+-> c mixed among synthetic background d
+-> pre-shared A locates / bootstraps c
+-> authenticated open
+-> B decodes b; optional V20 repair
+-> exact a
+-> same current machine package/results feed the mock-paper renderer
 ```
 
-The two codebooks are not peers.
+The two codebooks are not peers:
+
+```text
+A = long-lived root locator / canonicalization / bootstrap protocol
+B = per-package reconstruction + reliability manifest
+```
 
 ## A responsibilities
-
-A is long-lived and shared before any package exists.
 
 A may define:
 
@@ -54,28 +56,26 @@ candidate canonicalization
 candidate ranking
 outer package framing/bootstrap
 how B is parsed
-strict outer verification rule
+authentication vocabulary
 ```
 
-A should not need each package's concrete q, table geometry, transform, ECC, padding, or payload length.
+A should not absorb package-specific q, table geometry, transform, ECC, payload length, shard size, or parity count.
 
 ## B responsibilities
 
-B is created for one concrete package.
-
-B may contain:
+B is created for one concrete package and may contain:
 
 ```text
 actual carrier mode
-actual q
+actual q / delta
 transform
 block/table geometry
 symbol/fragment ordering
-ECC parameters
+inner ECC parameters
 publication precision
 padding and payload length
 outer-code parameters
-final payload binding
+final authenticated payload binding
 ```
 
 If deleting a B field makes reconstruction ambiguous, that field is not optional overhead.
@@ -88,78 +88,87 @@ False positives are allowed.
 locator hit != valid package
 ```
 
-The A-layer objective is high target Recall@K. Strict package verification is authoritative.
+Candidate ranking must not require parsing B. Strict authenticated open and final payload verification are authoritative.
 
-# Technical priority
+# Priority
 
 Use this ordering:
 
 ```text
 1. A can find/bootstrap c
-2. c can be opened and verified
-3. B completely explains b
-4. b reconstructs a
-5. only then optimize capacity/rate
+2. c can be opened/authenticated
+3. B completely explains b/r
+4. exact a is recovered
+5. machine evidence can feed the paper layer without hand substitution
+6. only then optimize capacity/rate/overhead
 ```
 
-Do not trade locator recall, reconstruction metadata, or strict verification for a prettier bit/value number.
+Do not trade locator recall, reconstruction metadata, strict verification, or paper evidence traceability for a prettier bit/value number.
 
-# Retained technical modes
+# Current technical modes
 
 ## V12 clean-host carrier
 
-Use adaptive q `{8,16,32}`, q-ary Hamming ECC, shaping, and publication quantization for clean/nearly-clean synthetic free subspaces.
-
-Concrete package choices belong in B.
+Historical/current clean-host baseline using adaptive q, q-ary Hamming ECC, shaping, and publication quantization.
 
 ## V18 noisy-host carrier
 
-For an explicit synthetic residual model, use host-aware syndrome/QIM embedding.
+Current bounded host-aware modulo-QIM carrier for explicit sender-observed synthetic residual hosts.
 
-Residual benchmark families include:
+Evidence covers several frozen residual families and publication-damage statistics. Broad publication robustness is explicitly rejected.
+
+## V20 logical outer reliability
+
+Current bounded V20 uses fixed RS shard geometry around the decoded payload and logical integrity over `B + masked r`, with exact final payload SHA-256 required for acceptance.
+
+Current fixed geometry:
 
 ```text
-iid Gaussian
-heteroscedastic Gaussian
-AR(1)
-batch drift
-sparse-outlier mixture
+512-byte payload
+4 x 128-byte data shards
+8 parity bytes / shard
+<=4 byte errors correctable / shard
+32 parity bytes total = 6.25% payload parity overhead
 ```
 
-## V19 regime selector
+Its stronger synthetic failure envelope aligns with the declared per-shard RS correction capacity in the tested grid.
 
-V19 is sender-side policy for choosing the package's inner strategy.
+## V19 selector
 
-It is not a replacement for A.
+V19 remains sender-side policy for choosing among package modes. It is not a replacement for A and is not the immediate priority while one current integrated mode is primary.
 
-## V20/V21 package reliability
+# Preferred current end-to-end test
 
-Outer integrity and erasure-code choices belong to package reliability / B.
-
-Rate optimization is downstream of protocol constraints.
-
-# Real-package protocol test
-
-The preferred end-to-end technical test is:
+Use:
 
 ```text
-A
--> rank candidate c
--> strict outer verify
--> extract real V12 B + b
--> invoke real V12 decoder
--> recover a
--> verify payload hash
+tools/current_end_to_end.py
 ```
 
-Important acceptance cases:
+The preferred integrated test is now:
 
 ```text
-normal package -> ACCEPT
-corrupt B -> REJECT
-corrupt b -> REJECT
-wrong A -> REJECT
-locator false positive -> reject decoy, continue
+current V18/V20 encode
+-> c mixed among synthetic d
+-> A rank candidate c without parsing B
+-> authenticated V20 open
+-> exact a
+-> explicit decoy/tamper rejection
+-> same current V20 NPZ + B manifest -> paper_v6
+-> same current multiseed result -> paper E5
+-> bundle hash manifest
+```
+
+The frozen current integration evidence uses seeds `901..908` and passes:
+
+```text
+8 / 8 unique payload hashes
+8 / 8 exact recovery
+Recall@20 = 1.0
+Recall@100 = 1.0
+paper E5 completed from the same current result
+synthetic/mock labels retained
+mandatory non-provenance limitation retained
 ```
 
 # Paper pipeline
@@ -169,22 +178,19 @@ The paper layer is downstream of authoritative machine evidence.
 Recommended chain:
 
 ```text
-machine result
+current machine package/results
 -> morphology analysis
 -> narrative archetype
 -> generic descriptive fits
 -> figure planning
--> story / claim hierarchy
--> experiment requests
--> completed experiment results
--> paper
+-> claim hierarchy
+-> machine-checkable experiment requests/results
+-> clearly labeled mock paper
 ```
 
-## Morphology-driven domain archetype
+## Morphology-driven archetype
 
-The renderer may infer a narrative style from visible synthetic curve morphology.
-
-Useful features:
+Useful visible features include:
 
 ```text
 linearity
@@ -196,7 +202,7 @@ peak symmetry
 significant extrema
 ```
 
-Candidate narrative archetypes may include:
+Candidate presentation archetypes may include:
 
 ```text
 materials characterization / physical chemistry
@@ -206,9 +212,9 @@ oscillatory systems / controls
 signal processing / measurement methods
 ```
 
-This is a writing archetype, not provenance inference.
+This is a writing/presentation archetype, not provenance inference.
 
-A peak-shaped synthetic curve may justify "peak-profile analysis"; it does not justify inventing a real Raman experiment, material, instrument, patient cohort, or mechanism.
+A peak-shaped synthetic curve may justify “peak-profile analysis”; it does not justify inventing a real Raman experiment, material, instrument, patient cohort, or mechanism.
 
 # Generic fits
 
@@ -222,32 +228,6 @@ bell peak -> Gaussian peak fit
 ```
 
 A good fit is not mechanistic proof.
-
-# Figure and story planning
-
-Main figures should favor evidence breadth:
-
-```text
-morphology coverage
-fit quality
-morphology confidence
-relevance to the primary claim
-```
-
-Do not automatically promote the prettiest/highest-R² curve to the primary conclusion.
-
-Claim roles may include:
-
-```text
-primary_conclusion
-supporting_quantification
-presentation_support
-technical_control
-limitation_negative_result
-supplementary_control
-```
-
-Material limitations may be forced into the Discussion.
 
 # Claim-driven experiment requests
 
@@ -264,19 +244,6 @@ FAILED
 
 Only `COMPLETED` machine results may be rendered as evidence.
 
-A requested experiment must remain pending until a benchmark result exists.
-
-Useful request classes:
-
-```text
-morphology perturbation stability
-leave-one-table-out story stability
-fit ablation
-domain-archetype stability
-multi-seed full re-encode / locator / exact recovery
-limitation-retention audit
-```
-
 Preferred loop:
 
 ```text
@@ -289,28 +256,33 @@ claim
 
 # Current implementation
 
-The cleaned repository exposes the current paper line through:
-
 ```text
+tools/current_end_to_end.py
 tools/paper_v6.py
+tools/paper_claim_gate_v7.py
 ```
 
-Historical v3/v4/v5/v6 helper chains are intentionally removed from the current working tree.
-
-# Output package
-
-A current paper package may contain:
+Current end-to-end evidence:
 
 ```text
-paper_v6.md
-paper_manifest.json
-experiment_results_v6.json
-story_plan.json
-claim_evidence_map.json
-paper_plan.json
-fit_results.json
-domain_archetype.json
-figures/
+results/current-e2e-integration-plan.md
+results/current-e2e-integration.json
+results/current-e2e-integration.md
+```
+
+# Next system-level paper milestone
+
+Do not immediately create another carrier version just because an edge case remains.
+
+The current paper side is thinner than the technical side. The next high-value integrated artifact should add:
+
+```text
+actual synthetic figures derived from the same current V20 NPZ
+multi-figure layout selected from morphology
+machine-backed captions / claim map
+downloadable synthetic raw-data tables
+clearly labeled mock-paper manuscript/package
+bundle-level traceability from figure/data/claim back to current machine artifacts
 ```
 
 # Claim discipline
@@ -334,7 +306,7 @@ exact in this synthetic run
 all tested seeds passed
 empirical operating point
 descriptive fit
-morphology-based narrative archetype
+morphology-based presentation archetype
 unresolved / pending under the current gate
 not a universal guarantee
 ```

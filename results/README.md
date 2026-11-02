@@ -19,58 +19,83 @@ Only milestones still useful under the corrected protocol remain in the current 
 | `v20-bounded-reintegration.json/.md` | fixed 6.25% RS geometry passes initial 24-seed six-condition post-seal matrix |
 | `v20-failure-envelope-plan.md` | frozen stronger damage grid with V20 geometry held fixed |
 | `v20-failure-envelope.json/.md` | V20 first tested failures align exactly with per-shard RS capacity exceedance |
+| `current-e2e-integration-plan.md` | frozen project-level integration gate |
+| `current-e2e-integration.json/.md` | current V18/V20 technical path and paper_v6 renderer pass as one reproducible bundle |
 | `paper-claim-audit-v7.json/.md` | bounded paper claim gate and mandatory limitations |
 | `current-summary.json` | compact audited current state |
 
-## Current technical interpretation
+## Project-level result
 
-V18 is **CURRENT_BOUNDED_REINTEGRATION**, not broadly publication-robust. Its tested transition-region failures are sparse after the existing inner Hamming layer.
+The current repository now has one integrated synthetic path rather than only separately passing components:
 
-V20 uses one fixed logical outer-reliability geometry:
+```text
+synthetic a
+-> current V18/V20 package
+-> c mixed among d
+-> A locator/bootstrap
+-> authenticated open
+-> B decode / optional repair
+-> exact a
+-> same current package + same current multiseed evidence
+-> paper_v6 mock-paper output
+```
+
+Fresh seeds `901..908`:
+
+```text
+8 / 8 distinct payload hashes
+8 / 8 exact recovery
+Recall@20  = 1.0
+Recall@100 = 1.0
+median target rank = 1
+max target rank = 1
+```
+
+The representative current V20 NPZ and B manifest are consumed directly by `tools/paper_v6.py`, and the same current-V20 8-seed result completes paper E5. Visible mock/synthetic labels and the mandatory non-provenance limitation are retained.
+
+The CI bundle contains technical + paper outputs and a SHA-256 manifest covering 14 files; independent recomputation found zero mismatches.
+
+This is now the preferred high-level evidence when asking whether the project works as a system.
+
+## Technical boundary that still matters
+
+V18 is **CURRENT_BOUNDED_REINTEGRATION**, not broadly publication-robust. Its transition-region failures are sparse after inner Hamming correction.
+
+V20 uses fixed logical outer reliability:
 
 ```text
 512-byte payload
 4 x 128-byte RS data shards
-8 parity bytes per shard
-<=4 byte-error correction per shard
+8 parity bytes / shard
+<=4 byte-error correction / shard
 32 parity bytes total = 6.25% payload parity overhead
 ```
 
-The first frozen 24-seed matrix passed all six damaged conditions, with 49/49 repair attempts successful.
-
-A second fresh-seed run then held the geometry fixed and deliberately crossed its failure boundary.
-
-Paired additive noise:
+The first V20 frozen matrix passed 49/49 attempted repairs. A stronger fresh-seed envelope then showed:
 
 ```text
-0.16 delta  24/24 V20, 0 packages over RS shard bound
-0.18 delta  24/24 V20, 0 packages over RS shard bound
-0.20 delta  17/24 V20, 7 packages over RS shard bound
-0.22 delta   5/24 V20, 19 packages over RS shard bound
->=0.25       0/24 V20, 24 packages over RS shard bound
+V20 failure <=> at least one shard exceeds the declared four-byte RS correction bound
 ```
 
-Re-quantization:
+Mismatch count: **0** in the tested stronger grid. Locator structural score remained 1.0 throughout.
+
+This makes V20's current synthetic failure boundary interpretable, but does not prove universal robustness or optimality of the 6.25% overhead.
+
+## What not to optimize next
+
+Further dense points on the same numeric-noise grids, immediate parity tuning, or bit/value optimization have diminishing project value.
+
+The thinner side of the now-integrated system is the **paper-shaped artifact**. The next high-value milestone should make the current paper output genuinely multi-figure and traceable to the same current V20 data:
 
 ```text
-1.30x  24/24 V20, 0 packages over RS shard bound
-1.50x  24/24 V20, 0 packages over RS shard bound
-1.75x  20/24 V20, 4 packages over RS shard bound
->=2.00x 0/24 V20, 24 packages over RS shard bound
+actual synthetic figures
+multi-figure layout chosen from morphology
+machine-backed captions / claim map
+downloadable synthetic raw-data tables
+clearly labeled mock-paper manuscript/package
+bundle-level traceability to current machine artifacts
 ```
 
-Across every individual run in this stronger frozen grid, the equivalence was exact:
+Structural-damage tests and V19 remain valid future work, but they should be pulled in when they unblock this whole-system objective rather than because an unresolved checkbox exists.
 
-```text
-V20 failure <=> at least one 128-byte shard exceeded 4 candidate byte errors
-```
-
-Mismatch count: **0**. Locator structural score remained 1.0 throughout, so the measured failures are not A-layer retrieval failures.
-
-This makes the current V20 boundary mechanistically interpretable inside the declared synthetic channel: the implementation continues to work until the fixed Reed-Solomon shard capacity is exceeded.
-
-Important protocol distinction: V20 authenticates `B + masked r`, not raw numeric `b`, and requires exact final payload SHA-256 after decode/repair. Both manifest and repair-field bitflip controls are rejected by the authenticated envelope.
-
-Still unsupported: universal/continuous thresholds, optimality of 6.25% overhead, real-publication robustness, cryptographic security/undetectability, or restoration of historical V18/V20 numerical summaries.
-
-Further points on the same numeric-noise grids have diminishing value. The next useful fork is either structurally different damage under the same V20 geometry, or V19 reintegration using only modes with audited evidence envelopes.
+Still unsupported: real-publication deployment, real confidential payload hiding, universal undetectability/security, real provenance/mechanism, or restoration of historical V18/V20 numerical summaries.
