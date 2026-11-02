@@ -1,57 +1,54 @@
 {
-  "version": "current-audited-summary-v16",
+  "version": "current-audited-summary-v17",
   "scope": "synthetic-only",
   "protocol": {
     "chain": "A -> c -> B + b + optional r -> exact a",
-    "A": "pre-shared root locator/canonicalization/bootstrap codebook; current promoted implementation remains A-v3",
+    "A": "pre-shared root locator/canonicalization/bootstrap codebook; current promoted implementation remains A-v3 until candidate determinism is re-established",
     "B": "per-package reconstruction and reliability manifest; package-specific basis/reliability state belongs here",
     "locator_does_not_parse_B_before_ranking": true,
     "current_v18_engine": {
       "path": "src/noisy_host_package_v18_deterministic.py",
       "basis_version": "deterministic-dct-mgs-v1",
-      "legacy_baseline": "src/noisy_host_package_v18.py",
       "status": "CURRENT_BOUNDED_REINTEGRATION_AND_DECLARED_CI_DETERMINISM_PASS"
     },
     "real_package_v20": {
       "status": "CURRENT_BOUNDED_REINTEGRATION",
       "role": "logical outer reliability for candidate-producing post-seal numeric damage",
-      "geometry": {"scheme": "Reed-Solomon GF(256)", "payload_bytes": 512, "data_shards": 4, "data_shard_bytes": 128, "parity_bytes_per_shard": 8, "rs_byte_error_bound_per_shard": 4, "total_parity_bytes": 32, "payload_parity_overhead": 0.0625},
-      "failure_envelope": {"failure_iff_any_shard_over_4_byte_errors": true, "mismatch_count": 0, "evidence": "results/v20-failure-envelope.json"}
+      "geometry": {"scheme":"Reed-Solomon GF(256)","payload_bytes":512,"data_shards":4,"data_shard_bytes":128,"parity_bytes_per_shard":8,"rs_byte_error_bound_per_shard":4,"total_parity_bytes":32,"payload_parity_overhead":0.0625},
+      "failure_envelope": {"failure_iff_any_shard_over_4_byte_errors":true,"mismatch_count":0,"evidence":"results/v20-failure-envelope.json"}
     }
   },
   "deterministic_basis_v1": {
     "status": "PROMOTION_GATES_PASS",
-    "gate_a": {"pass": true, "seeds": 8, "exact_recovery_rate": 1.0, "recall_at_100": 1.0, "paper_v7_pass": true},
-    "gate_b": {"pass": true, "independent_runners": 2, "semantic_equal": true, "mismatch_count": 0, "raw_container_hash_equal": true, "semantic_authority_sha256": "243b05fd32624e931379ea471c2d209700fb3491c33a911f9071084e8f57bc04", "workflow_run": 41393344543},
-    "gate_c": {"pass": true, "no_q_delta_rs_retuning": true, "workflow_run": 41393344478},
+    "gate_a": {"pass":true,"seeds":8,"exact_recovery_rate":1.0,"recall_at_100":1.0,"paper_v7_pass":true},
+    "gate_b": {"pass":true,"independent_runners":2,"semantic_equal":true,"mismatch_count":0,"raw_container_hash_equal":true,"semantic_authority_sha256":"243b05fd32624e931379ea471c2d209700fb3491c33a911f9071084e8f57bc04","workflow_run":41393344543},
+    "gate_c": {"pass":true,"no_q_delta_rs_retuning":true,"workflow_run":41393344478},
     "boundary": "declared independent GitHub Actions environment only; not universal every-platform bit identity",
     "evidence": "results/deterministic-basis-v1.json"
   },
   "physical_structural_damage_v1": {
     "status": "BOUNDED_LAYER_MAPPING_PASS",
-    "whole_table_deletion": {"recall_at_100": 0.0, "median_target_rank": 1749.0, "candidate_produced_runs": 0, "first_failure": "A/public locator"},
-    "tail_segment_truncation": {"recall_at_100": 1.0, "candidate_produced_runs": 0, "first_failure": "b/parser/decoder before candidate"},
-    "localized_burst_4_segments_sigma4delta": {"candidate_byte_errors_max": 4, "v20_accepted_runs": 24},
-    "localized_burst_6_segments_sigma4delta": {"candidate_byte_errors_max": 6, "v20_accepted_runs": 0},
+    "whole_table_deletion": {"recall_at_100":0.0,"median_target_rank":1749.0,"candidate_produced_runs":0,"first_failure":"A/public locator"},
+    "tail_segment_truncation": {"recall_at_100":1.0,"candidate_produced_runs":0,"first_failure":"b/parser/decoder before candidate"},
+    "localized_burst_4_segments_sigma4delta": {"candidate_byte_errors_max":4,"v20_accepted_runs":24},
+    "localized_burst_6_segments_sigma4delta": {"candidate_byte_errors_max":6,"v20_accepted_runs":0},
     "evidence": "results/physical-structural-damage-v1.json"
   },
   "structural_erasure_v2_candidate": {
     "status": "EXECUTION_GATE_FAIL_EVIDENCE_VALID",
     "promotion": "DEFERRED",
-    "current_protocol_replaced": false,
     "A_candidate": "A-v4-erasure-xlen",
     "decoder_candidate": "decoder-v2-prefix-erasure",
-    "clean": {"exact_recovery_runs": 24, "recall_at_100": 1.0, "median_target_rank": 1.0, "max_target_rank": 2, "rank1_gate_pass": false},
-    "rank2_collision": {"seed": 1116, "cause": "exact 12/12 A-visible near-decoy descriptor duplicate", "post_hoc_gate_relaxation": false},
-    "whole_table_deletion": {"candidate_produced_runs": 24, "erased_payload_bits": 341, "v20_accepted_runs": 0},
-    "tail_segment_truncation": {"candidate_produced_runs": 24, "erased_payload_bits_median": 5.0, "direct_exact_runs": 3, "repair_successes": 21, "v20_accepted_runs": 24},
-    "information_bound": {"whole_table_unknown_bits": 341, "current_v20_parity_bits": 256, "minimum_redundancy_shortfall_bits": 85},
+    "clean": {"exact_recovery_runs":24,"recall_at_100":1.0,"median_target_rank":1.0,"max_target_rank":2,"rank1_gate_pass":false},
+    "rank2_collision": {"seed":1116,"cause":"exact 12/12 A-visible near-decoy descriptor duplicate","post_hoc_gate_relaxation":false},
+    "whole_table_deletion": {"candidate_produced_runs":24,"erased_payload_bits":341,"v20_accepted_runs":0},
+    "tail_segment_truncation": {"candidate_produced_runs":24,"erased_payload_bits_median":5.0,"direct_exact_runs":3,"repair_successes":21,"v20_accepted_runs":24},
+    "information_bound": {"whole_table_unknown_bits":341,"current_v20_parity_bits":256,"minimum_redundancy_shortfall_bits":85},
     "evidence": "results/structural-erasure-v2.json"
   },
   "structural_parity_v3_candidate": {
     "status": "PROMOTION_GATE_PASS",
     "current_protocol_replaced": false,
-    "next_gate": "current E2E + paper-v7 integration before whole-system promotion",
     "A_candidate": "A-v4-erasure-xlen",
     "structural_code": "11 data tables + 1 XOR parity table inside existing 12 public tables",
     "payload_bits": 4096,
@@ -60,22 +57,33 @@
     "structural_overhead_fraction": 0.091064453125,
     "q_delta_unchanged": true,
     "v20_geometry_unchanged": true,
-    "matrix": {"seeds": 24, "clean_runs": 24, "single_table_deletion_runs": 288, "single_tail_segment_truncation_runs": 288, "total_observations": 600},
-    "clean": {"recall_at_20": 1.0, "max_target_rank": 1, "direct_exact_runs": 24, "v20_accepted_runs": 24},
-    "single_table_deletion": {"locator_score_median": 0.9166666666666666, "recall_at_20": 1.0, "max_target_rank": 1, "candidate_produced_runs": 288, "direct_exact_runs": 288, "v20_accepted_runs": 288, "unresolved_structural_bits_max": 0, "v20_repair_attempts": 0, "data_table_deletions_exact": 264, "parity_table_deletions_exact": 24},
-    "single_tail_segment_truncation": {"recall_at_20": 1.0, "max_target_rank": 1, "candidate_produced_runs": 288, "direct_exact_runs": 288, "v20_accepted_runs": 288, "unresolved_structural_bits_max": 0, "v20_repair_attempts": 0, "data_table_truncations_exact": 264, "parity_table_truncations_exact": 24},
-    "interpretation": "bounded single-table structural erasure is now repaired entirely before V20 in the frozen candidate matrix",
+    "matrix": {"seeds":24,"clean_runs":24,"single_table_deletion_runs":288,"single_tail_segment_truncation_runs":288,"total_observations":600},
+    "clean": {"recall_at_20":1.0,"max_target_rank":1,"direct_exact_runs":24,"v20_accepted_runs":24},
+    "single_table_deletion": {"locator_score_median":0.9166666666666666,"recall_at_20":1.0,"max_target_rank":1,"candidate_produced_runs":288,"direct_exact_runs":288,"v20_accepted_runs":288,"unresolved_structural_bits_max":0,"v20_repair_attempts":0},
+    "single_tail_segment_truncation": {"recall_at_20":1.0,"max_target_rank":1,"candidate_produced_runs":288,"direct_exact_runs":288,"v20_accepted_runs":288,"unresolved_structural_bits_max":0,"v20_repair_attempts":0},
     "workflow_run": 41495970007,
     "artifact_id": 13166113925,
-    "artifact_zip_sha256": "f4b8d67f75552991a18674a6405642eca507f5db9e275a59e5418af4e84f5be9",
     "evidence": "results/structural-parity-v3.json"
+  },
+  "structural_parity_current_integration": {
+    "status": "WHOLE_SYSTEM_VIABILITY_PASS",
+    "promotion_status": "DETERMINISM_RECHECK_PENDING",
+    "current_protocol_replaced": false,
+    "seeds": [1301,1302,1303,1304,1305,1306,1307,1308],
+    "technical": {"seed_count":8,"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"all_payload_hashes_unique":true,"median_target_rank":1.0,"max_target_rank":1},
+    "representative": {"seed":1301,"payload_sha256":"dd901bfd73c39260d98ce3198a9d2d583fc162fa5d3168ca797e50d416afa6c3","target_rank":1,"target_locator_score":1.0,"decoy_rejected":true,"repair_field_tamper_rejected":true,"structural_data_tables":11,"physical_tables":12,"structural_parity_bits":373,"v20_data_shard_bytes":128,"v20_parity_bytes_per_shard":8,"published_npz_sha256":"76589f23ef5ee43eaf214ac90b93af2a079c1323ceff6daa99b322b437bade88"},
+    "paper_v6": {"e5_completed":true,"e5_pass":true,"same_machine_result":true,"synthetic_labels_present":true,"mandatory_limitation_present":true,"presentation_archetype":"materials characterization / physical chemistry","story_type":"multi_regime_characterization"},
+    "paper_v7": {"gate_pass":true,"figure_count":4,"raw_data_table_count":12,"selected_morphology_examples":{"bell_peak":3,"linear":10,"periodic":7,"saturating":0},"paper_v6_e5_matches_current_e5":true,"required_claims_traced":["C1","C2","C4","C5"],"synthetic_labels_present":true,"mandatory_limitation_present":true,"final_bundle_file_count":23,"nested_manifest_mismatch_count":0},
+    "workflow_run": 41497969290,
+    "artifact_id": 13167542189,
+    "artifact_zip_sha256": "be02968d1c26207742999f567c024a84eab6b69d3fbfc4e2c9727f2a6904770d",
+    "evidence": "results/structural-parity-current-integration.json"
   },
   "current_end_to_end_integration": {
     "status": "PASS",
     "engine": "src/noisy_host_package_v18_deterministic.py",
     "seeds": [901,902,903,904,905,906,907,908],
-    "technical": {"exact_recovery_rate": 1.0, "recall_at_20": 1.0, "recall_at_100": 1.0, "all_payload_hashes_unique": true, "median_target_rank": 1.0, "max_target_rank": 1},
-    "paper_consumed_same_current_v20_package": true,
+    "technical": {"exact_recovery_rate":1.0,"recall_at_20":1.0,"recall_at_100":1.0,"all_payload_hashes_unique":true,"median_target_rank":1.0,"max_target_rank":1},
     "evidence": "results/current-e2e-integration.json"
   },
   "paper_bundle_v7": {
@@ -87,19 +95,19 @@
     "evidence": "results/paper-bundle-v7.json"
   },
   "technical_history": {
-    "v18": {"classification": "CURRENT_BOUNDED_REINTEGRATION_WITH_DETERMINISTIC_ENGINE"},
-    "v19": {"classification": "NEEDS-REINTEGRATION", "priority": "deferred"},
-    "v20": {"classification": "CURRENT_BOUNDED_REINTEGRATION"},
-    "v21": {"classification": "HISTORICAL-BUT-VALID-PRINCIPLE_ONLY", "retained_principle": "protocol constraints before rate"}
+    "v18": {"classification":"CURRENT_BOUNDED_REINTEGRATION_WITH_DETERMINISTIC_ENGINE"},
+    "v19": {"classification":"NEEDS-REINTEGRATION","priority":"deferred"},
+    "v20": {"classification":"CURRENT_BOUNDED_REINTEGRATION"},
+    "v21": {"classification":"HISTORICAL-BUT-VALID-PRINCIPLE_ONLY","retained_principle":"protocol constraints before rate"}
   },
   "unresolved_high_value": [
-    "integrate A-v4 + 11+1 structural parity candidate into current E2E and paper-v7 without regressing deterministic evidence",
-    "prove A-v4 public x-length profile stability across package configurations before promotion",
-    "map two-table loss and other broader structural families only after single-table current integration",
+    "run two independent structural-candidate whole-system builds and compare canonical B, NPZ x/y arrays, CSVs, E5, figure plan, morphology selection, archetype and story before promotion",
+    "scope any A-v4 promotion to the frozen supported 12-table current configuration unless broader x-length profile stability is separately proven",
+    "map two-table loss and other broader structural families only after candidate promotion decision",
     "V18 q=2 fallback remains unexercised",
     "re-quantization alignment mechanism not modeled",
     "V20 6.25% geometry not shown minimal or optimal for numeric damage",
     "semantic bit identity outside the declared CI environment not proven"
   ],
-  "project_priority": "keep current A-v3/V18/V20 path promoted for now; structural-parity-v3 has passed its frozen single-table gate and should next face one current-E2E/paper integration gate before promotion; do not return to blind parity/noise tuning"
+  "project_priority": "whole-system viability of A-v4 + 11+1 structural parity is now established; do not promote yet. Next run the same independent-run semantic determinism standard previously required for deterministic V18, with no q/delta/RS/paper retuning."
 }
