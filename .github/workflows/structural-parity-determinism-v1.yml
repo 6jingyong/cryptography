@@ -1,0 +1,94 @@
+name: structural-parity-determinism-v1
+
+on:
+  push:
+    branches: [structural-parity-determinism-v1-20261103]
+  workflow_dispatch:
+
+jobs:
+  replica:
+    strategy:
+      fail-fast: false
+      matrix:
+        replica: [a, b]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile frozen candidate and semantic tools
+        run: |
+          python -m py_compile tools/structural_parity_current_end_to_end.py
+          python -m py_compile protocol/structural-parity-v3.py
+          python -m py_compile protocol/real-package-v20.py
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
+          python -m py_compile tools/paper_v6.py
+          python -m py_compile tools/paper_bundle_v7.py
+          python -m py_compile tools/finalize_paper_bundle_v7.py
+          python -m py_compile tools/current_bundle_semantic_fingerprint.py
+      - name: Build full structural candidate bundle
+        run: |
+          python tools/structural_parity_current_end_to_end.py \
+            --structural protocol/structural-parity-v3.py \
+            --v20 protocol/real-package-v20.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
+            --paper-tool tools/paper_v6.py \
+            --seeds 1301,1302,1303,1304,1305,1306,1307,1308 \
+            --representative-seed 1301 \
+            --payload-bytes 512 \
+            --channels 2 \
+            --corpus-size 2000 \
+            --near-decoy-fraction 0.01 \
+            --top-k 100 \
+            --out-dir /tmp/structural-candidate
+      - name: Render and finalize unchanged paper-v7
+        run: |
+          python tools/paper_bundle_v7.py \
+            --base-bundle /tmp/structural-candidate \
+            --out-dir /tmp/structural-candidate/paper_v7_output
+          python tools/finalize_paper_bundle_v7.py \
+            --paper-dir /tmp/structural-candidate/paper_v7_output
+      - name: Fingerprint semantic bundle
+        run: |
+          python tools/current_bundle_semantic_fingerprint.py \
+            --bundle /tmp/structural-candidate \
+            --out /tmp/structural-candidate/semantic_fingerprint.json
+      - name: Upload independent replica
+        uses: actions/upload-artifact@v4
+        with:
+          name: structural-parity-determinism-replica-${{ matrix.replica }}
+          path: /tmp/structural-candidate
+          if-no-files-found: error
+
+  compare:
+    needs: replica
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download independent replicas
+        uses: actions/download-artifact@v4
+        with:
+          pattern: structural-parity-determinism-replica-*
+          path: /tmp/replicas
+          merge-multiple: false
+      - name: Compile strict comparator
+        run: python -m py_compile tools/compare_semantic_fingerprints.py
+      - name: Require exact semantic equality
+        run: |
+          python tools/compare_semantic_fingerprints.py \
+            --a /tmp/replicas/structural-parity-determinism-replica-a/semantic_fingerprint.json \
+            --b /tmp/replicas/structural-parity-determinism-replica-b/semantic_fingerprint.json \
+            --out /tmp/semantic-comparison.json
+      - name: Upload semantic comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: structural-parity-determinism-comparison
+          path: /tmp/semantic-comparison.json
+          if-no-files-found: warn
