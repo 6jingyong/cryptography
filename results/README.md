@@ -19,46 +19,48 @@ Only milestones still useful under the corrected protocol remain in the current 
 | `v18-publication-frontier-refine-plan.md` | fresh 8-seed measurement-only refinement plan |
 | `v18-publication-frontier-refine.json/.md` | re-quantization non-monotonicity discovered; independent-noise ambiguity exposed |
 | `v18-publication-statistics-plan.md` | 24-seed dense re-quantization + paired-noise statistical plan |
-| `v18-publication-statistics.json/.md` | current best V18 damage evidence: alignment-dependent re-quantization and monotonic paired-noise success curve |
+| `v18-publication-statistics.json/.md` | alignment-dependent re-quantization and monotonic paired-noise success curve |
+| `v18-error-profile-plan.md` | frozen residual-error decomposition plan before V20 |
+| `v18-error-profile.json/.md` | failed V18 packages have sparse post-Hamming residual errors; bounded V20 prototype justified |
 | `paper-v6-experiments.json` | completed machine validation experiments for the paper line |
 | `paper-claim-audit-v7.json/.md` | bounded claim gate C1–C6 and mandatory limitations |
 | `current-summary.json` | compact audited current state |
 
 ## V18 evidence hierarchy
 
-V18 evidence now has five distinct layers:
+V18 evidence now has six distinct layers:
 
 1. **Smooth-host feasibility** — rebuilt host-aware modulo-QIM recovers exactly under the current lifecycle.
 2. **Known-host distribution breadth** — five equal-energy sender-observed residual families pass without carrier retuning.
 3. **Coarse post-embedding publication damage** — broad publication robustness is rejected; failures begin in inner decode while locator retrieval remains intact.
 4. **Fresh-seed refinement** — re-quantization is demonstrably non-monotonic and the original independent-noise sweep cannot define a deterministic threshold.
-5. **24-seed statistics** — paired noise resolves that ambiguity, while dense re-quantization confirms alignment dependence.
+5. **24-seed statistics** — paired noise establishes a monotonic strength axis, while dense re-quantization confirms alignment dependence.
+6. **Residual error profile** — failed transition-region packages are sparse after the existing Hamming layer.
 
-Current 24-seed paired-noise result:
+Current error-profile evidence, fresh seeds 601–624:
 
 ```text
-sigma/delta : exact/24
-0.08        : 24
-0.09        : 24
-0.10        : 24
-0.11        : 24
-0.12        : 24
-0.13        : 23
-0.14        : 20
-0.15        : 16
-0.16        :  9
-0.17        :  4
-0.18        :  1
+paired noise failures (37 packages):
+  residual payload bits   median 2, p90 4, max 4
+  bad tables              median 1, p90 2, max 3
+  bad corrected codewords median 1, p90 2, max 3
+  raw payload-symbol errs median 18
+  post-Hamming symbol err median 2
+
+representative re-quantization failures (23 packages):
+  residual payload bits   median 2, p90 3, max 5
+  bad tables              median 1, p90 1, max 2
+  bad corrected codewords median 1, p90 1, max 2
+  raw payload-symbol errs median 15
+  post-Hamming symbol err median 1
 ```
 
-All 24 per-seed PASS→FAIL patterns are monotonic when the same base noise field is scaled across alpha. Thus additive-noise strength is a valid monotonic axis under this paired construction, although no universal deterministic threshold is claimed.
+About 95.7% of failed re-quantized packages concentrated final payload errors in one table. Every failed package in the measured profile had at most four bad corrected codewords.
 
-Dense re-quantization remains non-monotonic. For example `1.06x` recovers 19/24, `1.10x` 22/24; `1.20x` 17/24, `1.22x` 22/24. Treat factor as an alignment variable, not a scalar damage severity.
+This changes the V20 decision: a **small, bounded outer-reliability prototype is now justified**. It should target the measured sparse residual regime rather than use large redundancy to force success.
 
-All tested locator structural scores remain 1.0; observed failure is inside `B + damaged b` reconstruction.
+Broad V18 publication robustness remains rejected. The sparse error profile does not validate any V20 code family, shard geometry, post-seal repair path, or real-publication robustness.
 
-Therefore **broad V18 publication robustness remains rejected**. The next useful measurement is error multiplicity/location in failed packages; only then is it sensible to decide whether V20-style redundancy would help or merely mask a structurally poor inner channel.
-
-The historical V18 `59/60`, `57 q4 / 2 q2 / 1 unresolved` summary remains retired. V19–V20 historical precise metrics remain non-current; V21 retains only **protocol constraints before rate**.
+The historical V18 `59/60`, `57 q4 / 2 q2 / 1 unresolved` summary remains retired. Historical V20 numerical summaries also remain non-current; V21 retains only **protocol constraints before rate**.
 
 The authoritative chain is current code + checked-in machine results + reproducible CI. Historical prose does not override them.
