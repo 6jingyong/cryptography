@@ -16,11 +16,11 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Compile failure-envelope harness
-        run: python -m py_compile protocol/v20-failure-envelope.py
+        run: python -m py_compile protocol/v20-failure-envelope.py src/noisy_host_package_v18_deterministic.py
       - name: Run fixed-geometry V20 failure envelope
         run: |
           python protocol/v20-failure-envelope.py \
-            --engine src/noisy_host_package_v18.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
             --v20 protocol/real-package-v20.py \
             --statistics protocol/v18-publication-statistics.py \
             --seeds 801,802,803,804,805,806,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824 \
