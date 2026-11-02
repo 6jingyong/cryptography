@@ -1,0 +1,51 @@
+{
+  "version": "v18-publication-error-profile-summary-v1",
+  "scope": "synthetic-only",
+  "source_ci": {
+    "workflow_run_id": 41373895320,
+    "artifact_id": 13110134062,
+    "artifact_sha256": "953680ef469764fb50ee5ea81cf2b97e0a182a2d5eb1f6e0a6b877f01d6b15a3"
+  },
+  "frozen_plan": "results/v18-error-profile-plan.md",
+  "configuration": {
+    "seeds": [601,602,603,604,605,606,607,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,624],
+    "payload_bytes": 512,
+    "channels": 2,
+    "noise_sigma_over_delta": [0.12,0.13,0.14,0.15,0.16],
+    "requant_factors": [1.0,1.06,1.1,1.2,1.22,1.3],
+    "damage_position": "post-embedding/post-A-assignment/pre-c-seal",
+    "carrier_changes": "none"
+  },
+  "paired_additive_noise_summary": [
+    {"sigma_over_delta":0.12,"seed_count":24,"exact_count":23,"exact_rate":0.9583333333333334,"failed_count":1,"failed_profile":{"bit_errors_median":3.0,"bit_errors_p90":3.0,"bit_errors_max":3,"ber_median":0.000732421875,"ber_p90":0.000732421875,"tables_with_bit_errors_median":2.0,"tables_with_bit_errors_p90":2.0,"tables_with_bit_errors_max":2,"bad_codewords_median":2.0,"bad_codewords_p90":2.0,"bad_codewords_max":2,"max_table_bit_error_share_median":0.6666666666666666,"raw_payload_symbol_errors_median":8.0,"corrected_payload_symbol_errors_median":2.0,"failed_with_one_bad_table_fraction":0.0,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0},
+    {"sigma_over_delta":0.13,"seed_count":24,"exact_count":22,"exact_rate":0.9166666666666666,"failed_count":2,"failed_profile":{"bit_errors_median":3.5,"bit_errors_p90":3.9,"bit_errors_max":4,"ber_median":0.0008544921875,"ber_p90":0.0009521484375,"tables_with_bit_errors_median":2.0,"tables_with_bit_errors_p90":2.0,"tables_with_bit_errors_max":2,"bad_codewords_median":2.0,"bad_codewords_p90":2.0,"bad_codewords_max":2,"max_table_bit_error_share_median":0.5833333333333333,"raw_payload_symbol_errors_median":10.0,"corrected_payload_symbol_errors_median":2.5,"failed_with_one_bad_table_fraction":0.0,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0},
+    {"sigma_over_delta":0.14,"seed_count":24,"exact_count":17,"exact_rate":0.7083333333333334,"failed_count":7,"failed_profile":{"bit_errors_median":2.0,"bit_errors_p90":3.4,"bit_errors_max":4,"ber_median":0.00048828125,"ber_p90":0.000830078125,"tables_with_bit_errors_median":1.0,"tables_with_bit_errors_p90":2.0,"tables_with_bit_errors_max":2,"bad_codewords_median":1.0,"bad_codewords_p90":2.0,"bad_codewords_max":2,"max_table_bit_error_share_median":1.0,"raw_payload_symbol_errors_median":13.0,"corrected_payload_symbol_errors_median":2.0,"failed_with_one_bad_table_fraction":0.7142857142857143,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0},
+    {"sigma_over_delta":0.15,"seed_count":24,"exact_count":11,"exact_rate":0.4583333333333333,"failed_count":13,"failed_profile":{"bit_errors_median":2.0,"bit_errors_p90":3.8,"bit_errors_max":4,"ber_median":0.00048828125,"ber_p90":0.000927734375,"tables_with_bit_errors_median":1.0,"tables_with_bit_errors_p90":2.0,"tables_with_bit_errors_max":2,"bad_codewords_median":1.0,"bad_codewords_p90":2.0,"bad_codewords_max":2,"max_table_bit_error_share_median":1.0,"raw_payload_symbol_errors_median":16.0,"corrected_payload_symbol_errors_median":2.0,"failed_with_one_bad_table_fraction":0.6153846153846154,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0},
+    {"sigma_over_delta":0.16,"seed_count":24,"exact_count":10,"exact_rate":0.4166666666666667,"failed_count":14,"failed_profile":{"bit_errors_median":2.0,"bit_errors_p90":4.0,"bit_errors_max":4,"ber_median":0.00048828125,"ber_p90":0.0009765625,"tables_with_bit_errors_median":2.0,"tables_with_bit_errors_p90":2.0,"tables_with_bit_errors_max":3,"bad_codewords_median":2.0,"bad_codewords_p90":2.0,"bad_codewords_max":3,"max_table_bit_error_share_median":0.6666666666666666,"raw_payload_symbol_errors_median":23.0,"corrected_payload_symbol_errors_median":2.0,"failed_with_one_bad_table_fraction":0.42857142857142855,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0}
+  ],
+  "requantization_summary": [
+    {"factor":1.0,"seed_count":24,"exact_count":24,"exact_rate":1.0,"failed_count":0,"failed_profile":null,"locator_score_min":1.0,"locator_score_max":1.0},
+    {"factor":1.06,"seed_count":24,"exact_count":20,"exact_rate":0.8333333333333334,"failed_count":4,"failed_profile":{"bit_errors_median":1.5,"bit_errors_p90":2.0,"bit_errors_max":2,"ber_median":0.0003662109375,"ber_p90":0.00048828125,"tables_with_bit_errors_median":1.0,"tables_with_bit_errors_p90":1.0,"tables_with_bit_errors_max":1,"bad_codewords_median":1.0,"bad_codewords_p90":1.0,"bad_codewords_max":1,"max_table_bit_error_share_median":1.0,"raw_payload_symbol_errors_median":9.5,"corrected_payload_symbol_errors_median":1.0,"failed_with_one_bad_table_fraction":1.0,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0},
+    {"factor":1.1,"seed_count":24,"exact_count":21,"exact_rate":0.875,"failed_count":3,"failed_profile":{"bit_errors_median":1.0,"bit_errors_p90":1.8,"bit_errors_max":2,"ber_median":0.000244140625,"ber_p90":0.000439453125,"tables_with_bit_errors_median":1.0,"tables_with_bit_errors_p90":1.0,"tables_with_bit_errors_max":1,"bad_codewords_median":1.0,"bad_codewords_p90":1.0,"bad_codewords_max":1,"max_table_bit_error_share_median":1.0,"raw_payload_symbol_errors_median":11.0,"corrected_payload_symbol_errors_median":1.0,"failed_with_one_bad_table_fraction":1.0,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0},
+    {"factor":1.2,"seed_count":24,"exact_count":17,"exact_rate":0.7083333333333334,"failed_count":7,"failed_profile":{"bit_errors_median":2.0,"bit_errors_p90":3.4,"bit_errors_max":4,"ber_median":0.00048828125,"ber_p90":0.000830078125,"tables_with_bit_errors_median":1.0,"tables_with_bit_errors_p90":1.0,"tables_with_bit_errors_max":1,"bad_codewords_median":1.0,"bad_codewords_p90":1.0,"bad_codewords_max":1,"max_table_bit_error_share_median":1.0,"raw_payload_symbol_errors_median":17.0,"corrected_payload_symbol_errors_median":1.0,"failed_with_one_bad_table_fraction":1.0,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0},
+    {"factor":1.22,"seed_count":24,"exact_count":21,"exact_rate":0.875,"failed_count":3,"failed_profile":{"bit_errors_median":2.0,"bit_errors_p90":2.0,"bit_errors_max":2,"ber_median":0.00048828125,"ber_p90":0.00048828125,"tables_with_bit_errors_median":1.0,"tables_with_bit_errors_p90":1.0,"tables_with_bit_errors_max":1,"bad_codewords_median":1.0,"bad_codewords_p90":1.0,"bad_codewords_max":1,"max_table_bit_error_share_median":1.0,"raw_payload_symbol_errors_median":13.0,"corrected_payload_symbol_errors_median":1.0,"failed_with_one_bad_table_fraction":1.0,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0},
+    {"factor":1.3,"seed_count":24,"exact_count":18,"exact_rate":0.75,"failed_count":6,"failed_profile":{"bit_errors_median":2.0,"bit_errors_p90":4.0,"bit_errors_max":5,"ber_median":0.00048828125,"ber_p90":0.0009765625,"tables_with_bit_errors_median":1.0,"tables_with_bit_errors_p90":1.5,"tables_with_bit_errors_max":2,"bad_codewords_median":1.0,"bad_codewords_p90":1.5,"bad_codewords_max":2,"max_table_bit_error_share_median":1.0,"raw_payload_symbol_errors_median":16.0,"corrected_payload_symbol_errors_median":1.0,"failed_with_one_bad_table_fraction":0.8333333333333334,"failed_with_le4_bad_codewords_fraction":1.0},"locator_score_min":1.0,"locator_score_max":1.0}
+  ],
+  "global_failed_profile": {
+    "paired_additive_noise": {"failed_packages":37,"bit_errors_median":2.0,"bit_errors_p90":4.0,"bit_errors_max":4,"tables_with_bit_errors_median":1.0,"tables_with_bit_errors_p90":2.0,"tables_with_bit_errors_max":3,"bad_codewords_median":1.0,"bad_codewords_p90":2.0,"bad_codewords_max":3,"raw_payload_symbol_errors_median":18.0,"raw_payload_symbol_errors_p90":26.0,"raw_payload_symbol_errors_max":29,"corrected_payload_symbol_errors_median":2.0,"corrected_payload_symbol_errors_p90":3.0,"corrected_payload_symbol_errors_max":3,"one_bad_table_fraction":0.5135135135135135,"le4_bad_codewords_fraction":1.0},
+    "requantization": {"failed_packages":23,"bit_errors_median":2.0,"bit_errors_p90":3.0,"bit_errors_max":5,"tables_with_bit_errors_median":1.0,"tables_with_bit_errors_p90":1.0,"tables_with_bit_errors_max":2,"bad_codewords_median":1.0,"bad_codewords_p90":1.0,"bad_codewords_max":2,"raw_payload_symbol_errors_median":15.0,"raw_payload_symbol_errors_p90":17.8,"raw_payload_symbol_errors_max":22,"corrected_payload_symbol_errors_median":1.0,"corrected_payload_symbol_errors_p90":2.0,"corrected_payload_symbol_errors_max":3,"one_bad_table_fraction":0.9565217391304348,"le4_bad_codewords_fraction":1.0}
+  },
+  "accepted_claims": [
+    "V18 transition-region package failures are sparse after the existing per-codeword Hamming correction in this synthetic profile",
+    "Across 37 failed paired-noise packages, median residual payload error is 2 bits in 1 table and 1 bad codeword; p90 is 4 bits, 2 tables and 2 bad codewords; maximum is 4 bits, 3 tables and 3 bad codewords",
+    "Across 23 failed re-quantized packages, median residual payload error is 2 bits in 1 table and 1 bad codeword; maximum is 5 bits, 2 tables and 2 bad codewords",
+    "The existing Hamming layer removes most raw payload-symbol errors before package verification",
+    "A bounded V20 outer-reliability prototype is structurally justified by the observed sparse residual-error profile"
+  ],
+  "rejected_or_not_supported": [
+    "that V18 itself has broad publication robustness",
+    "that any particular V20 code or redundancy geometry is already validated",
+    "that post-seal corruption follows exactly the same byte/error geometry as this pre-seal diagnostic",
+    "universal repairability or real-publication robustness"
+  ]
+}

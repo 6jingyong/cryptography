@@ -1,0 +1,35 @@
+name: v18-error-profile
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile error-profile harness
+        run: python -m py_compile protocol/v18-error-profile.py
+      - name: Run V18 publication error profile
+        run: |
+          python protocol/v18-error-profile.py \
+            --engine src/noisy_host_package_v18.py \
+            --protocol protocol/real-package-v18.py \
+            --statistics protocol/v18-publication-statistics.py \
+            --seeds 601,602,603,604,605,606,607,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,624 \
+            --payload-bytes 512 \
+            --channels 2 \
+            --out /tmp/v18-error-profile.json
+      - name: Upload error-profile evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: v18-error-profile
+          path: /tmp/v18-error-profile.json
+          if-no-files-found: error
