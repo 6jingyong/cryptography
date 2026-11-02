@@ -3,7 +3,7 @@
 The corrected lifecycle is:
 
 ```text
-A -> c -> B -> b -> a
+A -> locate/rank c -> authenticated open -> B decodes b -> optional outer repair -> a
 ```
 
 This note preserves useful historical work without preserving pre-reset naming or treating unaudited summaries as current evidence.
@@ -18,7 +18,7 @@ Status: **CURRENT / RETAIN**.
 
 ## V14 — historical dual-codebook experiment
 
-Useful components remain, but the old names are retired:
+Useful components remain, but old names are retired:
 
 ```text
 old locator portion -> current A
@@ -31,7 +31,7 @@ Status: **HISTORICAL-BUT-VALID EXPERIMENTS; TERMINOLOGY STALE**.
 
 **Correct layer:** `A`.
 
-The labeled fingerprint is historical A-layer retrieval research. References in the old report to the "second codebook" are pre-reset wording and now mean the A-layer locator, not current `B`.
+The labeled fingerprint is historical A-layer retrieval research. Old references to the "second codebook" now map to A-layer locator state, not current B.
 
 Status: **HISTORICAL-BUT-VALID A-LAYER BENCHMARK**.
 
@@ -43,7 +43,7 @@ Status: **HISTORICAL-BUT-VALID A-LAYER BENCHMARK**.
 - package framing and publication survival -> `c`;
 - actual transform, q, precision, geometry, decoder settings -> `B`.
 
-The old V17 report contains pre-reset statements placing q/transform/ECC/geometry in "Codebook A". Those statements are stale; the experimental observations may still be retained under the remap above.
+Old statements placing q/transform/ECC/geometry in "Codebook A" are stale.
 
 Status: **HISTORICAL-BUT-VALID RESULTS; RESPONSIBILITIES REMAPPED**.
 
@@ -51,89 +51,134 @@ Status: **HISTORICAL-BUT-VALID RESULTS; RESPONSIBILITIES REMAPPED**.
 
 **Correct layer:** `b`, with concrete host model / q / QIM / geometry / publication parameters in `B`.
 
-The old precise V18 summary had no auditable executable/raw-result chain and remains retired. It was **not** restored.
+The historical precise V18 summary remains retired. It was not restored.
 
-A new implementation now exists:
+Current implementation:
 
 ```text
 src/noisy_host_package_v18.py
 protocol/real-package-v18.py
 ```
 
-It first generates a non-zero smooth synthetic residual host, then embeds payload symbols by moving free-subspace coefficients to the nearest modulo-QIM payload coset. The hypothesis/gates were frozen before the machine run.
+Current evidence now covers:
 
-Current bounded evidence:
+- smooth non-zero synthetic residual host;
+- five frozen equal-energy sender-observed residual families;
+- current-protocol exact-recovery runs;
+- paired additive-noise publication-damage statistics;
+- alignment-dependent re-quantization behavior;
+- residual error multiplicity/location after the existing inner Hamming layer.
 
-```text
-12 / 12 tables selected q=4
-q=2 fallback not exercised
-all selected-table calibration exact recovery = 1.0
-calibration adjustment NRMSE ~= 0.000720 .. 0.001093
-strictest declared budget = 0.0045
-8 / 8 payload seeds distinct
-8 / 8 exact full-protocol recovery
-Recall@100 = 1.0
-median target rank = 1
-max target rank = 2
-```
+Key boundary:
 
-Embedding adjustment RMS is material but smaller than the pre-existing host residual: median ratio about `0.446`, maximum observed about `0.485` in the 8-seed run.
+- broad V18 publication robustness is **REJECTED**;
+- re-quantization factor is **not** a scalar monotonic severity axis;
+- paired additive-noise strength is monotonic per seed under the paired construction;
+- transition-region residual failures are sparse after Hamming correction.
 
-Status: **CURRENT_BOUNDED_REINTEGRATION** for the frozen smooth synthetic residual model only.
+Status: **CURRENT_BOUNDED_REINTEGRATION**.
 
-Still unverified:
+Still unresolved:
 
 ```text
 q=2 fallback effectiveness
-other residual distributions
-rate optimality
+cross-platform deterministic basis generation
+mechanistic model of re-quantization alignment bands
+universal / real-publication robustness
 historical V18 quantitative summary
 ```
 
 ## V19 — regime selector
 
-**Correct layer:** sender-side policy for choosing `(b,B)`. `A` may define the allowed vocabulary, but must not absorb package-specific mode choice.
+**Correct layer:** sender-side policy for choosing `(b,B)`. `A` may define allowed vocabulary, but must not absorb package-specific mode choice.
 
-The architecture is reusable; the historical quantitative summary lacks an auditable current executable/result chain.
+The architecture remains reusable; historical quantitative values are not current evidence.
 
-Do not build V19 on the assumption that the current V18 mode is a universal noisy-host default. First test V18 across a frozen residual-model matrix. If the carrier is model-specific, V19 should select among explicitly supported host regimes.
-
-Status: **NEEDS-REINTEGRATION**.
-
-## V20 — outer ECC / verified package reliability
-
-**Correct layer:** mainly `b` and `c`; concrete shard/parity geometry belongs in `B`; bootstrap/verification rules belong to A/c framing.
-
-The architecture is reusable; historical quantitative values are not current machine evidence until rerun under the corrected lifecycle.
+Current V18 is bounded rather than universal, so a future V19 must select only among modes with explicit evidence envelopes.
 
 Status: **NEEDS-REINTEGRATION**.
+
+## V20 — outer logical reliability
+
+**Correct layer:** package reliability around decoded `a`; concrete code/shard/parity geometry belongs in `B`; repair bytes may be carried separately in `c`; A supplies long-lived bootstrap/authentication vocabulary but no package-specific parity geometry.
+
+Historical V20 numerical summaries remain retired.
+
+Current implementation:
+
+```text
+protocol/real-package-v20.py
+protocol/v20-bounded-reintegration.py
+```
+
+The current first-pass geometry was frozen before results:
+
+```text
+512-byte payload
+4 x 128-byte RS data shards
+8 parity bytes / shard
+32 parity bytes total = 6.25% payload parity overhead
+```
+
+V20 uses **logical integrity**, not old raw-b byte integrity:
+
+```text
+v20 tag authenticates B + masked repair bytes r
+raw numeric b is not in the V20 tag
+final acceptance requires exact SHA-256 match to authenticated payload target in B
+```
+
+This permits post-seal numeric transforms of b to be decoded/repaired rather than rejected before inner decoding.
+
+Frozen fresh-seed matrix (`701..724`) passed:
+
+```text
+clean: 24/24
+noise 0.14 / 0.15 / 0.16 delta: V20 24/24 each
+requant 1.06 / 1.20 / 1.30x: V20 24/24 each
+49 / 49 attempted repairs successful
+all final accepted hashes exact
+all locator structural scores 1.0
+repair-field tamper control rejected
+```
+
+Status: **CURRENT_BOUNDED_REINTEGRATION** for the declared synthetic post-seal matrix.
+
+Still unresolved:
+
+```text
+stronger / structurally different damage envelope
+burst or concentrated >4-byte-per-shard errors
+B/r loss or corruption beyond authenticated rejection
+optimal/minimal parity overhead
+real-publication robustness
+historical V20 quantitative summary
+```
 
 ## V21 — constrained optimizer
 
-The retained principle is:
+Retained principle:
 
 > protocol constraints before rate.
 
-The old quantitative locator schema and package-geometry results were produced under the pre-reset abstraction and must not be attached directly to current Protocol-v3.
+Old quantitative locator schema and package-geometry results were produced under the pre-reset abstraction and must not be attached directly to current protocol evidence.
 
 Status: **HISTORICAL-BUT-VALID PRINCIPLE ONLY; QUANTITATIVE RESULTS STALE**.
 
-## Current audited state
-
-The current verified spine is:
+## Current audited spine
 
 ```text
 A/B reset
 -> V12 clean-host carrier
 -> Protocol-v3 public-structure locator
--> strict open/verify
--> B+b decode
--> exact a recovery
--> E5 multi-seed nominal benchmark
--> V18 bounded smooth-residual noisy-host carrier
--> V18 current-protocol 8-seed exact-recovery benchmark
+-> exact clean-host recovery / E5
+-> V18 bounded noisy-host carrier
+-> V18 residual-model + publication-damage characterization
+-> V18 sparse residual-error profile
+-> V20 fixed 6.25% RS logical repair envelope
+-> V20 frozen 24-seed / six-condition post-seal gate PASS
 ```
 
-A separate structural-v4 synthetic descriptor benchmark records the explicit retrieval boundary for a 12-label A-layer model. It is research on the retrieval layer, not evidence that the current NPZ parser already tolerates physical table deletion or split/merge.
+Structural-v4 remains a separate A-layer descriptor benchmark; it is not proof that the physical NPZ parser tolerates arbitrary table deletion or split/merge.
 
-The next high-value test is the V18 residual-model matrix, not another rate/bit-value sweep and not yet V19 policy optimization.
+Next work should hold the current V20 geometry fixed and map its failure envelope before changing redundancy or optimizing rate.

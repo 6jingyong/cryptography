@@ -1,0 +1,41 @@
+name: v20-bounded-reintegration
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  v20:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile V20 harness
+        run: |
+          python -m py_compile protocol/real-package-v20.py
+          python -m py_compile protocol/v20-bounded-reintegration.py
+      - name: Clean V20 smoke test
+        run: |
+          python protocol/real-package-v20.py \
+            --engine src/noisy_host_package_v18.py \
+            --seed 701 --payload-bytes 512 --channels 2
+      - name: Run bounded V20 matrix
+        run: |
+          python protocol/v20-bounded-reintegration.py \
+            --engine src/noisy_host_package_v18.py \
+            --v20 protocol/real-package-v20.py \
+            --statistics protocol/v18-publication-statistics.py \
+            --seeds 701,702,703,704,705,706,707,708,709,710,711,712,713,714,715,716,717,718,719,720,721,722,723,724 \
+            --payload-bytes 512 --channels 2 \
+            --out /tmp/v20-bounded-result.json
+      - name: Upload V20 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: v20-bounded-reintegration
+          path: /tmp/v20-bounded-result.json
+          if-no-files-found: error
