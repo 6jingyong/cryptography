@@ -1,50 +1,125 @@
-# HANDOFF — audited protocol state
+# HANDOFF — audited project state
 
 Repository: `6jingyong/cryptography`  
 Scope: **synthetic/mock benchmark only**
 
 Current code, checked-in machine results, and reproducible CI are authoritative. Historical prose and legacy V18–V21 numbers are not.
 
-## 1. Authoritative lifecycle
+## 1. Project-level orientation
+
+Do not treat this project as a sequence of carrier-parameter competitions.
+
+The intended system is:
 
 ```text
-A -> locate/rank c -> authenticated open -> decode b -> optional outer repair -> exact a
+synthetic payload a
+-> encode to numeric b
+-> create per-package manifest B (+ optional repair r)
+-> construct candidate package c
+-> mix c among unrelated synthetic d records
+-> long-lived A locates / bootstraps c without parsing B during ranking
+-> authenticated open
+-> B explains b; optional V20 repair handles bounded sparse damage
+-> exact a
+-> same current machine package/results feed a clearly labeled mock-paper renderer
 ```
+
+The central two-codebook distinction remains:
 
 ```text
 A = long-lived locator / canonicalization / bootstrap root
 B = per-package reconstruction + reliability manifest
-b = processed numeric payload representation
-r = optional V20 repair bytes, masked and authenticated with B
-c = public candidate package
-a = final synthetic payload
-d = unrelated public/background record
 ```
 
-Package-specific q, transform, geometry, ECC, host model, payload length, publication parameters, outer-code family, shard size and parity geometry belong in `B`, not long-lived `A`.
+Package-specific q, transform, geometry, ECC, host model, payload length, publication parameters, outer-code family, shard size, and parity geometry belong in B, not A.
 
-## 2. Base / locator state
+Priority order:
+
+```text
+find c > open/authenticate c > interpret B > recover a > presentation > rate/overhead optimization
+```
+
+A locally better q, parity count, or damage threshold is not automatically project progress if it does not improve the complete system.
+
+## 2. Current project-level integration — PASS
+
+Current runner:
+
+```text
+tools/current_end_to_end.py
+```
+
+Frozen fresh seeds `901..908`, representative seed `901`, payload 512 B, channels 2, 2,000-candidate corpus, Top-100.
+
+The runner uses the **current V18 carrier + current bounded V20 logical reliability layer**, then feeds the representative current V20 NPZ + B manifest and the same 8-seed machine result into `tools/paper_v6.py`.
+
+Technical result:
+
+```text
+8 / 8 distinct payload hashes
+8 / 8 exact recovery
+Recall@20  = 1.0
+Recall@100 = 1.0
+median target rank = 1
+max target rank = 1
+```
+
+Representative seed 901:
+
+```text
+target index = 1734 / 2000
+target rank = 1
+locator score = 1.0
+20 near decoys
+explicit decoy rejected
+repair-field bitflip rejected by V20 envelope integrity
+```
+
+Paper integration:
+
+```text
+paper input = representative current V20 package/manifest
+paper E5 input = same current-V20 8-seed result
+E5 status = COMPLETED
+E5 pass = true
+visible synthetic/mock labels = present
+mandatory non-provenance limitation = present
+```
+
+The uploaded bundle contains both technical and paper artifacts and a per-file SHA-256 manifest. All 14 recorded file entries were independently recomputed with zero mismatches.
+
+Evidence:
+
+```text
+results/current-e2e-integration-plan.md
+results/current-e2e-integration.json
+results/current-e2e-integration.md
+```
+
+This is the current highest-level milestone: the repository now has one reproducible path connecting locator, carrier, reliability, exact recovery, and mock-paper generation.
+
+## 3. Base / locator state
 
 - Protocol-v3 locator uses `A + public NPZ structure` and does not parse B before ranking: **PASS**.
 - Clean-host V12 E5: 8/8 unique payload hashes, 8/8 exact recovery, Recall@20=1, Recall@100=1, median target rank=1.
 - Structural-v4 remains descriptor-level A-layer evidence only; it does not prove arbitrary physical NPZ deletion/split/merge survival.
 - Paper claim gate v7 remains PASS only for bounded C1–C6 claims; C5 remains mandatory.
 
-## 3. V18 state
+## 4. V18 state
 
-Current V18 implementation:
+Current implementation:
 
 ```text
 src/noisy_host_package_v18.py
 protocol/real-package-v18.py
 ```
 
-V18 is **CURRENT_BOUNDED_REINTEGRATION**.
+Status: **CURRENT_BOUNDED_REINTEGRATION**.
 
-Supported bounded evidence:
+Current evidence:
 
 ```text
-smooth reference: 8/8 current-protocol exact
+smooth reference: 8/8 exact under current protocol
 known-host matrix: 5/5 frozen sender-observed residual families pass
 q=4 selected for all tested tables; q=2 fallback remains unexercised
 ```
@@ -66,16 +141,16 @@ sigma/delta : exact/24
 
 Dense re-quantization is non-monotonic and alignment-dependent; a scalar threshold is rejected.
 
-V18 transition-region residual errors after the existing Hamming layer are sparse:
+Transition-region residual failures are sparse after the existing Hamming layer:
 
 ```text
 paired-noise failures: median 2 payload bits, 1 bad table, 1 bad corrected codeword
 representative requant failures: median 2 payload bits, 1 bad table, 1 bad corrected codeword
 ```
 
-This sparse profile motivated V20 rather than V18 carrier retuning.
+That sparse profile motivated V20 rather than continued V18 retuning.
 
-## 4. V20 implementation and integrity semantics
+## 5. V20 state
 
 Implementation:
 
@@ -96,129 +171,90 @@ parity total              32 bytes
 payload parity overhead   6.25%
 ```
 
-V20 deliberately does **not** reuse old raw `HMAC(B+b)` semantics. Instead:
+V20 uses logical integrity:
 
 ```text
 v20_tag = HMAC_A(B_bytes || masked_r)
 ```
 
-Raw numeric `b` is excluded from the V20 envelope tag. B contains the authenticated expected final payload SHA-256 and concrete reliability geometry.
+Raw numeric b is excluded from the envelope tag. B contains the authenticated expected final payload SHA-256 and reliability geometry. Final acceptance always requires exact SHA-256 equality to that authenticated target.
 
-Receiver flow:
-
-1. locator ranks from public b without parsing B;
-2. authenticate B + masked r;
-3. decode damaged b;
-4. accept directly if candidate payload hash equals authenticated target;
-5. otherwise use authenticated RS parity to repair;
-6. accept only if repaired payload SHA-256 exactly equals the authenticated target in B.
-
-Repair bytes are HMAC-stream masked under A before storage in `r`.
-
-## 5. V20 first bounded gate — PASS
-
-Fresh seeds 701–724, frozen before results.
+First frozen 24-seed gate:
 
 ```text
-condition                 V18 direct   V20 final
-clean                     24/24        24/24
-noise 0.14 delta          20/24        24/24
-noise 0.15 delta          15/24        24/24
-noise 0.16 delta           7/24        24/24
-requant 1.06x             17/24        24/24
-requant 1.20x             19/24        24/24
-requant 1.30x             17/24        24/24
+clean                     24/24
+noise 0.14 delta          24/24 V20
+noise 0.15 delta          24/24 V20
+noise 0.16 delta          24/24 V20
+requant 1.06x             24/24 V20
+requant 1.20x             24/24 V20
+requant 1.30x             24/24 V20
+49 / 49 attempted repairs successful
 ```
 
-Across six damaged conditions: 49 repair attempts, 49 successes; successful repairs touched at most two 128-byte shards. Final authenticated payload hashes were exact, locator score remained 1.0, and repair-field tamper was rejected.
-
-Evidence:
+Stronger fixed-geometry failure envelope:
 
 ```text
-results/v20-bounded-reintegration-plan.md
-results/v20-bounded-reintegration.json
-results/v20-bounded-reintegration.md
+noise 0.18 delta   24/24
+noise 0.20 delta   17/24; exactly 7 packages exceed RS shard bound
+noise 0.22 delta    5/24; exactly 19 exceed bound
+noise >=0.25        0/24; all exceed bound
+
+requant 1.50x      24/24
+requant 1.75x      20/24; exactly 4 packages exceed RS shard bound
+requant >=2.00x     0/24; all exceed bound
 ```
 
-## 6. V20 fixed-geometry failure envelope
-
-Fresh seeds 801–824. Geometry and protocol remained unchanged.
-
-### Paired additive noise
+Across every tested stronger-damage run:
 
 ```text
-sigma/delta   V20 exact   packages with any shard >4 byte errors
-0.16          24/24       0
-0.18          24/24       0
-0.20          17/24       7
-0.22           5/24       19
-0.25           0/24       24
-0.30           0/24       24
-0.35           0/24       24
+V20 failure <=> at least one 128-byte shard has >4 candidate byte errors
 ```
 
-First tested V20 failure point: **0.20 delta**.
+Mismatch count: **0**. Locator structural score stayed 1.0.
 
-At 0.20 delta, exactly seven packages crossed the RS per-shard capacity and exactly seven V20 packages failed.
+Interpretation: current V20 is bounded but mechanically interpretable inside the tested synthetic channel. It does not exhibit an earlier unexplained protocol failure before its declared RS capacity is exceeded.
 
-### Re-quantization
+## 6. Paper line
+
+Current renderer:
 
 ```text
-factor        V20 exact   packages with any shard >4 byte errors
-1.30x         24/24       0
-1.50x         24/24       0
-1.75x         20/24       4
-2.00x          0/24       24
-2.50x          0/24       24
-3.00x          0/24       24
+tools/paper_v6.py
 ```
 
-First tested V20 failure point: **1.75x**.
-
-At 1.75x, exactly four packages crossed the RS per-shard capacity and exactly four V20 packages failed.
-
-### Capacity alignment
-
-Across every individual run in the frozen stronger grid:
+The paper layer is downstream of machine evidence:
 
 ```text
-V20 failure  <=>  at least one 128-byte shard has >4 candidate byte errors
+machine result
+-> morphology analysis
+-> narrative archetype
+-> generic descriptive fits
+-> claim/experiment gate
+-> clearly labeled mock paper
 ```
 
-Observed mismatch count: **0**.
+Current end-to-end integration confirms that `paper_v6.py` can consume a **current V20 package and current V20 multiseed result directly**.
 
-All locator structural scores remained 1.0. Manifest-B and masked-repair-r bitflip controls were both rejected by envelope integrity.
-
-Interpretation: within the tested synthetic channel, V20 does not exhibit an earlier unexplained protocol failure. It remains successful until the fixed Reed-Solomon per-shard correction capacity is actually exceeded.
-
-Evidence:
+The renderer must retain the distinction:
 
 ```text
-results/v20-failure-envelope-plan.md
-results/v20-failure-envelope.json
-results/v20-failure-envelope.md
+morphology / framing / descriptive fits = presentation
+not provenance
+not physical-mechanism proof
 ```
-
-The listed 0.20-delta and 1.75x values are **first tested failure grid points**, not universal continuous thresholds.
 
 ## 7. Current classification
 
 ```text
-V12 -> CURRENT clean-host b carrier
+V12 -> CURRENT clean-host carrier
 V16 -> HISTORICAL-BUT-VALID A-layer benchmark; old terminology stale
 V17 -> HISTORICAL-BUT-VALID observations; responsibilities remapped
 V18 -> CURRENT_BOUNDED_REINTEGRATION
-       - known-host feasibility supported
-       - broad publication robustness REJECTED
-       - re-quantization scalar threshold REJECTED
-       - sparse residual-error profile measured
-V19 -> NEEDS-REINTEGRATION
-V20 -> CURRENT_BOUNDED_REINTEGRATION
-       - fixed 6.25% RS logical repair envelope
-       - first frozen matrix PASS
-       - stronger failure envelope mapped
-       - observed failures align exactly with >4 byte errors in a shard
-V21 -> retain "protocol constraints before rate" only; old quantitative results STALE
+V19 -> NEEDS-REINTEGRATION, but not immediate priority
+V20 -> CURRENT_BOUNDED_REINTEGRATION with mapped RS-capacity failure envelope
+V21 -> retain "protocol constraints before rate" only; old quantitative results stale
+Current end-to-end technical + paper integration -> PASS
 ```
 
 Historical V18/V20 precise summaries remain retired unless recreated by current executable evidence.
@@ -231,20 +267,31 @@ Historical V18/V20 precise summaries remain retired unless recreated by current 
 4. V18 q=2 fallback remains unexercised.
 5. Re-quantization alignment structure is measured but not mechanistically modeled.
 6. V20 has only one RS geometry; 6.25% overhead is not shown minimal or optimal.
-7. V20 has not been tested against physical table deletion, missing repair bytes, partial manifest loss, or other non-numeric structural damage beyond authenticated bitflip rejection.
-8. The current failure boundary is tied to the declared synthetic damage families and grid.
-9. V19 is not current.
+7. V20 structural-damage behavior is not comprehensively characterized.
+8. V19 is not current.
+9. The current paper output is a correctly gated Markdown/JSON package, not yet a polished multi-figure paper-shaped artifact.
 10. No universal undetectability/security or real-publication claim is supported.
 
-## 9. Next work
+## 9. Next work — avoid local over-optimization
 
-Do **not** immediately optimize parity overhead or bit/value.
+Do **not** immediately add another V-number, another dense damage grid, or a bit/value optimization pass.
 
-The most useful next step is now a protocol-level choice:
+The current technical path is sufficiently characterized for the project to move one level upward.
 
-- either test **structurally different damage** with the same V20 geometry (table deletion/truncation/burst loss) to see whether the RS shard model is still appropriate;
-- or rebuild V19 as a selector that chooses only among already-audited carrier/reliability modes.
+The next high-value milestone should improve the **integrated artifact**, especially the thinner paper side:
 
-Because the numeric-damage V20 failure mechanism is now cleanly explained by its declared RS capacity, more points on the same additive-noise/re-quantization axes have diminishing value.
+```text
+current V20 numeric package
+-> morphology-selected multi-figure layout
+-> actual generated synthetic figures from the same package data
+-> machine-backed captions / claim map
+-> downloadable synthetic raw-data tables
+-> clearly labeled mock-paper manuscript/package
+-> bundle-level verification that figures/data/claims all trace back to current machine artifacts
+```
 
-AUDIT GATE: PASS — V18 remains bounded; V20 fixed geometry passes its initial matrix and has an explicit measured capacity-aligned failure envelope
+This is closer to the project objective than continuing to optimize V18/V20 locally.
+
+Structural-damage tests and V19 remain valid future work, but they should be pulled in when they unblock the complete system rather than because an unresolved bullet exists.
+
+AUDIT GATE: PASS — current technical and mock-paper paths are now integrated; next priority is the whole paper-shaped artifact, not another carrier micro-benchmark
