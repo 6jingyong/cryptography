@@ -20,11 +20,12 @@ jobs:
           python -m py_compile tools/current_end_to_end.py
           python -m py_compile tools/paper_bundle_v7.py
           python -m py_compile tools/finalize_paper_bundle_v7.py
+          python -m py_compile src/noisy_host_package_v18_deterministic.py
       - name: Build fresh current end-to-end base bundle
         run: |
           python tools/current_end_to_end.py \
             --v20 protocol/real-package-v20.py \
-            --engine src/noisy_host_package_v18.py \
+            --engine src/noisy_host_package_v18_deterministic.py \
             --paper-tool tools/paper_v6.py \
             --seeds 901,902,903,904,905,906,907,908 \
             --representative-seed 901 \
